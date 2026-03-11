@@ -35,7 +35,6 @@ export default function Admin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["allocations"] });
       setToast("Allocation complete!");
-      setAllocTab("master");
     },
   });
 
