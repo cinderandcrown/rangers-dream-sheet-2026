@@ -67,13 +67,13 @@ export default function GameCard({ game, rankNumber, onSelect }) {
       {/* Team logo */}
       <div
         className="mt-0.5 flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-[10px] overflow-hidden"
-        style={{ backgroundColor: teamColor }}
+        style={{ backgroundColor: logoUrl ? "rgba(255,255,255,0.06)" : teamColor }}
       >
         {logoUrl ? (
           <img
             src={logoUrl}
             alt={game.opponent}
-            className="h-[30px] w-[30px] object-contain"
+            className="h-[32px] w-[32px] object-contain"
           />
         ) : (
           <span
