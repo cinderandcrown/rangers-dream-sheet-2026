@@ -4,16 +4,16 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
+import AdminSubmissionControls from "@/components/rangers/AdminSubmissionControls";
+import AllocationEditor from "@/components/rangers/AllocationEditor";
 import useSeedData from "@/components/rangers/useSeedData";
-import { RESERVED_GAME_NUMBER } from "@/components/rangers/constants";
 import { buildAllocationPlan, calculateTargets, downloadMasterScheduleCsv, downloadMemberScheduleCsv } from "@/components/rangers/adminHelpers";
-import { formatGameDate, sortGames, sortMembers, getTeamColor } from "@/components/rangers/utils";
+import { formatGameDate, sortGames, sortMembers } from "@/components/rangers/utils";
 
 export default function Admin() {
   const queryClient = useQueryClient();
   const seedQuery = useSeedData();
   const [toast, setToast] = React.useState("");
-  const [allocTab, setAllocTab] = React.useState("master");
 
   const membersQuery = useQuery({ queryKey: ["members"], queryFn: () => base44.entities.Member.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), enabled: seedQuery.isSuccess, initialData: [] });
@@ -43,11 +43,8 @@ export default function Admin() {
   const submissions = submissionsQuery.data;
   const allocations = allocationsQuery.data;
   const submittedMembers = members.filter((m) => submissions.some((s) => s.member_name === m.name));
-  const memberMap = Object.fromEntries(members.map((m) => [m.name, m]));
   const submissionMap = Object.fromEntries(submissions.map((s) => [s.member_name, s]));
-  const allocationMap = Object.fromEntries(allocations.map((a) => [a.game_number, a]));
   const targets = submittedMembers.length > 0 ? calculateTargets(submittedMembers) : {};
-  const counts = allocations.reduce((acc, a) => ({ ...acc, [a.assigned_to]: (acc[a.assigned_to] || 0) + 1 }), {});
 
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionsQuery.isLoading || allocationsQuery.isLoading) {
     return (
@@ -57,37 +54,32 @@ export default function Admin() {
     );
   }
 
-  const mc = (name) => memberMap[name]?.accent_color || "#555";
-
   return (
     <div>
       <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
       <div className="relative z-[1] mx-auto max-w-[1100px] px-6 py-8">
-        <h3
-          className="mb-2 text-[26px] font-bold"
-          style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}
-        >
-          Admin Dashboard
-        </h3>
-        <p className="mb-8 text-[15px] text-white/50">Manage submissions, run the allocation algorithm, and export schedules.</p>
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3
+              className="mb-2 text-[26px] font-bold"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}
+            >
+              Admin Dashboard <span className="text-[var(--gold)]">👑</span>
+            </h3>
+            <p className="text-[15px] text-white/50">Clark's control center — manage submissions, run allocations, and finalize assignments.</p>
+          </div>
+        </div>
 
-        {/* Submission Status */}
-        <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
-          {members.map((m) => {
-            const sub = submissionMap[m.name];
-            const ct = sub?.ranked_game_ids?.length || 0;
-            return (
-              <div key={m.id} className="rounded-[14px] border border-white/[0.06] bg-[var(--slate)] p-5 text-center">
-                <div className="mb-1.5 text-base font-semibold" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", color: m.accent_color }}>
-                  {m.name}
-                </div>
-                <div className="mb-3 text-xs text-white/40">{m.share_count} game share · Rank {m.rank_max}</div>
-                <span className={`inline-block rounded-[20px] px-3 py-1 text-xs font-semibold uppercase tracking-wider ${ct > 0 ? "bg-[rgba(34,197,94,0.15)] text-[#22C55E]" : "bg-[rgba(234,179,8,0.15)] text-[#EAB308]"}`}>
-                  {ct > 0 ? `✓ ${ct} ranked` : "Awaiting"}
-                </span>
-              </div>
-            );
-          })}
+        {/* Submission Status with Controls */}
+        <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
+          {members.map((m) => (
+            <AdminSubmissionControls
+              key={m.id}
+              member={m}
+              submission={submissionMap[m.name]}
+              onToast={setToast}
+            />
+          ))}
         </div>
 
         {/* Allocation Engine */}
