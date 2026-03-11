@@ -126,7 +126,7 @@ export default function Rank() {
   return (
     <div>
       <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
-      <div className="relative z-[1] mx-auto max-w-[1200px] px-6 py-6">
+      <div className="relative z-[1] mx-auto max-w-[1200px] px-3 sm:px-6 py-4 sm:py-6">
         {/* Top bar */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -138,8 +138,8 @@ export default function Rank() {
             </h3>
             <p className="mt-0.5 text-sm text-white/50">Click games to rank them (1 = most wanted). Drag to reorder.</p>
           </div>
-          <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--slate)] px-5 py-[10px]">
-            <div className="h-2 w-40 overflow-hidden rounded-lg bg-white/[0.08]">
+          <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--slate)] px-3 sm:px-5 py-[10px]">
+            <div className="h-2 w-24 sm:w-40 overflow-hidden rounded-lg bg-white/[0.08]">
               <div
                 className="h-full rounded-lg transition-all duration-400"
                 style={{
@@ -155,16 +155,16 @@ export default function Rank() {
         </div>
 
         {/* Filters */}
-        <div className="mb-5 flex flex-wrap gap-2">
+        <div className="mb-5 flex flex-wrap gap-1.5 sm:gap-2 overflow-x-auto thin-scrollbar">
           <FilterPills options={["All", ...["April", "May", "June", "July", "August", "September"]]} activeValue={monthFilter} onChange={setMonthFilter} />
           <span className="w-2" />
           <FilterPills options={DAY_OPTIONS} activeValue={dayFilter} onChange={setDayFilter} />
         </div>
 
         {/* Two column layout */}
-        <div className="grid items-start gap-6" style={{ gridTemplateColumns: window.innerWidth > 900 ? "1fr 340px" : "1fr" }}>
+        <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px]">
           {/* Game grid */}
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-[10px]">
+          <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2 sm:gap-[10px]">
             {filteredGames.map((game) => (
               <GameCard
                 key={game.id}

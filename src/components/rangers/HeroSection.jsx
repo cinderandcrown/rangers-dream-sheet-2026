@@ -55,7 +55,7 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
 
         {/* Stats row */}
         <div className="mx-auto mb-10 flex max-w-[520px] items-center justify-center gap-0 overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02]">
-          <StatCell label="Home Games" value={totalGames} />
+          <StatCell label="Games" value={totalGames} />
           <div className="h-10 w-px bg-white/[0.06]" />
           <StatCell label="Submitted" value={`${submittedCount}/${totalMembers}`} highlight={submittedCount === totalMembers} />
           <div className="h-10 w-px bg-white/[0.06]" />
@@ -68,15 +68,15 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
 
 function StatCell({ label, value, highlight, isDeadline }) {
   return (
-    <div className="flex flex-1 flex-col items-center gap-1 px-4 py-4">
+    <div className="flex flex-1 flex-col items-center gap-1 px-2 sm:px-4 py-3 sm:py-4">
       <span
-        className={`text-[22px] font-bold leading-none ${highlight ? "text-green-400" : isDeadline ? "text-[var(--gold)]" : "text-white"}`}
+        className={`text-[18px] sm:text-[22px] font-bold leading-none ${highlight ? "text-green-400" : isDeadline ? "text-[var(--gold)]" : "text-white"}`}
         style={{ fontFamily: "'Oswald', sans-serif" }}
       >
         {value}
       </span>
       <span
-        className="text-[10px] font-medium tracking-[2px] text-white/35"
+        className="text-[9px] sm:text-[10px] font-medium tracking-[1.5px] sm:tracking-[2px] text-white/35"
         style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}
       >
         {label}

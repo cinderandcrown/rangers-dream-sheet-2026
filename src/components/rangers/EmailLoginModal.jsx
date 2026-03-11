@@ -28,7 +28,7 @@ export default function EmailLoginModal({ memberName, onConfirm, onCancel }) {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center px-4 transition-all duration-200"
+      className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center px-0 sm:px-4 transition-all duration-200"
       style={{
         backgroundColor: show ? "rgba(0,0,0,0.65)" : "rgba(0,0,0,0)",
         backdropFilter: show ? "blur(8px)" : "blur(0px)"
@@ -36,7 +36,7 @@ export default function EmailLoginModal({ memberName, onConfirm, onCancel }) {
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
       <div
-        className="w-full max-w-[400px] overflow-hidden rounded-2xl border border-white/[0.08] shadow-[0_32px_80px_rgba(0,0,0,0.6)] transition-all duration-200"
+        className="w-full max-w-[400px] overflow-hidden rounded-t-2xl sm:rounded-2xl border border-white/[0.08] shadow-[0_32px_80px_rgba(0,0,0,0.6)] transition-all duration-200"
         style={{
           backgroundColor: "rgba(30,41,59,0.95)",
           backdropFilter: "blur(24px)",
@@ -47,7 +47,7 @@ export default function EmailLoginModal({ memberName, onConfirm, onCancel }) {
         {/* Colored top strip */}
         <div className="h-1" style={{ background: "linear-gradient(90deg, var(--red), var(--gold))" }} />
 
-        <div className="p-7">
+        <div className="p-5 sm:p-7">
           {/* Header */}
           <div className="mb-6 text-center">
             <div
@@ -66,8 +66,8 @@ export default function EmailLoginModal({ memberName, onConfirm, onCancel }) {
             >
               {memberName}'s Dream Sheet
             </h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-white/45">This will be the email address you use to login to the MLB Baseball App to access tickets
-              Enter your email to access or create your game rankings. This email will be used for your assignment notifications.
+            <p className="mt-2 text-[13px] leading-relaxed text-white/45">
+              This will be the email address you use to login to the MLB Ballpark App to access tickets.
             </p>
           </div>
 
