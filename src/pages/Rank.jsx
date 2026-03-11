@@ -10,6 +10,7 @@ import RankedListPanel from "@/components/rangers/RankedListPanel";
 import useSeedData from "@/components/rangers/useSeedData";
 import { DAY_OPTIONS, MONTH_OPTIONS } from "@/components/rangers/constants";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
+import LoadingScreen from "@/components/rangers/LoadingScreen";
 
 function reorder(items, startIndex, endIndex) {
   const next = [...items];
@@ -69,11 +70,7 @@ export default function Rank() {
   const emailMismatch = existingSubmission?.member_email && memberEmail && existingSubmission.member_email.toLowerCase() !== memberEmail.toLowerCase();
 
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionQuery.isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg tracking-widest text-white/50" style={{ fontFamily: "'Oswald', sans-serif" }}>LOADING...</div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!member) {
