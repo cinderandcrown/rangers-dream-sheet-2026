@@ -10,12 +10,12 @@ export default function BrandHeader({ showBack, onBack }) {
         boxShadow: "0 4px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.03) inset"
       }}
     >
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-6 py-3.5">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-3.5">
         <div className="flex items-center gap-3.5">
           {/* Logo mark */}
           <div className="relative">
             <div
-              className="flex h-[46px] w-[46px] flex-shrink-0 items-center justify-center rounded-full border-[2.5px] border-[var(--gold)] bg-[var(--red)] text-[20px] font-bold text-white shadow-[0_4px_12px_rgba(192,17,31,0.3)]"
+              className="flex h-[38px] w-[38px] sm:h-[46px] sm:w-[46px] flex-shrink-0 items-center justify-center rounded-full border-[2.5px] border-[var(--gold)] bg-[var(--red)] text-[16px] sm:text-[20px] font-bold text-white shadow-[0_4px_12px_rgba(192,17,31,0.3)]"
               style={{ fontFamily: "'Oswald', sans-serif" }}
             >
               TX
@@ -23,7 +23,7 @@ export default function BrandHeader({ showBack, onBack }) {
           </div>
           <div>
             <h1
-              className="text-[20px] font-bold leading-tight text-white"
+              className="text-[16px] sm:text-[20px] font-bold leading-tight text-white"
               style={{ fontFamily: "'Oswald', sans-serif", letterSpacing: "2px", textTransform: "uppercase" }}
             >
               Rangers Dream Sheet
