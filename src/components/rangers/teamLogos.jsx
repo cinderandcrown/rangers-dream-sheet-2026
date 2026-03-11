@@ -30,5 +30,5 @@ const TEAM_IDS = {
 export function getTeamLogoUrl(opponent) {
   const id = TEAM_IDS[opponent];
   if (!id) return null;
-  return `https://midfield.mlbstatic.com/cvbSzy49MiltMIRl/images/logos/team-cap-on-dark/${id}.svg`;
+  return `https://www.mlbstatic.com/team-logos/team-cap-on-dark/${id}.svg`;
 }
