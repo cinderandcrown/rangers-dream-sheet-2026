@@ -142,6 +142,16 @@ export default function Admin() {
             </div>
           )}
 
+          {/* Preference Analytics */}
+          {allocations.length > 0 && submissions.length > 0 && (
+            <AnalyticsDashboard
+              members={submittedMembers}
+              games={games}
+              submissions={submissions}
+              allocations={allocations}
+            />
+          )}
+
           {/* Schedule Distribution */}
           {allocations.length > 0 && (
             <ScheduleDistribution
