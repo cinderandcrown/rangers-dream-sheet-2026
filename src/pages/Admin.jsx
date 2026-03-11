@@ -107,9 +107,8 @@ export default function Admin() {
               <button
                 onClick={() => allocationMutation.mutate()}
                 disabled={submittedMembers.length === 0 || allocationMutation.isPending}
-                className="rounded-[10px] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:opacity-40"
-                style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
                 className="btn-red-gradient rounded-[10px] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:opacity-40"
+                style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
               >
                 ⚡ Run Allocation
               </button>
