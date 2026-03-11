@@ -87,7 +87,7 @@ export default function Admin() {
           <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
             Allocation Engine
           </h4>
-          <p className="mb-4 text-sm text-white/50">Weighted round-robin draft across 80 draftable games (Opening Day is reserved). Higher-share members pick proportionally more.</p>
+          <p className="mb-4 text-sm text-white/50">Weighted round-robin draft across 80 draftable games (Opening Day reserved). Clark drafts first as group owner, then by share count. After running, you can swap any game assignment before finalizing.</p>
           <div className="flex flex-wrap gap-[10px]">
             <button
               onClick={() => allocationMutation.mutate()}
