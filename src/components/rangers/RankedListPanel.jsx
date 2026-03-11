@@ -19,7 +19,7 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
         {games.length > 0 ? (
           <button
             onClick={onClear}
-            className="rounded-[10px] border border-white/12 bg-transparent px-[10px] py-1 text-[11px] font-medium text-white/70 transition hover:border-white/25 hover:text-white"
+            className="rounded-[10px] border border-white/12 bg-transparent px-3 py-2 min-h-[44px] min-w-[44px] text-[11px] font-medium text-white/70 transition hover:border-white/25 hover:text-white active:bg-white/[0.08] active:scale-95"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
             Clear
@@ -84,26 +84,26 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
                           </div>
 
                           {/* Actions - hover reveal on desktop */}
-                          <div className="ri-actions flex items-center gap-0.5">
-                            <div className="flex flex-col gap-0.5">
+                          <div className="ri-actions flex items-center gap-1">
+                            <div className="flex flex-col gap-1">
                               <button
                                 onClick={(e) => { e.stopPropagation(); onMoveUp(index); }}
                                 disabled={index === 0}
-                                className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-white/[0.06] text-[10px] text-white/50 disabled:opacity-30"
+                                className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
                               >
                                 ▲
                               </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); onMoveDown(index); }}
                                 disabled={index === games.length - 1}
-                                className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-white/[0.06] text-[10px] text-white/50 disabled:opacity-30"
+                                className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
                               >
                                 ▼
                               </button>
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); onRemove(game.game_number); }}
-                              className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-sm text-[var(--red)]"
+                              className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-sm text-[var(--red)] active:bg-[rgba(192,17,31,0.3)] active:scale-90 transition-transform"
                             >
                               ✕
                             </button>
@@ -125,7 +125,7 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
         <button
           onClick={onSubmit}
           disabled={disabled}
-          className="w-full rounded-[10px] px-3 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className="w-full rounded-[10px] px-3 py-3 min-h-[48px] text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] active:scale-[0.97] active:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
           style={{
             fontFamily: "'Oswald', sans-serif",
             textTransform: "uppercase",

@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import AppToast from "@/components/rangers/AppToast";
@@ -10,15 +10,24 @@ import EmailLoginModal from "@/components/rangers/EmailLoginModal";
 import HeroSection from "@/components/rangers/HeroSection";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
 import PrivacySection from "../components/rangers/PrivacySection";
+import PullToRefresh from "@/components/rangers/PullToRefresh";
 import useSeedData from "@/components/rangers/useSeedData";
 import { DEADLINE_LABEL, GAME_SEED_DATA } from "@/components/rangers/constants";
 import { sortMembers } from "@/components/rangers/utils";
 
 export default function Index() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [toast, setToast] = React.useState("");
   const [loginMember, setLoginMember] = React.useState(null);
   const seedQuery = useSeedData();
+
+  const handleRefresh = async () => {
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ["members"] }),
+      queryClient.refetchQueries({ queryKey: ["submissions"] }),
+    ]);
+  };
 
   const membersQuery = useQuery({
     queryKey: ["members"],
@@ -54,6 +63,7 @@ export default function Index() {
         />
 
         {/* Members section */}
+        <PullToRefresh onRefresh={handleRefresh}>
         <div className="mx-auto max-w-[780px] px-6 pb-16">
           {/* Section label */}
           <div className="mb-5 flex items-center gap-3">
@@ -139,6 +149,7 @@ export default function Index() {
             </div>
           </div>
         </div>
+        </PullToRefresh>
       </div>
 
       {loginMember && (

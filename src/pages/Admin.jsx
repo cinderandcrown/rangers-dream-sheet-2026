@@ -36,7 +36,21 @@ export default function Admin() {
       if (allocations.length > 0) await base44.entities.Allocation.bulkCreate(allocations);
       return allocations;
     },
-    onSuccess: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["allocations"] });
+      const prev = queryClient.getQueryData(["allocations"]);
+      const g = sortGames(gamesQuery.data);
+      const m = sortMembers(membersQuery.data);
+      const s = submissionsQuery.data;
+      const { allocations: optimistic } = buildAllocationPlan(g, m, s);
+      queryClient.setQueryData(["allocations"], optimistic);
+      return { prev };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(["allocations"], ctx.prev);
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["allocations"], data);
       queryClient.invalidateQueries({ queryKey: ["allocations"] });
       setToast("Allocation complete!");
     },

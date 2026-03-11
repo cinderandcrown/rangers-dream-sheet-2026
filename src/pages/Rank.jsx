@@ -8,6 +8,7 @@ import BrandHeader from "@/components/rangers/BrandHeader";
 import FilterPills from "@/components/rangers/FilterPills";
 import GameCard from "@/components/rangers/GameCard";
 import RankedListPanel from "@/components/rangers/RankedListPanel";
+import PullToRefresh from "@/components/rangers/PullToRefresh";
 import useSeedData from "@/components/rangers/useSeedData";
 import { DAY_OPTIONS, MONTH_OPTIONS } from "@/components/rangers/constants";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
@@ -45,6 +46,18 @@ export default function Rank() {
       if (existing) return base44.entities.Submission.update(existing.id, payload);
       return base44.entities.Submission.create(payload);
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["submission", memberName] });
+      const prev = queryClient.getQueryData(["submission", memberName]);
+      queryClient.setQueryData(["submission", memberName], (old) => {
+        const payload = { member_name: memberName, ranked_game_ids: rankedGameIds, submitted_at: new Date().toISOString() };
+        return old?.[0] ? [{ ...old[0], ...payload }] : [payload];
+      });
+      return { prev };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(["submission", memberName], ctx.prev);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["submissions"] });
       queryClient.invalidateQueries({ queryKey: ["submission", memberName] });
@@ -52,6 +65,10 @@ export default function Rank() {
       setTimeout(() => { navigate(createPageUrl("Index")); }, 1200);
     },
   });
+
+  const handleRefreshGames = async () => {
+    await queryClient.refetchQueries({ queryKey: ["games"] });
+  };
 
   React.useEffect(() => {
     if (!loaded && submissionQuery.data[0]?.ranked_game_ids) {
@@ -166,6 +183,7 @@ export default function Rank() {
         {/* Two column layout */}
         <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px]">
           {/* Game grid */}
+          <PullToRefresh onRefresh={handleRefreshGames}>
           <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2 sm:gap-[10px]">
             {filteredGames.map((game) => (
               <GameCard
@@ -176,6 +194,7 @@ export default function Rank() {
               />
             ))}
           </div>
+          </PullToRefresh>
 
           {/* Ranked list */}
           <div className="max-lg:order-first">

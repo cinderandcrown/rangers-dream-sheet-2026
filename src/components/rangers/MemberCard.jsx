@@ -6,8 +6,8 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, isLocked
   return (
     <div
       onClick={onClick}
-      className="member-card group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.06] transition-all duration-300 hover:-translate-y-1.5 hover:border-white/[0.12] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)]"
-      style={{ backgroundColor: "rgba(30,41,59,0.7)", backdropFilter: "blur(12px)" }}
+      className="member-card group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.06] transition-all duration-300 hover:-translate-y-1.5 hover:border-white/[0.12] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] active:scale-[0.96] active:border-white/[0.15]"
+      style={{ backgroundColor: "rgba(30,41,59,0.7)", backdropFilter: "blur(12px)", minHeight: "44px" }}
     >
       {/* Top accent bar — always visible, uses member color */}
       <div
