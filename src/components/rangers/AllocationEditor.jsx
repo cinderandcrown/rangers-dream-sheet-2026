@@ -149,8 +149,8 @@ export default function AllocationEditor({ games, members, allocations, targets,
                           fontFamily: "'Oswald', sans-serif",
                           textTransform: "uppercase",
                           letterSpacing: "0.5px",
-                          backgroundColor: `${mc(owner)}22`,
-                          color: mc(owner)
+                          backgroundColor: owner === "Reserved" ? "rgba(191,160,72,0.15)" : `${mc(owner)}22`,
+                          color: owner === "Reserved" ? "var(--gold)" : mc(owner)
                         }}
                       >
                         {owner}
