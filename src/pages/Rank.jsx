@@ -81,6 +81,21 @@ export default function Rank() {
     );
   }
 
+  const existingSub = submissionQuery.data[0];
+  if (existingSub?.is_locked) {
+    return (
+      <div>
+        <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
+        <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-6">
+          <div className="text-4xl mb-4">🔒</div>
+          <div className="mb-2 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>Submission Locked</div>
+          <p className="text-sm text-white/50 max-w-md">{member.name}'s submission has been locked by the admin. Contact Clark if you need to make changes.</p>
+          <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="mt-6 rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70 hover:text-white transition">Back to Home</button>
+        </div>
+      </div>
+    );
+  }
+
   const addGame = (game) => {
     if (rankedGameSet.has(game.game_number)) return;
     if (rankedGameIds.length >= member.rank_max) { setToast(`Maximum ${member.rank_max} rankings reached!`); return; }
