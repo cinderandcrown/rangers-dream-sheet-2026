@@ -1,5 +1,5 @@
 // MLB team logo URLs from mlbstatic.com using official team IDs
-// Format: https://www.mlbstatic.com/team-logos/{teamId}.svg
+// Using team-logos-on-dark for better visibility on dark backgrounds
 
 const TEAM_IDS = {
   Reds: 113,
@@ -30,5 +30,5 @@ const TEAM_IDS = {
 export function getTeamLogoUrl(opponent) {
   const id = TEAM_IDS[opponent];
   if (!id) return null;
-  return `https://www.mlbstatic.com/team-logos/${id}.svg`;
+  return `https://midfield.mlbstatic.com/cvbSzy49MiltMIRl/images/logos/team-cap-on-dark/${id}.svg`;
 }
