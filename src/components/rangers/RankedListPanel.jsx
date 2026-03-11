@@ -61,10 +61,10 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
                           {/* Team logo */}
                           <div
                             className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-md overflow-hidden"
-                            style={{ backgroundColor: getTeamColor(game.opponent) }}
+                            style={{ backgroundColor: getTeamLogoUrl(game.opponent) ? "rgba(255,255,255,0.06)" : getTeamColor(game.opponent) }}
                           >
                             {getTeamLogoUrl(game.opponent) ? (
-                              <img src={getTeamLogoUrl(game.opponent)} alt="" className="h-[16px] w-[16px] object-contain" />
+                              <img src={getTeamLogoUrl(game.opponent)} alt="" className="h-[18px] w-[18px] object-contain" />
                             ) : (
                               <div className="h-1.5 w-1.5 rounded-full bg-white" />
                             )}
