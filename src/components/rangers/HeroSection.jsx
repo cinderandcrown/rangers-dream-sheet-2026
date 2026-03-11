@@ -48,9 +48,11 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
         </h2>
 
         {/* Description */}
-        <p className="mx-auto mb-10 max-w-[480px] text-[16px] leading-[1.7] text-white/50">
-          Welcome to the Will Family Dream Sheet. Select your name below
-          to rank the {totalGames} home games you'd love to attend at Globe Life Field.
+        <p className="mx-auto mb-10 max-w-[540px] text-[14px] sm:text-[16px] leading-[1.7] text-white/50">
+          Welcome to the 2026 Texas Rangers Season! This app was built for our Dream Sheet selection.
+          Just follow the simple steps below — pick your name, rank the {totalGames} home games you want most, and hit submit.
+          Works great on desktop or mobile and should only take a few minutes.
+          Reach out to Clark if anything isn't working or you have questions!
         </p>
 
         {/* Stats row */}
