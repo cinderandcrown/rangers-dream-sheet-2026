@@ -50,6 +50,7 @@
 import Admin from './pages/Admin';
 import Index from './pages/Index';
 import Rank from './pages/Rank';
+import Schedule from './pages/Schedule';
 import __Layout from './Layout.jsx';
 
 
@@ -57,6 +58,7 @@ export const PAGES = {
     "Admin": Admin,
     "Index": Index,
     "Rank": Rank,
+    "Schedule": Schedule,
 }
 
 export const pagesConfig = {
