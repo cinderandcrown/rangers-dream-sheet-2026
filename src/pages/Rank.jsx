@@ -23,6 +23,7 @@ export default function Rank() {
   const seedQuery = useSeedData();
   const urlParams = new URLSearchParams(window.location.search);
   const memberName = urlParams.get("memberName") || "";
+  const memberEmail = urlParams.get("email") || "";
 
   const [monthFilter, setMonthFilter] = React.useState("All");
   const [dayFilter, setDayFilter] = React.useState("All");
@@ -37,7 +38,7 @@ export default function Rank() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       const existing = submissionQuery.data[0];
-      const payload = { member_name: memberName, ranked_game_ids: rankedGameIds, submitted_at: new Date().toISOString(), is_final: false };
+      const payload = { member_name: memberName, member_email: memberEmail || existing?.member_email || "", ranked_game_ids: rankedGameIds, submitted_at: new Date().toISOString(), is_final: false };
       if (existing) return base44.entities.Submission.update(existing.id, payload);
       return base44.entities.Submission.create(payload);
     },
