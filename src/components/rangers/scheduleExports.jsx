@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import { format, parseISO } from "date-fns";
-import { RESERVED_GAME_NUMBER, OUTLOOK_LOCATION, MEMBER_SEED_DATA, TEAM_COLORS } from "./constants";
-import { sortGames, getTeamColor, addHoursToTime, csvEscape, downloadCsv, formatOutlookDate } from "./utils";
+import { RESERVED_GAME_NUMBER } from "./constants";
+import { sortGames, getTeamColor } from "./utils";
 
 // Member row background colors for Excel
 const MEMBER_ROW_COLORS = {
@@ -222,8 +222,6 @@ export function generateAllSchedulesHtml(members, games, allocations) {
 <body>
 <button class="print-btn" onclick="window.print()">🖨 Print All</button>
 <div class="container">`;
-
-  const ownerByGame = Object.fromEntries(allocations.map((a) => [a.game_number, a.assigned_to]));
 
   for (const member of members) {
     const memberGames = getMemberScheduleData(member.name, games, allocations);
