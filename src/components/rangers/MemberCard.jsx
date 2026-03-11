@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function MemberCard({ member, hasSubmitted, rankedCount, onClick }) {
+export default function MemberCard({ member, hasSubmitted, rankedCount, isLocked, onClick }) {
   return (
     <div
       onClick={onClick}
@@ -15,12 +15,17 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, onClick 
 
       {/* Status dot */}
       <div
-        className="absolute right-[14px] top-[14px] h-[10px] w-[10px] rounded-full"
-        style={{
-          backgroundColor: hasSubmitted ? "#22C55E" : "#EAB308",
-          border: "2px solid #1E293B"
-        }}
-      />
+        className="absolute right-[14px] top-[14px] flex items-center gap-1"
+      >
+        {isLocked && <span className="text-[10px]">🔒</span>}
+        <div
+          className="h-[10px] w-[10px] rounded-full"
+          style={{
+            backgroundColor: hasSubmitted ? "#22C55E" : "#EAB308",
+            border: "2px solid #1E293B"
+          }}
+        />
+      </div>
 
       {/* Avatar */}
       <div
