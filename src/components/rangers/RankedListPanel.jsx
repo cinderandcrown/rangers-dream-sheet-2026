@@ -1,6 +1,7 @@
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { getTeamColor } from "./utils";
+import { getTeamLogoUrl } from "./teamLogos";
 import { format, parseISO } from "date-fns";
 
 export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown, onRemove, onClear, onSubmit, disabled, isPending }) {
@@ -57,11 +58,17 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
                             {index + 1}
                           </span>
 
-                          {/* Team dot */}
+                          {/* Team logo */}
                           <div
-                            className="h-1.5 w-1.5 flex-shrink-0 rounded-full"
+                            className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-md overflow-hidden"
                             style={{ backgroundColor: getTeamColor(game.opponent) }}
-                          />
+                          >
+                            {getTeamLogoUrl(game.opponent) ? (
+                              <img src={getTeamLogoUrl(game.opponent)} alt="" className="h-[16px] w-[16px] object-contain" />
+                            ) : (
+                              <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                            )}
+                          </div>
 
                           {/* Game info */}
                           <div className="min-w-0 flex-1">
