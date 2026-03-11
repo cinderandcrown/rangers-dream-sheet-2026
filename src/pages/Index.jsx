@@ -76,7 +76,7 @@ export default function Index() {
           </p>
 
           {/* Member Grid */}
-          <div className="mb-10 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-[14px]">
+          <div className="mb-10 grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-5">
             {members.map((member) => {
               const submission = submissionMap[member.name];
               return (
