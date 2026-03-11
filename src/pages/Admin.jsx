@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
@@ -14,6 +15,7 @@ import AdminGate from "@/components/rangers/AdminGate";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
 
 export default function Admin() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const seedQuery = useSeedData();
   const [toast, setToast] = React.useState("");
@@ -55,7 +57,7 @@ export default function Admin() {
   return (
     <AdminGate>
       <div>
-        <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
+        <BrandHeader showBack onBack={() => navigate(createPageUrl("Index"))} />
         <div className="relative z-[1] mx-auto max-w-[1100px] px-6 py-8">
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>

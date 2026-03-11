@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
@@ -8,11 +9,13 @@ import MemberCard from "@/components/rangers/MemberCard";
 import EmailLoginModal from "@/components/rangers/EmailLoginModal";
 import HeroSection from "@/components/rangers/HeroSection";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
+import PrivacySection from "@/components/rangers/PrivacySection";
 import useSeedData from "@/components/rangers/useSeedData";
 import { DEADLINE_LABEL, GAME_SEED_DATA } from "@/components/rangers/constants";
 import { sortMembers } from "@/components/rangers/utils";
 
 export default function Index() {
+  const navigate = useNavigate();
   const [toast, setToast] = React.useState("");
   const [loginMember, setLoginMember] = React.useState(null);
   const seedQuery = useSeedData();
@@ -119,10 +122,17 @@ export default function Index() {
             </div>
           </div>
 
+          {/* Privacy section */}
+          <PrivacySection
+            members={members}
+            submissionMap={submissionMap}
+            onToast={setToast}
+          />
+
           {/* Hidden admin access */}
           <div className="mt-12 text-center">
             <div
-              onDoubleClick={() => { window.location.href = createPageUrl("Admin"); }}
+              onDoubleClick={() => navigate(createPageUrl("Admin"))}
               className="inline-block cursor-default select-none text-[13px] text-white/[0.08] transition hover:text-white/15"
             >
               ⚾
@@ -135,7 +145,7 @@ export default function Index() {
         <EmailLoginModal
           memberName={loginMember.name}
           onConfirm={(email) => {
-            window.location.href = createPageUrl(`Rank?memberName=${encodeURIComponent(loginMember.name)}&email=${encodeURIComponent(email)}`);
+            navigate(createPageUrl(`Rank?memberName=${encodeURIComponent(loginMember.name)}&email=${encodeURIComponent(email)}`));
           }}
           onCancel={() => setLoginMember(null)}
         />
