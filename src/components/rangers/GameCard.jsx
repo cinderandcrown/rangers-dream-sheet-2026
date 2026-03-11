@@ -64,12 +64,25 @@ export default function GameCard({ game, rankNumber, onSelect }) {
         </div>
       ) : null}
 
-      {/* Team color badge */}
+      {/* Team logo */}
       <div
-        className="mt-0.5 flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-[10px] text-[14px] font-semibold text-white"
-        style={{ fontFamily: "'Oswald', sans-serif", backgroundColor: teamColor }}
+        className="mt-0.5 flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-[10px] overflow-hidden"
+        style={{ backgroundColor: teamColor }}
       >
-        {abbr}
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={game.opponent}
+            className="h-[30px] w-[30px] object-contain"
+          />
+        ) : (
+          <span
+            className="text-[14px] font-semibold text-white"
+            style={{ fontFamily: "'Oswald', sans-serif" }}
+          >
+            {abbr}
+          </span>
+        )}
       </div>
 
       {/* Info */}
