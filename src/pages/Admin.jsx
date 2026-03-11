@@ -14,6 +14,7 @@ import { sortGames, sortMembers } from "@/components/rangers/utils";
 import AdminGate from "@/components/rangers/AdminGate";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
 import ScheduleDistribution from "@/components/rangers/ScheduleDistribution";
+import AnalyticsDashboard from "@/components/rangers/analytics/AnalyticsDashboard";
 
 export default function Admin() {
   const navigate = useNavigate();
