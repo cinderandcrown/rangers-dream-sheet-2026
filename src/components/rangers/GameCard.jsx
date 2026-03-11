@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { RESERVED_GAME_NUMBER } from "./constants";
 import { formatGameMeta, getTeamAbbreviation, getTeamColor } from "./utils";
 
@@ -7,35 +8,74 @@ export default function GameCard({ game, rankNumber, onSelect, maxReached }) {
   const isRanked = Boolean(rankNumber);
   const teamColor = getTeamColor(game.opponent);
 
-  return (
-    <button
-      disabled={isReserved || isRanked}
-      onClick={() => onSelect(game)}
-      className={`relative min-h-[152px] rounded-2xl border p-4 text-left transition ${
-        isReserved
-          ? "border-[rgba(191,160,72,0.4)] bg-[rgba(191,160,72,0.08)] opacity-55"
-          : isRanked
-            ? "cursor-not-allowed border-white/10 bg-[var(--slate)] opacity-35"
-            : "border-white/10 bg-[var(--slate)] hover:-translate-y-1 hover:border-white/20 hover:shadow-xl"
-      }`}
-      style={isReserved ? { borderStyle: "dashed" } : undefined}
-    >
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="flex h-[42px] w-[42px] items-center justify-center rounded-xl text-xs font-bold text-white oswald" style={{ backgroundColor: teamColor }}>
+  const cardContent = (
+    <>
+      {/* Team badge + rank/reserved indicator */}
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div
+          className="flex h-[44px] w-[44px] items-center justify-center rounded-xl text-[11px] font-bold tracking-wider text-white shadow-lg oswald"
+          style={{
+            background: `linear-gradient(135deg, ${teamColor}, ${teamColor}BB)`,
+            boxShadow: `0 4px 12px ${teamColor}40`
+          }}
+        >
           {getTeamAbbreviation(game.opponent)}
         </div>
         {isReserved ? (
-          <div className="rounded-full border border-[var(--gold)]/30 px-2 py-1 text-[10px] font-semibold tracking-[0.2em] text-[var(--gold)] oswald">Opening Day</div>
+          <div className="rounded-lg border border-[var(--gold)]/30 bg-[var(--gold)]/10 px-2.5 py-1 text-[9px] font-bold tracking-[0.2em] text-[var(--gold)] oswald">
+            ⭐ Opening Day
+          </div>
         ) : null}
         {isRanked ? (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--gold)] text-sm font-bold text-[var(--dark)] oswald">{rankNumber}</div>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--gold)] to-[#8B7128] text-sm font-bold text-[var(--dark)] shadow-lg oswald">
+            {rankNumber}
+          </div>
         ) : null}
       </div>
-      <div className="text-xl text-white oswald">{game.opponent}</div>
-      <div className="mt-2 text-sm text-white/70">#{game.game_number} · {formatGameMeta(game)}</div>
-      <div className="mt-3 text-xs uppercase tracking-[0.18em] text-white/35">
-        {isReserved ? "Reserved from draft" : maxReached ? "Tap to rank" : "Available game"}
+
+      {/* Opponent name */}
+      <div className="text-lg font-semibold text-white oswald">{game.opponent}</div>
+
+      {/* Date/time line */}
+      <div className="mt-1.5 text-[13px] leading-relaxed text-white/60">
+        {formatGameMeta(game)}
       </div>
-    </button>
+
+      {/* Bottom row: game number + day badge */}
+      <div className="mt-3 flex items-center justify-between">
+        <span className="text-[11px] font-medium text-white/30">#{game.game_number}</span>
+        <span className="rounded-md bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-white/50 oswald">
+          {game.day_of_week}
+        </span>
+      </div>
+    </>
+  );
+
+  if (isReserved) {
+    return (
+      <div className="relative rounded-2xl border border-dashed border-[rgba(191,160,72,0.35)] bg-[rgba(191,160,72,0.06)] p-4 opacity-60">
+        {cardContent}
+      </div>
+    );
+  }
+
+  if (isRanked) {
+    return (
+      <div className="relative cursor-default rounded-2xl border border-white/5 bg-[var(--slate)]/50 p-4 opacity-35">
+        {cardContent}
+      </div>
+    );
+  }
+
+  return (
+    <motion.button
+      onClick={() => onSelect(game)}
+      whileHover={{ y: -4, scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      className="glass-card relative rounded-2xl p-4 text-left"
+    >
+      {cardContent}
+    </motion.button>
   );
 }

@@ -12,12 +12,20 @@ export default function AppToast({ toast, onClose }) {
     <AnimatePresence>
       {toast ? (
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 40 }}
-          className="fixed bottom-6 left-1/2 z-50 w-[calc(100%-32px)] max-w-md -translate-x-1/2 rounded-2xl border border-[rgba(191,160,72,0.65)] bg-[#1E293B] px-4 py-3 text-sm font-semibold text-white shadow-2xl"
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 30, scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="fixed bottom-6 left-1/2 z-50 w-[calc(100%-32px)] max-w-md -translate-x-1/2"
         >
-          {toast}
+          <div className="rounded-2xl border border-[var(--gold)]/40 bg-gradient-to-r from-[rgba(30,41,59,0.97)] to-[rgba(20,30,48,0.97)] px-5 py-3.5 shadow-2xl shadow-black/40 backdrop-blur-lg">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--gold)]/15">
+                <span className="text-base">✓</span>
+              </div>
+              <span className="text-sm font-semibold text-white/90">{toast}</span>
+            </div>
+          </div>
         </motion.div>
       ) : null}
     </AnimatePresence>

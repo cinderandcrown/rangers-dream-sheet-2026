@@ -1,9 +1,10 @@
 import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
+import { motion } from "framer-motion";
 import AppToast from "@/components/rangers/AppToast";
+import BrandHeader from "@/components/rangers/BrandHeader";
 import FilterPills from "@/components/rangers/FilterPills";
 import GameCard from "@/components/rangers/GameCard";
 import RankedListPanel from "@/components/rangers/RankedListPanel";
@@ -28,6 +29,7 @@ export default function Rank() {
   const [dayFilter, setDayFilter] = React.useState("All");
   const [rankedGameIds, setRankedGameIds] = React.useState([]);
   const [toast, setToast] = React.useState("");
+  const [loaded, setLoaded] = React.useState(false);
 
   const membersQuery = useQuery({
     queryKey: ["members"],
@@ -76,10 +78,11 @@ export default function Rank() {
   });
 
   React.useEffect(() => {
-    if (submissionQuery.data[0]?.ranked_game_ids) {
+    if (!loaded && submissionQuery.data[0]?.ranked_game_ids) {
       setRankedGameIds(submissionQuery.data[0].ranked_game_ids);
+      setLoaded(true);
     }
-  }, [submissionQuery.data]);
+  }, [submissionQuery.data, loaded]);
 
   const member = sortMembers(membersQuery.data).find((item) => item.name === memberName);
   const games = sortGames(gamesQuery.data);
@@ -89,14 +92,19 @@ export default function Rank() {
   const progress = member ? Math.min((rankedGameIds.length / member.rank_max) * 100, 100) : 0;
 
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionQuery.isLoading) {
-    return <div className="flex min-h-screen items-center justify-center text-xl text-white/80 oswald">Loading rankings…</div>;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--gold)]/20 border-t-[var(--gold)]" />
+        <span className="text-lg text-white/60 oswald">Loading rankings…</span>
+      </div>
+    );
   }
 
   if (!member) {
     return (
       <div className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 text-center">
         <div className="text-3xl text-white oswald">Member not found</div>
-        <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="mt-6 min-h-[44px] rounded-full border border-white/10 px-5 text-white/75">
+        <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="mt-6 min-h-[44px] rounded-xl border border-white/10 px-5 text-white/75">
           Back to home
         </button>
       </div>
@@ -119,66 +127,100 @@ export default function Rank() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="mb-5 inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/10 px-4 text-sm font-semibold text-white/75 transition hover:bg-white/5">
-        <ArrowLeft className="h-4 w-4" /> Back
-      </button>
+    <div className="min-h-screen">
+      <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
 
-      <div className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.03)] p-5">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h1 className="text-4xl oswald" style={{ color: member.accent_color }}>{member.name} Dream Sheet</h1>
-            <p className="mt-2 text-white/70">Click games to rank them (1 = most wanted). Drag to reorder your list.</p>
-          </div>
-          <div className="w-full max-w-md rounded-full border border-white/10 bg-[rgba(255,255,255,0.04)] p-1.5">
-            <div className="mb-2 flex items-center justify-between px-3 text-sm font-semibold text-white/70">
-              <span>Progress</span>
-              <span>{rankedGameIds.length} / {member.rank_max}</span>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {/* Member header + progress */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="section-panel p-5"
+        >
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-xl text-base font-bold text-white oswald"
+                  style={{ background: `linear-gradient(135deg, ${member.accent_color}, ${member.accent_color}CC)` }}
+                >
+                  {member.name.slice(0, 1)}
+                </div>
+                <h1 className="text-3xl text-white oswald sm:text-4xl" style={{ color: member.accent_color }}>
+                  {member.name}&apos;s Dream Sheet
+                </h1>
+              </div>
+              <p className="mt-2 text-sm text-white/55">Click games to rank them (1 = most wanted). Drag to reorder your list.</p>
             </div>
-            <div className="h-3 rounded-full bg-white/10">
-              <div
-                className="h-3 rounded-full transition-all"
-                style={{
-                  width: `${progress}%`,
-                  background: progress >= 100 ? "#22C55E" : `linear-gradient(90deg, ${member.accent_color}, #BFA048)`
-                }}
+
+            {/* Progress pill */}
+            <div className="w-full max-w-sm">
+              <div className="mb-2 flex items-center justify-between text-xs font-semibold">
+                <span className="text-white/40 oswald">Progress</span>
+                <span className="text-white/70">{rankedGameIds.length} <span className="text-white/30">/ {member.rank_max}</span></span>
+              </div>
+              <div className="h-2.5 overflow-hidden rounded-full bg-white/8">
+                <motion.div
+                  className="h-full rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  style={{
+                    background: progress >= 100 ? "linear-gradient(90deg, #22C55E, #16A34A)" : `linear-gradient(90deg, ${member.accent_color}, #BFA048)`
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="section-panel mt-5 space-y-3 p-4"
+        >
+          <FilterPills label="Month" options={MONTH_OPTIONS} activeValue={monthFilter} onChange={setMonthFilter} />
+          <FilterPills label="Day" options={DAY_OPTIONS} activeValue={dayFilter} onChange={setDayFilter} />
+        </motion.div>
+
+        {/* Two-column layout */}
+        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+          <motion.section
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-3"
+          >
+            {filteredGames.map((game) => (
+              <GameCard
+                key={game.id}
+                game={game}
+                rankNumber={rankedGameIds.indexOf(game.game_number) + 1 || null}
+                maxReached={rankedGameIds.length >= member.rank_max}
+                onSelect={addGame}
               />
-            </div>
-          </div>
+            ))}
+          </motion.section>
+
+          <RankedListPanel
+            games={rankedGames}
+            memberColor={member.accent_color}
+            onDragEnd={(result) => {
+              if (!result.destination) return;
+              setRankedGameIds((current) => reorder(current, result.source.index, result.destination.index));
+            }}
+            onMoveUp={(index) => moveItem(index, "up")}
+            onMoveDown={(index) => moveItem(index, "down")}
+            onRemove={(gameNumber) => setRankedGameIds((current) => current.filter((id) => id !== gameNumber))}
+            onClear={() => setRankedGameIds([])}
+            onSubmit={() => saveMutation.mutate()}
+            disabled={rankedGameIds.length === 0 || saveMutation.isPending}
+            isPending={saveMutation.isPending}
+          />
         </div>
-      </div>
-
-      <div className="mt-6 space-y-4 rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.03)] p-4">
-        <FilterPills label="Month" options={MONTH_OPTIONS} activeValue={monthFilter} onChange={setMonthFilter} />
-        <FilterPills label="Day" options={DAY_OPTIONS} activeValue={dayFilter} onChange={setDayFilter} />
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        <section className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
-          {filteredGames.map((game) => (
-            <GameCard
-              key={game.id}
-              game={game}
-              rankNumber={rankedGameIds.indexOf(game.game_number) + 1 || null}
-              maxReached={rankedGameIds.length >= member.rank_max}
-              onSelect={addGame}
-            />
-          ))}
-        </section>
-
-        <RankedListPanel
-          games={rankedGames}
-          onDragEnd={(result) => {
-            if (!result.destination) return;
-            setRankedGameIds((current) => reorder(current, result.source.index, result.destination.index));
-          }}
-          onMoveUp={(index) => moveItem(index, "up")}
-          onMoveDown={(index) => moveItem(index, "down")}
-          onRemove={(gameNumber) => setRankedGameIds((current) => current.filter((id) => id !== gameNumber))}
-          onClear={() => setRankedGameIds([])}
-          onSubmit={() => saveMutation.mutate()}
-          disabled={rankedGameIds.length === 0 || saveMutation.isPending}
-        />
       </div>
 
       <AppToast toast={toast} onClose={() => setToast("")} />
