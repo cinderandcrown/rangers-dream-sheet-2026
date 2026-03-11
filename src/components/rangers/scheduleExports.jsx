@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { format, parseISO } from "date-fns";
-import { RESERVED_GAME_NUMBER, OUTLOOK_LOCATION, MEMBER_SEED_DATA } from "./constants";
+import { RESERVED_GAME_NUMBER, OUTLOOK_LOCATION, MEMBER_SEED_DATA, TEAM_COLORS } from "./constants";
 import { sortGames, getTeamColor, addHoursToTime, csvEscape, downloadCsv, formatOutlookDate } from "./utils";
 
 // Member row background colors for Excel
@@ -227,7 +227,6 @@ export function generateAllSchedulesHtml(members, games, allocations) {
 <div class="container">`;
 
   const ownerByGame = Object.fromEntries(allocations.map((a) => [a.game_number, a.assigned_to]));
-  const { TEAM_COLORS } = require("./constants");
 
   for (const member of members) {
     const memberGames = getMemberScheduleData(member.name, games, allocations);

@@ -13,6 +13,7 @@ import { buildAllocationPlan, calculateTargets, downloadMasterScheduleCsv, downl
 import { sortGames, sortMembers } from "@/components/rangers/utils";
 import AdminGate from "@/components/rangers/AdminGate";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
+import ScheduleDistribution from "@/components/rangers/ScheduleDistribution";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -138,6 +139,15 @@ export default function Admin() {
                 onToast={setToast}
               />
             </div>
+          )}
+
+          {/* Schedule Distribution */}
+          {allocations.length > 0 && (
+            <ScheduleDistribution
+              members={submittedMembers}
+              games={games}
+              allocations={allocations}
+            />
           )}
 
           {/* Raw Submissions */}
