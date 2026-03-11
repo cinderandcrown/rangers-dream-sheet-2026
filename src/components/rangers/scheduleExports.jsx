@@ -12,11 +12,6 @@ const MEMBER_ROW_COLORS = {
   Chase: "F0D6D6",
 };
 
-function hexToRgb(hex) {
-  const h = hex.replace("#", "");
-  return { r: parseInt(h.substring(0, 2), 16), g: parseInt(h.substring(2, 4), 16), b: parseInt(h.substring(4, 6), 16) };
-}
-
 function formatFullDate(dateStr) {
   const d = parseISO(dateStr);
   return format(d, "EEEE, MMMM d, yyyy");
