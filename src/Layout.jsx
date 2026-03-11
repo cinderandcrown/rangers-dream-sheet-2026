@@ -6,7 +6,7 @@ export default function Layout({ children }) {
   }, []);
 
   return (
-    <div className="app-shell-bg min-h-screen text-white">
+    <div className="dark app-shell-bg min-h-screen text-white">
       <div className="relative z-10">{children}</div>
     </div>
   );
