@@ -112,120 +112,23 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Allocation Results */}
-        {allocations.length > 0 ? (
-          <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-6">
-            <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
-              Allocation Results
-            </h4>
-            <div className="mb-5 grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
-              {submittedMembers.map((m) => (
-                <div key={m.name} className="rounded-[14px] border border-white/[0.06] bg-[var(--slate)] p-5 text-center">
-                  <div className="mb-1.5 text-base font-semibold" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", color: m.accent_color }}>
-                    {m.name}
-                  </div>
-                  <div className="text-[28px] font-bold" style={{ fontFamily: "'Oswald', sans-serif" }}>{counts[m.name] || 0}</div>
-                  <div className="text-xs text-white/40">games assigned (target: {targets[m.name] || 0})</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Tabs */}
-            <div className="mb-4 flex flex-wrap gap-1">
-              <button onClick={() => setAllocTab("master")} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === "master" ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                Master Schedule
-              </button>
-              {submittedMembers.map((m) => (
-                <button key={m.name} onClick={() => setAllocTab(m.name)} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === m.name ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  {m.name}
-                </button>
-              ))}
-            </div>
-
-            {/* Table */}
-            <div className="thin-scrollbar max-h-[500px] overflow-y-auto rounded-lg">
-              <table className="at">
-                <thead>
-                  <tr><th>#</th><th>Date</th><th>Day</th><th>Time</th><th>Opponent</th><th>Owner</th></tr>
-                </thead>
-                <tbody>
-                  {(allocTab === "master" ? games : games.filter((g) => allocationMap[g.game_number]?.assigned_to === allocTab)).map((g, i) => {
-                    const owner = g.game_number === RESERVED_GAME_NUMBER ? "Reserved" : allocationMap[g.game_number]?.assigned_to || "";
-                    return (
-                      <tr key={g.id}>
-                        <td className="text-white/30">{i + 1}</td>
-                        <td>{formatGameDate(g.date)}</td>
-                        <td>{g.day_of_week}</td>
-                        <td>{g.start_time}</td>
-                        <td>
-                          <span className="inline-flex items-center gap-1.5">
-                            <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: getTeamColor(g.opponent) }} />
-                            {g.opponent}{g.game_number === RESERVED_GAME_NUMBER ? " ★" : ""}
-                          </span>
-                        </td>
-                        <td>
-                          <span
-                            className="inline-block rounded-md px-[10px] py-0.5 text-xs font-medium"
-                            style={{
-                              fontFamily: "'Oswald', sans-serif",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                              backgroundColor: `${mc(owner)}22`,
-                              color: mc(owner)
-                            }}
-                          >
-                            {owner}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+        {/* Allocation Results — Editable */}
+        {allocations.length > 0 && (
+          <div className="mb-5">
+            <AllocationEditor
+              games={games}
+              members={submittedMembers}
+              allocations={allocations}
+              targets={targets}
+              onToast={setToast}
+            />
           </div>
-        ) : null}
+        )}
 
         {/* Raw Submissions */}
-        {submittedMembers.length > 0 ? (
-          <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-6">
-            <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
-              Raw Submissions
-            </h4>
-            <div className="mb-4 flex flex-wrap gap-1">
-              {submittedMembers.map((m) => (
-                <button key={m.name} onClick={() => setAllocTab(`raw-${m.name}`)} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === `raw-${m.name}` ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  {m.name}
-                </button>
-              ))}
-            </div>
-            {submittedMembers.map((m) => {
-              if (allocTab !== `raw-${m.name}`) return null;
-              const ranked = submissionMap[m.name]?.ranked_game_ids || [];
-              return (
-                <div key={m.name} className="thin-scrollbar max-h-[500px] overflow-y-auto rounded-lg">
-                  <table className="at">
-                    <thead><tr><th>Rank</th><th>Date</th><th>Opponent</th><th>Time</th></tr></thead>
-                    <tbody>
-                      {ranked.map((gid, idx) => {
-                        const g = games.find((x) => x.game_number === gid);
-                        if (!g) return null;
-                        return (
-                          <tr key={gid}>
-                            <td className="font-semibold text-[var(--gold)]">{idx + 1}</td>
-                            <td>{g.day_of_week}, {formatGameDate(g.date)}</td>
-                            <td>{g.opponent}</td>
-                            <td>{g.start_time}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
+        {submittedMembers.length > 0 && (
+          <RawSubmissions submittedMembers={submittedMembers} submissionMap={submissionMap} games={games} />
+        )}
       </div>
       <AppToast toast={toast} onClose={() => setToast("")} />
     </div>
