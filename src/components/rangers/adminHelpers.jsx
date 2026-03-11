@@ -33,7 +33,12 @@ export function buildAllocationPlan(games, members, submissions) {
   const draftableGames = sortGames(games).filter((game) => game.game_number !== RESERVED_GAME_NUMBER);
   const submittedMembers = members
     .filter((member) => submissions.some((submission) => submission.member_name === member.name))
-    .sort((a, b) => b.share_count - a.share_count);
+    .sort((a, b) => {
+      // Clark (owner) always drafts first, then by share count
+      if (a.name === "Clark") return -1;
+      if (b.name === "Clark") return 1;
+      return b.share_count - a.share_count;
+    });
 
   const targets = calculateTargets(submittedMembers);
   const counts = Object.fromEntries(submittedMembers.map((member) => [member.name, 0]));
