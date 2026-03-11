@@ -29,6 +29,7 @@ export default function GameCard({ game, rankNumber, onSelect }) {
   const isReserved = game.game_number === RESERVED_GAME_NUMBER;
   const isRanked = Boolean(rankNumber);
   const teamColor = getTeamColor(game.opponent);
+  const logoUrl = getTeamLogoUrl(game.opponent);
   const abbr = game.opponent.slice(0, 3).toUpperCase();
   const dateLabel = format(parseISO(game.date), "MMM d");
 
