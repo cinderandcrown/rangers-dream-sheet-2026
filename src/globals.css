@@ -145,3 +145,26 @@ button.btn-red-gradient {
 @media (max-width: 900px) {
   .ri-actions { opacity: 1; }
 }
+
+/* Print styles for Schedule page */
+@media print {
+  html, body, #root {
+    background: #fff !important;
+    color: #333 !important;
+  }
+  .schedule-page {
+    background: #fff !important;
+    color: #333 !important;
+  }
+  .schedule-page header,
+  .schedule-page .print-hide {
+    display: none !important;
+  }
+  .schedule-page * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .app-shell-bg::before {
+    display: none !important;
+  }
+}
