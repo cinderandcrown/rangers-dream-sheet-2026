@@ -41,10 +41,20 @@ html, body, #root {
 
 body {
   margin: 0;
-  background: var(--dark);
-  color: #E2E8F0;
+  background: #0A1628 !important;
+  color: #E2E8F0 !important;
   font-family: 'Source Sans 3', sans-serif;
   overflow-x: hidden;
+}
+
+/* Nuclear override — force dark backgrounds on all shadcn surfaces */
+body,
+#root,
+.bg-background,
+.bg-card,
+.bg-popover {
+  background-color: #0A1628 !important;
+  color: #E2E8F0 !important;
 }
 
 * {
