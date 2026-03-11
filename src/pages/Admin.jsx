@@ -11,6 +11,7 @@ import RawSubmissions from "@/components/rangers/RawSubmissions";
 import { buildAllocationPlan, calculateTargets, downloadMasterScheduleCsv, downloadMemberScheduleCsv } from "@/components/rangers/adminHelpers";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
 import AdminGate from "@/components/rangers/AdminGate";
+import LoadingScreen from "@/components/rangers/LoadingScreen";
 
 export default function Admin() {
   const queryClient = useQueryClient();
@@ -48,11 +49,7 @@ export default function Admin() {
   const targets = submittedMembers.length > 0 ? calculateTargets(submittedMembers) : {};
 
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionsQuery.isLoading || allocationsQuery.isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg tracking-widest text-white/50" style={{ fontFamily: "'Oswald', sans-serif" }}>LOADING...</div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
