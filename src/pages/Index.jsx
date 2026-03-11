@@ -139,14 +139,15 @@ export default function Index() {
             onToast={setToast}
           />
 
-          {/* Hidden admin access */}
+          {/* Admin access */}
           <div className="mt-12 text-center">
-            <div
-              onDoubleClick={() => navigate(createPageUrl("Admin"))}
-              className="inline-block cursor-default select-none text-[13px] text-white/[0.08] transition hover:text-white/15"
+            <button
+              onClick={() => navigate(createPageUrl("Admin"))}
+              className="text-[12px] text-white/20 underline underline-offset-2 transition hover:text-white/40"
+              style={{ fontFamily: "'Source Sans 3', sans-serif" }}
             >
-              ⚾
-            </div>
+              Admin Dashboard →
+            </button>
           </div>
         </div>
         </PullToRefresh>

@@ -34,14 +34,17 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, isLocked
           </div>
           {/* Status badge */}
           <div className="absolute -bottom-0.5 -right-0.5 flex items-center gap-0.5">
-            {isLocked && (
+            {isLocked ? (
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--slate)] text-[9px] shadow-md">
                 🔒
               </span>
-            )}
-            {hasSubmitted && !isLocked && (
+            ) : hasSubmitted ? (
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-[10px] shadow-md">
                 ✓
+              </span>
+            ) : (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EAB308] shadow-md">
+                <span className="h-2 w-2 rounded-full bg-white/80" />
               </span>
             )}
           </div>
@@ -57,7 +60,7 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, isLocked
 
         {/* Share count */}
         <div className="mb-3 text-[12px] text-white/35">
-          {member.share_count} games
+          {member.share_count} games · Rank top {member.rank_max}
         </div>
 
         {/* Progress bar */}
