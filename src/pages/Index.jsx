@@ -9,7 +9,7 @@ import MemberCard from "@/components/rangers/MemberCard";
 import EmailLoginModal from "@/components/rangers/EmailLoginModal";
 import HeroSection from "@/components/rangers/HeroSection";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
-import PrivacySection from "@/components/rangers/PrivacySection";
+import PrivacySection from "../components/rangers/PrivacySection";
 import useSeedData from "@/components/rangers/useSeedData";
 import { DEADLINE_LABEL, GAME_SEED_DATA } from "@/components/rangers/constants";
 import { sortMembers } from "@/components/rangers/utils";
