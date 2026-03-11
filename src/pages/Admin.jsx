@@ -10,6 +10,7 @@ import useSeedData from "@/components/rangers/useSeedData";
 import RawSubmissions from "@/components/rangers/RawSubmissions";
 import { buildAllocationPlan, calculateTargets, downloadMasterScheduleCsv, downloadMemberScheduleCsv } from "@/components/rangers/adminHelpers";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
+import AdminGate from "@/components/rangers/AdminGate";
 
 export default function Admin() {
   const queryClient = useQueryClient();
@@ -55,82 +56,84 @@ export default function Admin() {
   }
 
   return (
-    <div>
-      <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
-      <div className="relative z-[1] mx-auto max-w-[1100px] px-6 py-8">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h3
-              className="mb-2 text-[26px] font-bold"
-              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}
-            >
-              Admin Dashboard <span className="text-[var(--gold)]">👑</span>
-            </h3>
-            <p className="text-[15px] text-white/50">Clark's control center — manage submissions, run allocations, and finalize assignments.</p>
+    <AdminGate>
+      <div>
+        <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
+        <div className="relative z-[1] mx-auto max-w-[1100px] px-6 py-8">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h3
+                className="mb-2 text-[26px] font-bold"
+                style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}
+              >
+                Admin Dashboard <span className="text-[var(--gold)]">👑</span>
+              </h3>
+              <p className="text-[15px] text-white/50">Clark's control center — manage submissions, run allocations, and finalize assignments.</p>
+            </div>
           </div>
-        </div>
 
-        {/* Submission Status with Controls */}
-        <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
-          {members.map((m) => (
-            <AdminSubmissionControls
-              key={m.id}
-              member={m}
-              submission={submissionMap[m.name]}
-              onToast={setToast}
-            />
-          ))}
-        </div>
+          {/* Submission Status with Controls */}
+          <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
+            {members.map((m) => (
+              <AdminSubmissionControls
+                key={m.id}
+                member={m}
+                submission={submissionMap[m.name]}
+                onToast={setToast}
+              />
+            ))}
+          </div>
 
-        {/* Allocation Engine */}
-        <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-6">
-          <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
-            Allocation Engine
-          </h4>
-          <p className="mb-4 text-sm text-white/50">Weighted round-robin draft across 80 draftable games (Opening Day reserved). Clark drafts first as group owner, then by share count. After running, you can swap any game assignment before finalizing.</p>
-          <div className="flex flex-wrap gap-[10px]">
-            <button
-              onClick={() => allocationMutation.mutate()}
-              disabled={submittedMembers.length === 0 || allocationMutation.isPending}
-              className="rounded-[10px] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:opacity-40"
-              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", background: "linear-gradient(135deg, var(--red), #8B0000)" }}
-            >
-              ⚡ Run Allocation
-            </button>
-            {allocations.length > 0 ? (
-              <>
-                <button onClick={() => downloadMasterScheduleCsv(games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
-                  📥 Master CSV
-                </button>
-                {submittedMembers.map((m) => (
-                  <button key={m.name} onClick={() => downloadMemberScheduleCsv(m.name, games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
-                    📥 {m.name}'s CSV
+          {/* Allocation Engine */}
+          <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-6">
+            <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+              Allocation Engine
+            </h4>
+            <p className="mb-4 text-sm text-white/50">Weighted round-robin draft across 80 draftable games (Opening Day reserved). Clark drafts first as group owner, then by share count. After running, you can swap any game assignment before finalizing.</p>
+            <div className="flex flex-wrap gap-[10px]">
+              <button
+                onClick={() => allocationMutation.mutate()}
+                disabled={submittedMembers.length === 0 || allocationMutation.isPending}
+                className="rounded-[10px] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:opacity-40"
+                style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", background: "linear-gradient(135deg, var(--red), #8B0000)" }}
+              >
+                ⚡ Run Allocation
+              </button>
+              {allocations.length > 0 ? (
+                <>
+                  <button onClick={() => downloadMasterScheduleCsv(games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+                    📥 Master CSV
                   </button>
-                ))}
-              </>
-            ) : null}
+                  {submittedMembers.map((m) => (
+                    <button key={m.name} onClick={() => downloadMemberScheduleCsv(m.name, games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+                      📥 {m.name}'s CSV
+                    </button>
+                  ))}
+                </>
+              ) : null}
+            </div>
           </div>
+
+          {/* Allocation Results — Editable */}
+          {allocations.length > 0 && (
+            <div className="mb-5">
+              <AllocationEditor
+                games={games}
+                members={submittedMembers}
+                allocations={allocations}
+                targets={targets}
+                onToast={setToast}
+              />
+            </div>
+          )}
+
+          {/* Raw Submissions */}
+          {submittedMembers.length > 0 && (
+            <RawSubmissions submittedMembers={submittedMembers} submissionMap={submissionMap} games={games} />
+          )}
         </div>
-
-        {/* Allocation Results — Editable */}
-        {allocations.length > 0 && (
-          <div className="mb-5">
-            <AllocationEditor
-              games={games}
-              members={submittedMembers}
-              allocations={allocations}
-              targets={targets}
-              onToast={setToast}
-            />
-          </div>
-        )}
-
-        {/* Raw Submissions */}
-        {submittedMembers.length > 0 && (
-          <RawSubmissions submittedMembers={submittedMembers} submissionMap={submissionMap} games={games} />
-        )}
+        <AppToast toast={toast} onClose={() => setToast("")} />
       </div>
-      <AppToast toast={toast} onClose={() => setToast("")} />
-    </div>
+    </AdminGate>
   );
 }

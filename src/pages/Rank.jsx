@@ -64,6 +64,10 @@ export default function Rank() {
   const filteredGames = games.filter((g) => (monthFilter === "All" || g.month === monthFilter) && (dayFilter === "All" || g.day_of_week === dayFilter));
   const progress = member ? Math.round((rankedGameIds.length / member.rank_max) * 100) : 0;
 
+  // Email verification: if a submission already exists with an email, the incoming email must match
+  const existingSubmission = submissionQuery.data[0];
+  const emailMismatch = existingSubmission?.member_email && memberEmail && existingSubmission.member_email.toLowerCase() !== memberEmail.toLowerCase();
+
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionQuery.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -77,6 +81,20 @@ export default function Rank() {
       <div className="flex min-h-screen flex-col items-center justify-center text-center">
         <div className="mb-4 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>Member not found</div>
         <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70">Back</button>
+      </div>
+    );
+  }
+
+  if (emailMismatch) {
+    return (
+      <div>
+        <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
+        <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-6">
+          <div className="text-4xl mb-4">🚫</div>
+          <div className="mb-2 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>Email Doesn't Match</div>
+          <p className="text-sm text-white/50 max-w-md">{member.name}'s Dream Sheet was submitted with a different email address. Please use the same email you originally signed in with.</p>
+          <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="mt-6 rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70 hover:text-white transition">Back to Home</button>
+        </div>
       </div>
     );
   }

@@ -108,13 +108,14 @@ export default function Index() {
             </span>
           </div>
 
-          {/* Admin link */}
-          <span
-            onClick={() => { window.location.href = createPageUrl("Admin"); }}
-            className="cursor-pointer text-[13px] text-white/30 underline decoration-white/20 underline-offset-[3px] transition hover:text-[var(--gold)]"
+          {/* Admin link — hidden behind double-click */}
+          <div
+            onDoubleClick={() => { window.location.href = createPageUrl("Admin"); }}
+            className="select-none text-[13px] text-white/15 transition hover:text-white/25 cursor-default"
+            title=""
           >
-            Admin Dashboard →
-          </span>
+            ⚾
+          </div>
         </div>
       </div>
       {loginMember && (
