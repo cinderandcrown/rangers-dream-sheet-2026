@@ -125,12 +125,11 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
         <button
           onClick={onSubmit}
           disabled={disabled}
-          className="w-full rounded-[10px] px-3 py-3 min-h-[48px] text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] active:scale-[0.97] active:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className="btn-red-gradient w-full rounded-[10px] px-3 py-3 min-h-[48px] text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] active:scale-[0.97] active:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
           style={{
             fontFamily: "'Oswald', sans-serif",
             textTransform: "uppercase",
             letterSpacing: "1px",
-            background: "linear-gradient(135deg, var(--red), #8B0000)"
           }}
         >
           {isPending ? "Saving…" : "✓ Submit Rankings"}
