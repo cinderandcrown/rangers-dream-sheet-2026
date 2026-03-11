@@ -59,6 +59,16 @@ body {
   color: #E2E8F0 !important;
   font-family: 'Source Sans 3', sans-serif;
   overflow-x: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS native feel */
+button, [role="button"], .game-card, .member-card {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 

@@ -36,7 +36,7 @@ export default function GameCard({ game, rankNumber, onSelect }) {
   return (
     <div
       onClick={() => !isRanked && !isReserved && onSelect(game)}
-      className={`relative flex items-start gap-2 sm:gap-[14px] rounded-xl border p-[10px_12px] sm:p-[14px_16px] transition-all duration-200 ${
+      className={`game-card relative flex items-start gap-2 sm:gap-[14px] rounded-xl border p-[10px_12px] sm:p-[14px_16px] transition-all duration-200 ${
         isReserved
           ? "cursor-default border-dashed border-[rgba(191,160,72,0.4)] bg-[rgba(191,160,72,0.05)] opacity-55"
           : isRanked

@@ -7,7 +7,8 @@ export default function BrandHeader({ showBack, onBack }) {
       style={{
         background: "linear-gradient(135deg, var(--navy), #001845)",
         borderBottom: "3px solid var(--red)",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.03) inset"
+        boxShadow: "0 4px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.03) inset",
+        paddingTop: "env(safe-area-inset-top, 0px)"
       }}
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-3.5">
