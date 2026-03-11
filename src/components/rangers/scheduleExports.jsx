@@ -168,9 +168,6 @@ export function getMemberScheduleData(memberName, games, allocations) {
 }
 
 export function generateAllSchedulesHtml(members, games, allocations) {
-  const teamColors = Object.fromEntries(
-    Object.entries(MEMBER_SEED_DATA.reduce(() => ({}), {}))
-  );
 
   let html = `<!DOCTYPE html>
 <html lang="en">
