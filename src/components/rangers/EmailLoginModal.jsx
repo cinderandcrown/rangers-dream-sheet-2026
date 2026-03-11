@@ -66,7 +66,7 @@ export default function EmailLoginModal({ memberName, onConfirm, onCancel }) {
             >
               {memberName}'s Dream Sheet
             </h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-white/45">
+            <p className="mt-2 text-[13px] leading-relaxed text-white/45">This will be the email address you use to login to the MLB Baseball App to access tickets
               Enter your email to access or create your game rankings. This email will be used for your assignment notifications.
             </p>
           </div>
