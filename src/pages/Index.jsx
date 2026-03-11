@@ -5,12 +5,14 @@ import { createPageUrl } from "@/utils";
 import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import MemberCard from "@/components/rangers/MemberCard";
+import EmailLoginModal from "@/components/rangers/EmailLoginModal";
 import useSeedData from "@/components/rangers/useSeedData";
 import { DEADLINE_LABEL } from "@/components/rangers/constants";
 import { sortMembers } from "@/components/rangers/utils";
 
 export default function Index() {
   const [toast, setToast] = React.useState("");
+  const [loginMember, setLoginMember] = React.useState(null);
   const seedQuery = useSeedData();
 
   const membersQuery = useQuery({
@@ -85,8 +87,13 @@ export default function Index() {
                   member={member}
                   hasSubmitted={Boolean(submission)}
                   rankedCount={submission?.ranked_game_ids?.length || 0}
+                  isLocked={submission?.is_locked}
                   onClick={() => {
-                    window.location.href = createPageUrl(`Rank?memberName=${encodeURIComponent(member.name)}`);
+                    if (submission?.is_locked) {
+                      setToast(`${member.name}'s submission is locked by admin`);
+                      return;
+                    }
+                    setLoginMember(member);
                   }}
                 />
               );
@@ -110,6 +117,15 @@ export default function Index() {
           </span>
         </div>
       </div>
+      {loginMember && (
+        <EmailLoginModal
+          memberName={loginMember.name}
+          onConfirm={(email) => {
+            window.location.href = createPageUrl(`Rank?memberName=${encodeURIComponent(loginMember.name)}&email=${encodeURIComponent(email)}`);
+          }}
+          onCancel={() => setLoginMember(null)}
+        />
+      )}
       <AppToast toast={toast} onClose={() => setToast("")} />
     </div>
   );
