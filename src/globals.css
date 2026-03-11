@@ -108,8 +108,9 @@ button, [role="button"], .game-card, .member-card {
 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
 
 /* Red gradient button */
-.btn-red-gradient {
+button.btn-red-gradient {
   background: linear-gradient(135deg, #C0111F, #8B0000) !important;
+  background-color: #C0111F !important;
 }
 
 /* Toast */
