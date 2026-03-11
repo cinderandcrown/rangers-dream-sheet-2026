@@ -130,6 +130,7 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
             fontFamily: "'Oswald', sans-serif",
             textTransform: "uppercase",
             letterSpacing: "1px",
+            background: "linear-gradient(135deg, #C0111F, #8B0000)",
           }}
         >
           {isPending ? "Saving…" : "✓ Submit Rankings"}
