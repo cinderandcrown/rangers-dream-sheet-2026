@@ -6,8 +6,10 @@ import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import MemberCard from "@/components/rangers/MemberCard";
 import EmailLoginModal from "@/components/rangers/EmailLoginModal";
+import HeroSection from "@/components/rangers/HeroSection";
+import LoadingScreen from "@/components/rangers/LoadingScreen";
 import useSeedData from "@/components/rangers/useSeedData";
-import { DEADLINE_LABEL } from "@/components/rangers/constants";
+import { DEADLINE_LABEL, GAME_SEED_DATA } from "@/components/rangers/constants";
 import { sortMembers } from "@/components/rangers/utils";
 
 export default function Index() {
@@ -31,54 +33,39 @@ export default function Index() {
 
   const members = sortMembers(membersQuery.data);
   const submissionMap = Object.fromEntries(submissionsQuery.data.map((s) => [s.member_name, s]));
+  const submittedCount = members.filter((m) => submissionMap[m.name]).length;
 
   if (seedQuery.isLoading || membersQuery.isLoading || submissionsQuery.isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-[3px] border-[var(--gold)] bg-[var(--red)] text-[28px] font-bold text-white"
-            style={{ fontFamily: "'Oswald', sans-serif" }}
-          >
-            TX
-          </div>
-          <div className="text-lg tracking-widest text-white/50" style={{ fontFamily: "'Oswald', sans-serif" }}>
-            LOADING...
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <div>
       <BrandHeader />
       <div className="relative z-[1]">
-        <div className="mx-auto max-w-[720px] px-6 py-[60px] text-center">
-          {/* Badge */}
-          <div
-            className="mb-8 inline-block rounded-[40px] border border-white/15 px-6 py-2 text-[13px] font-medium tracking-[3px] text-white"
-            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", background: "linear-gradient(135deg, var(--red), #8B0000)" }}
-          >
-            ⚾ 2026 Season
+        {/* Hero */}
+        <HeroSection
+          totalGames={GAME_SEED_DATA.length}
+          submittedCount={submittedCount}
+          totalMembers={members.length}
+        />
+
+        {/* Members section */}
+        <div className="mx-auto max-w-[780px] px-6 pb-16">
+          {/* Section label */}
+          <div className="mb-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/[0.06]" />
+            <span
+              className="text-[11px] font-semibold tracking-[3px] text-white/25"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}
+            >
+              Select Your Name
+            </span>
+            <div className="h-px flex-1 bg-white/[0.06]" />
           </div>
 
-          {/* Headline */}
-          <h2
-            className="mb-3 text-[clamp(32px,6vw,54px)] font-bold leading-[1.05]"
-            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}
-          >
-            It's <span className="text-[var(--red)]">Baseball Time</span>
-            <br />in <span className="text-[var(--gold)]">Texas</span>
-          </h2>
-
-          {/* Description */}
-          <p className="mx-auto mb-12 max-w-[520px] text-[17px] leading-relaxed text-white/60">
-            Welcome to the Will Family Season Ticket Dream Sheet! Select your name below to start ranking the home games you want to attend.
-          </p>
-
           {/* Member Grid */}
-          <div className="mb-10 grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
             {members.map((member) => {
               const submission = submissionMap[member.name];
               return (
@@ -100,24 +87,50 @@ export default function Index() {
             })}
           </div>
 
-          {/* Deadline */}
-          <div className="mb-6 flex items-center justify-center gap-[10px] rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.1)] px-5 py-[14px] text-sm text-[var(--gold)]">
-            <span>📅</span>
-            <span>
-              <strong>Deadline:</strong> Please submit your rankings by <strong>{DEADLINE_LABEL}</strong>
-            </span>
+          {/* Deadline banner */}
+          <div
+            className="mx-auto max-w-[540px] overflow-hidden rounded-2xl border border-[rgba(191,160,72,0.12)]"
+            style={{ background: "linear-gradient(135deg, rgba(191,160,72,0.08), rgba(191,160,72,0.03))" }}
+          >
+            <div className="flex items-center gap-3 px-6 py-4">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[rgba(191,160,72,0.12)] text-lg">
+                📅
+              </div>
+              <div>
+                <div
+                  className="text-[12px] font-semibold tracking-[2px] text-[var(--gold)]"
+                  style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}
+                >
+                  Submission Deadline
+                </div>
+                <div className="text-[14px] text-white/60">
+                  Please submit your rankings by <strong className="text-white/80">{DEADLINE_LABEL}</strong>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Admin link — hidden behind double-click */}
-          <div
-            onDoubleClick={() => { window.location.href = createPageUrl("Admin"); }}
-            className="select-none text-[13px] text-white/15 transition hover:text-white/25 cursor-default"
-            title=""
-          >
-            ⚾
+          {/* How it works — subtle helper text */}
+          <div className="mx-auto mt-10 max-w-[520px]">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <StepCard num="1" text="Select your name & enter email" />
+              <StepCard num="2" text="Rank your favorite home games" />
+              <StepCard num="3" text="Clark runs the draft allocation" />
+            </div>
+          </div>
+
+          {/* Hidden admin access */}
+          <div className="mt-12 text-center">
+            <div
+              onDoubleClick={() => { window.location.href = createPageUrl("Admin"); }}
+              className="inline-block cursor-default select-none text-[13px] text-white/[0.08] transition hover:text-white/15"
+            >
+              ⚾
+            </div>
           </div>
         </div>
       </div>
+
       {loginMember && (
         <EmailLoginModal
           memberName={loginMember.name}
@@ -128,6 +141,20 @@ export default function Index() {
         />
       )}
       <AppToast toast={toast} onClose={() => setToast("")} />
+    </div>
+  );
+}
+
+function StepCard({ num, text }) {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-[13px] font-bold text-white/40"
+        style={{ fontFamily: "'Oswald', sans-serif" }}
+      >
+        {num}
+      </div>
+      <p className="text-[12px] leading-[1.4] text-white/30">{text}</p>
     </div>
   );
 }
