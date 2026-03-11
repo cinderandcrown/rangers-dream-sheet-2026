@@ -10,10 +10,8 @@
   --light-slate: #334155;
 }
 
-/* Force dark theme variables - must override index.css defaults */
-:root,
-.dark,
-:root:not(.light) {
+/* Force dark everywhere — override index.css shadcn defaults */
+html:root {
   --background: 222 47% 10% !important;
   --foreground: 210 40% 98% !important;
   --card: 217 33% 17% !important;
@@ -35,6 +33,22 @@
   --ring: 216 77% 45% !important;
 }
 
+/* Hardcoded fallback for body bg */
+html, body, #root {
+  background-color: #0A1628 !important;
+  color: #E2E8F0 !important;
+}
+
+.bg-background { background-color: #0A1628 !important; }
+.bg-card { background-color: #1E293B !important; }
+.bg-popover { background-color: #1E293B !important; }
+.text-foreground { color: #E2E8F0 !important; }
+.text-card-foreground { color: #E2E8F0 !important; }
+.text-popover-foreground { color: #E2E8F0 !important; }
+.text-muted-foreground { color: #94A3B8 !important; }
+.border-border { border-color: #1E3A5F !important; }
+.border-input { border-color: #1E3A5F !important; }
+
 html, body, #root {
   min-height: 100%;
 }
@@ -47,15 +61,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Nuclear override — force dark backgrounds on all shadcn surfaces */
-body,
-#root,
-.bg-background,
-.bg-card,
-.bg-popover {
-  background-color: #0A1628 !important;
-  color: #E2E8F0 !important;
-}
+
 
 * {
   margin: 0;
