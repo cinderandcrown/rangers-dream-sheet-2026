@@ -2,7 +2,6 @@ import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { motion } from "framer-motion";
 import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import FilterPills from "@/components/rangers/FilterPills";
@@ -31,49 +30,22 @@ export default function Rank() {
   const [toast, setToast] = React.useState("");
   const [loaded, setLoaded] = React.useState(false);
 
-  const membersQuery = useQuery({
-    queryKey: ["members"],
-    queryFn: () => base44.entities.Member.list(),
-    enabled: seedQuery.isSuccess,
-    initialData: [],
-  });
-
-  const gamesQuery = useQuery({
-    queryKey: ["games"],
-    queryFn: () => base44.entities.Game.list(),
-    enabled: seedQuery.isSuccess,
-    initialData: [],
-  });
-
-  const submissionQuery = useQuery({
-    queryKey: ["submission", memberName],
-    queryFn: () => base44.entities.Submission.filter({ member_name: memberName }),
-    enabled: seedQuery.isSuccess && Boolean(memberName),
-    initialData: [],
-  });
+  const membersQuery = useQuery({ queryKey: ["members"], queryFn: () => base44.entities.Member.list(), enabled: seedQuery.isSuccess, initialData: [] });
+  const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), enabled: seedQuery.isSuccess, initialData: [] });
+  const submissionQuery = useQuery({ queryKey: ["submission", memberName], queryFn: () => base44.entities.Submission.filter({ member_name: memberName }), enabled: seedQuery.isSuccess && Boolean(memberName), initialData: [] });
 
   const saveMutation = useMutation({
     mutationFn: async () => {
       const existing = submissionQuery.data[0];
-      const payload = {
-        member_name: memberName,
-        ranked_game_ids: rankedGameIds,
-        submitted_at: new Date().toISOString(),
-        is_final: false,
-      };
-
-      if (existing) {
-        return base44.entities.Submission.update(existing.id, payload);
-      }
+      const payload = { member_name: memberName, ranked_game_ids: rankedGameIds, submitted_at: new Date().toISOString(), is_final: false };
+      if (existing) return base44.entities.Submission.update(existing.id, payload);
       return base44.entities.Submission.create(payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["submissions"] });
       queryClient.invalidateQueries({ queryKey: ["submission", memberName] });
       setToast(`${memberName}'s rankings saved!`);
-      window.setTimeout(() => {
-        window.location.href = createPageUrl("Index");
-      }, 1200);
+      setTimeout(() => { window.location.href = createPageUrl("Index"); }, 1200);
     },
   });
 
@@ -87,142 +59,110 @@ export default function Rank() {
   const member = sortMembers(membersQuery.data).find((item) => item.name === memberName);
   const games = sortGames(gamesQuery.data);
   const rankedGameSet = new Set(rankedGameIds);
-  const rankedGames = rankedGameIds.map((gameNumber) => games.find((game) => game.game_number === gameNumber)).filter(Boolean);
-  const filteredGames = games.filter((game) => (monthFilter === "All" || game.month === monthFilter) && (dayFilter === "All" || game.day_of_week === dayFilter));
-  const progress = member ? Math.min((rankedGameIds.length / member.rank_max) * 100, 100) : 0;
+  const rankedGames = rankedGameIds.map((n) => games.find((g) => g.game_number === n)).filter(Boolean);
+  const filteredGames = games.filter((g) => (monthFilter === "All" || g.month === monthFilter) && (dayFilter === "All" || g.day_of_week === dayFilter));
+  const progress = member ? Math.round((rankedGameIds.length / member.rank_max) * 100) : 0;
 
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionQuery.isLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--gold)]/20 border-t-[var(--gold)]" />
-        <span className="text-lg text-white/60 oswald">Loading rankings…</span>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg tracking-widest text-white/50" style={{ fontFamily: "'Oswald', sans-serif" }}>LOADING...</div>
       </div>
     );
   }
 
   if (!member) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 text-center">
-        <div className="text-3xl text-white oswald">Member not found</div>
-        <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="mt-6 min-h-[44px] rounded-xl border border-white/10 px-5 text-white/75">
-          Back to home
-        </button>
+      <div className="flex min-h-screen flex-col items-center justify-center text-center">
+        <div className="mb-4 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>Member not found</div>
+        <button onClick={() => { window.location.href = createPageUrl("Index"); }} className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70">Back</button>
       </div>
     );
   }
 
   const addGame = (game) => {
     if (rankedGameSet.has(game.game_number)) return;
-    if (rankedGameIds.length >= member.rank_max) {
-      setToast(`Maximum ${member.rank_max} rankings reached!`);
-      return;
-    }
-    setRankedGameIds((current) => [...current, game.game_number]);
+    if (rankedGameIds.length >= member.rank_max) { setToast(`Maximum ${member.rank_max} rankings reached!`); return; }
+    setRankedGameIds((prev) => [...prev, game.game_number]);
   };
 
-  const moveItem = (index, direction) => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= rankedGameIds.length) return;
-    setRankedGameIds((current) => reorder(current, index, targetIndex));
+  const moveItem = (idx, dir) => {
+    const target = dir === "up" ? idx - 1 : idx + 1;
+    if (target < 0 || target >= rankedGameIds.length) return;
+    setRankedGameIds((prev) => reorder(prev, idx, target));
   };
 
   return (
-    <div className="min-h-screen">
+    <div>
       <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
-
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Member header + progress */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="section-panel p-5"
-        >
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-base font-bold text-white oswald"
-                  style={{ background: `linear-gradient(135deg, ${member.accent_color}, ${member.accent_color}CC)` }}
-                >
-                  {member.name.slice(0, 1)}
-                </div>
-                <h1 className="text-3xl text-white oswald sm:text-4xl" style={{ color: member.accent_color }}>
-                  {member.name}&apos;s Dream Sheet
-                </h1>
-              </div>
-              <p className="mt-2 text-sm text-white/55">Click games to rank them (1 = most wanted). Drag to reorder your list.</p>
-            </div>
-
-            {/* Progress pill */}
-            <div className="w-full max-w-sm">
-              <div className="mb-2 flex items-center justify-between text-xs font-semibold">
-                <span className="text-white/40 oswald">Progress</span>
-                <span className="text-white/70">{rankedGameIds.length} <span className="text-white/30">/ {member.rank_max}</span></span>
-              </div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-white/8">
-                <motion.div
-                  className="h-full rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  style={{
-                    background: progress >= 100 ? "linear-gradient(90deg, #22C55E, #16A34A)" : `linear-gradient(90deg, ${member.accent_color}, #BFA048)`
-                  }}
-                />
-              </div>
-            </div>
+      <div className="relative z-[1] mx-auto max-w-[1200px] px-6 py-6">
+        {/* Top bar */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3
+              className="text-xl font-semibold"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", color: member.accent_color }}
+            >
+              {member.name}'s Dream Sheet
+            </h3>
+            <p className="mt-0.5 text-sm text-white/50">Click games to rank them (1 = most wanted). Drag to reorder.</p>
           </div>
-        </motion.div>
+          <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--slate)] px-5 py-[10px]">
+            <div className="h-2 w-40 overflow-hidden rounded-lg bg-white/[0.08]">
+              <div
+                className="h-full rounded-lg transition-all duration-400"
+                style={{
+                  width: `${Math.min(progress, 100)}%`,
+                  background: progress >= 100 ? "#22C55E" : `linear-gradient(90deg, ${member.accent_color}, var(--gold))`
+                }}
+              />
+            </div>
+            <span className="whitespace-nowrap text-[15px] font-medium" style={{ fontFamily: "'Oswald', sans-serif" }}>
+              {rankedGameIds.length} / {member.rank_max}
+            </span>
+          </div>
+        </div>
 
         {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="section-panel mt-5 space-y-3 p-4"
-        >
-          <FilterPills label="Month" options={MONTH_OPTIONS} activeValue={monthFilter} onChange={setMonthFilter} />
-          <FilterPills label="Day" options={DAY_OPTIONS} activeValue={dayFilter} onChange={setDayFilter} />
-        </motion.div>
+        <div className="mb-5 flex flex-wrap gap-2">
+          <FilterPills options={["All", ...["April", "May", "June", "July", "August", "September"]]} activeValue={monthFilter} onChange={setMonthFilter} />
+          <span className="w-2" />
+          <FilterPills options={DAY_OPTIONS} activeValue={dayFilter} onChange={setDayFilter} />
+        </div>
 
-        {/* Two-column layout */}
-        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-          <motion.section
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-            className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-3"
-          >
+        {/* Two column layout */}
+        <div className="grid items-start gap-6" style={{ gridTemplateColumns: window.innerWidth > 900 ? "1fr 340px" : "1fr" }}>
+          {/* Game grid */}
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-[10px]">
             {filteredGames.map((game) => (
               <GameCard
                 key={game.id}
                 game={game}
                 rankNumber={rankedGameIds.indexOf(game.game_number) + 1 || null}
-                maxReached={rankedGameIds.length >= member.rank_max}
                 onSelect={addGame}
               />
             ))}
-          </motion.section>
+          </div>
 
-          <RankedListPanel
-            games={rankedGames}
-            memberColor={member.accent_color}
-            onDragEnd={(result) => {
-              if (!result.destination) return;
-              setRankedGameIds((current) => reorder(current, result.source.index, result.destination.index));
-            }}
-            onMoveUp={(index) => moveItem(index, "up")}
-            onMoveDown={(index) => moveItem(index, "down")}
-            onRemove={(gameNumber) => setRankedGameIds((current) => current.filter((id) => id !== gameNumber))}
-            onClear={() => setRankedGameIds([])}
-            onSubmit={() => saveMutation.mutate()}
-            disabled={rankedGameIds.length === 0 || saveMutation.isPending}
-            isPending={saveMutation.isPending}
-          />
+          {/* Ranked list */}
+          <div className="max-lg:order-first">
+            <RankedListPanel
+              games={rankedGames}
+              onDragEnd={(result) => {
+                if (!result.destination) return;
+                setRankedGameIds((prev) => reorder(prev, result.source.index, result.destination.index));
+              }}
+              onMoveUp={(idx) => moveItem(idx, "up")}
+              onMoveDown={(idx) => moveItem(idx, "down")}
+              onRemove={(gn) => setRankedGameIds((prev) => prev.filter((id) => id !== gn))}
+              onClear={() => setRankedGameIds([])}
+              onSubmit={() => saveMutation.mutate()}
+              disabled={rankedGameIds.length === 0 || saveMutation.isPending}
+              isPending={saveMutation.isPending}
+            />
+          </div>
         </div>
       </div>
-
       <AppToast toast={toast} onClose={() => setToast("")} />
     </div>
   );

@@ -1,23 +1,19 @@
 import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Zap } from "lucide-react";
-import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
-import AdminStatusCard from "@/components/rangers/AdminStatusCard";
-import AdminResultsTable from "@/components/rangers/AdminResultsTable";
 import useSeedData from "@/components/rangers/useSeedData";
+import { RESERVED_GAME_NUMBER } from "@/components/rangers/constants";
 import { buildAllocationPlan, calculateTargets, downloadMasterScheduleCsv, downloadMemberScheduleCsv } from "@/components/rangers/adminHelpers";
-import { formatGameDate, sortGames, sortMembers, getTeamColor, getTeamAbbreviation } from "@/components/rangers/utils";
+import { formatGameDate, sortGames, sortMembers, getTeamColor } from "@/components/rangers/utils";
 
 export default function Admin() {
   const queryClient = useQueryClient();
   const seedQuery = useSeedData();
   const [toast, setToast] = React.useState("");
-  const [activeResultsTab, setActiveResultsTab] = React.useState("master");
-  const [activeSubmissionTab, setActiveSubmissionTab] = React.useState("");
+  const [allocTab, setAllocTab] = React.useState("master");
 
   const membersQuery = useQuery({ queryKey: ["members"], queryFn: () => base44.entities.Member.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), enabled: seedQuery.isSuccess, initialData: [] });
@@ -26,22 +22,19 @@ export default function Admin() {
 
   const allocationMutation = useMutation({
     mutationFn: async () => {
-      const games = sortGames(gamesQuery.data);
-      const members = sortMembers(membersQuery.data);
-      const submissions = submissionsQuery.data;
-      const { allocations } = buildAllocationPlan(games, members, submissions);
-      const existingAllocations = allocationsQuery.data;
-
-      await Promise.all(existingAllocations.map((allocation) => base44.entities.Allocation.delete(allocation.id)));
-      if (allocations.length > 0) {
-        await base44.entities.Allocation.bulkCreate(allocations);
-      }
+      const g = sortGames(gamesQuery.data);
+      const m = sortMembers(membersQuery.data);
+      const s = submissionsQuery.data;
+      const { allocations } = buildAllocationPlan(g, m, s);
+      const existing = allocationsQuery.data;
+      await Promise.all(existing.map((a) => base44.entities.Allocation.delete(a.id)));
+      if (allocations.length > 0) await base44.entities.Allocation.bulkCreate(allocations);
       return allocations;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["allocations"] });
-      setToast("Allocation complete — 80 games assigned!");
-      setActiveResultsTab("master");
+      setToast("Allocation complete!");
+      setAllocTab("master");
     },
   });
 
@@ -49,221 +42,199 @@ export default function Admin() {
   const members = sortMembers(membersQuery.data);
   const submissions = submissionsQuery.data;
   const allocations = allocationsQuery.data;
-  const submittedMembers = members.filter((member) => submissions.some((s) => s.member_name === member.name));
+  const submittedMembers = members.filter((m) => submissions.some((s) => s.member_name === m.name));
   const memberMap = Object.fromEntries(members.map((m) => [m.name, m]));
   const submissionMap = Object.fromEntries(submissions.map((s) => [s.member_name, s]));
+  const allocationMap = Object.fromEntries(allocations.map((a) => [a.game_number, a]));
   const targets = submittedMembers.length > 0 ? calculateTargets(submittedMembers) : {};
   const counts = allocations.reduce((acc, a) => ({ ...acc, [a.assigned_to]: (acc[a.assigned_to] || 0) + 1 }), {});
 
-  React.useEffect(() => {
-    if (!activeSubmissionTab && submittedMembers[0]) setActiveSubmissionTab(submittedMembers[0].name);
-  }, [activeSubmissionTab, submittedMembers]);
-
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionsQuery.isLoading || allocationsQuery.isLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--gold)]/20 border-t-[var(--gold)]" />
-        <span className="text-lg text-white/60 oswald">Loading dashboard…</span>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg tracking-widest text-white/50" style={{ fontFamily: "'Oswald', sans-serif" }}>LOADING...</div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen">
-      <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
+  const mc = (name) => memberMap[name]?.accent_color || "#555";
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="section-panel p-6"
+  return (
+    <div>
+      <BrandHeader showBack onBack={() => { window.location.href = createPageUrl("Index"); }} />
+      <div className="relative z-[1] mx-auto max-w-[1100px] px-6 py-8">
+        <h3
+          className="mb-2 text-[26px] font-bold"
+          style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}
         >
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--red)]/15">
-              <Zap className="h-5 w-5 text-[var(--red)]" />
-            </div>
-            <div>
-              <h1 className="text-3xl text-white oswald sm:text-4xl">Admin Dashboard</h1>
-              <p className="mt-1 text-sm text-white/50">Manage submissions, run the draft, and export schedules.</p>
-            </div>
-          </div>
-        </motion.div>
+          Admin Dashboard
+        </h3>
+        <p className="mb-8 text-[15px] text-white/50">Manage submissions, run the allocation algorithm, and export schedules.</p>
 
         {/* Submission Status */}
-        <motion.section
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="section-panel mt-5 p-5"
-        >
-          <div className="mb-4 flex items-center gap-2">
-            <div className="h-5 w-1 rounded-full bg-[var(--gold)]" />
-            <span className="text-base text-white oswald">Submission Status</span>
-            <span className="ml-auto text-xs text-white/40">{submittedMembers.length}/{members.length} submitted</span>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-            {members.map((member) => (
-              <AdminStatusCard key={member.id} member={member} submission={submissionMap[member.name]} />
-            ))}
-          </div>
-        </motion.section>
+        <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
+          {members.map((m) => {
+            const sub = submissionMap[m.name];
+            const ct = sub?.ranked_game_ids?.length || 0;
+            return (
+              <div key={m.id} className="rounded-[14px] border border-white/[0.06] bg-[var(--slate)] p-5 text-center">
+                <div className="mb-1.5 text-base font-semibold" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", color: m.accent_color }}>
+                  {m.name}
+                </div>
+                <div className="mb-3 text-xs text-white/40">{m.share_count} game share · Rank {m.rank_max}</div>
+                <span className={`inline-block rounded-[20px] px-3 py-1 text-xs font-semibold uppercase tracking-wider ${ct > 0 ? "bg-[rgba(34,197,94,0.15)] text-[#22C55E]" : "bg-[rgba(234,179,8,0.15)] text-[#EAB308]"}`}>
+                  {ct > 0 ? `✓ ${ct} ranked` : "Awaiting"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Allocation Engine */}
-        <motion.section
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="section-panel mt-5 p-5"
-        >
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <div className="h-5 w-1 rounded-full bg-[var(--red)]" />
-                <span className="text-base text-white oswald">Allocation Engine</span>
-              </div>
-              <p className="mt-1.5 text-sm text-white/45">Weighted round-robin draft across 80 draftable games. Opening Day is reserved.</p>
-            </div>
+        <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-6">
+          <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+            Allocation Engine
+          </h4>
+          <p className="mb-4 text-sm text-white/50">Weighted round-robin draft across 80 draftable games (Opening Day is reserved). Higher-share members pick proportionally more.</p>
+          <div className="flex flex-wrap gap-[10px]">
             <button
               onClick={() => allocationMutation.mutate()}
               disabled={submittedMembers.length === 0 || allocationMutation.isPending}
-              className="btn-primary-red inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl px-6 text-sm font-semibold text-white shadow-lg shadow-red-900/20 disabled:cursor-not-allowed disabled:opacity-30 oswald"
+              className="rounded-[10px] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:opacity-40"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", background: "linear-gradient(135deg, var(--red), #8B0000)" }}
             >
-              {allocationMutation.isPending ? (
-                <span className="flex items-center gap-2">
-                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" /></svg>
-                  Running…
-                </span>
-              ) : (
-                <><Zap className="h-4 w-4" /> Run Allocation</>
-              )}
+              ⚡ Run Allocation
             </button>
-          </div>
-
-          {allocations.length > 0 ? (
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button onClick={() => downloadMasterScheduleCsv(games, allocations)} className="inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-white/8 bg-white/[0.03] px-4 text-xs font-semibold text-white/70 transition hover:bg-white/[0.06]">
-                <Download className="h-3.5 w-3.5" /> Master CSV
-              </button>
-              {submittedMembers.map((member) => (
-                <button key={member.name} onClick={() => downloadMemberScheduleCsv(member.name, games, allocations)} className="inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-white/8 bg-white/[0.03] px-4 text-xs font-semibold text-white/70 transition hover:bg-white/[0.06]">
-                  <Download className="h-3.5 w-3.5" /> {member.name}
+            {allocations.length > 0 ? (
+              <>
+                <button onClick={() => downloadMasterScheduleCsv(games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+                  📥 Master CSV
                 </button>
-              ))}
-            </div>
-          ) : null}
-        </motion.section>
+                {submittedMembers.map((m) => (
+                  <button key={m.name} onClick={() => downloadMemberScheduleCsv(m.name, games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+                    📥 {m.name}'s CSV
+                  </button>
+                ))}
+              </>
+            ) : null}
+          </div>
+        </div>
 
         {/* Allocation Results */}
         {allocations.length > 0 ? (
-          <motion.section
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="section-panel mt-5 space-y-4 p-5"
-          >
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-1 rounded-full bg-[var(--gold)]" />
-              <span className="text-base text-white oswald">Allocation Results</span>
-            </div>
-
-            {/* Summary cards */}
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-              {submittedMembers.map((member) => {
-                const assigned = counts[member.name] || 0;
-                const target = targets[member.name] || 0;
-                const pct = target > 0 ? Math.round((assigned / target) * 100) : 0;
-                return (
-                  <div key={member.name} className="glass-card relative overflow-hidden rounded-xl p-4">
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
-                      <div className="h-full" style={{ width: `${pct}%`, backgroundColor: member.accent_color, opacity: 0.6 }} />
-                    </div>
-                    <div className="text-lg oswald" style={{ color: member.accent_color }}>{member.name}</div>
-                    <div className="mt-1 text-2xl font-bold text-white">{assigned} <span className="text-sm font-normal text-white/35">/ {target}</span></div>
+          <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-6">
+            <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+              Allocation Results
+            </h4>
+            <div className="mb-5 grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
+              {submittedMembers.map((m) => (
+                <div key={m.name} className="rounded-[14px] border border-white/[0.06] bg-[var(--slate)] p-5 text-center">
+                  <div className="mb-1.5 text-base font-semibold" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", color: m.accent_color }}>
+                    {m.name}
                   </div>
-                );
-              })}
+                  <div className="text-[28px] font-bold" style={{ fontFamily: "'Oswald', sans-serif" }}>{counts[m.name] || 0}</div>
+                  <div className="text-xs text-white/40">games assigned (target: {targets[m.name] || 0})</div>
+                </div>
+              ))}
             </div>
 
-            {/* Tab bar */}
-            <div className="flex flex-wrap gap-1.5">
-              <button onClick={() => setActiveResultsTab("master")} className={`min-h-[36px] rounded-lg px-4 text-xs font-semibold transition ${activeResultsTab === "master" ? "bg-[var(--navy)] text-white shadow-lg" : "border border-white/8 bg-white/[0.03] text-white/55"}`}>
+            {/* Tabs */}
+            <div className="mb-4 flex flex-wrap gap-1">
+              <button onClick={() => setAllocTab("master")} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === "master" ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Master Schedule
               </button>
-              {submittedMembers.map((member) => (
-                <button key={member.name} onClick={() => setActiveResultsTab(member.name)} className={`min-h-[36px] rounded-lg px-4 text-xs font-semibold transition ${activeResultsTab === member.name ? "bg-[var(--navy)] text-white shadow-lg" : "border border-white/8 bg-white/[0.03] text-white/55"}`}>
-                  {member.name}
+              {submittedMembers.map((m) => (
+                <button key={m.name} onClick={() => setAllocTab(m.name)} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === m.name ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  {m.name}
                 </button>
               ))}
             </div>
 
-            <AdminResultsTable games={games} allocations={allocations} memberMap={memberMap} activeTab={activeResultsTab} />
-          </motion.section>
+            {/* Table */}
+            <div className="thin-scrollbar max-h-[500px] overflow-y-auto rounded-lg">
+              <table className="at">
+                <thead>
+                  <tr><th>#</th><th>Date</th><th>Day</th><th>Time</th><th>Opponent</th><th>Owner</th></tr>
+                </thead>
+                <tbody>
+                  {(allocTab === "master" ? games : games.filter((g) => allocationMap[g.game_number]?.assigned_to === allocTab)).map((g, i) => {
+                    const owner = g.game_number === RESERVED_GAME_NUMBER ? "Reserved" : allocationMap[g.game_number]?.assigned_to || "";
+                    return (
+                      <tr key={g.id}>
+                        <td className="text-white/30">{i + 1}</td>
+                        <td>{formatGameDate(g.date)}</td>
+                        <td>{g.day_of_week}</td>
+                        <td>{g.start_time}</td>
+                        <td>
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: getTeamColor(g.opponent) }} />
+                            {g.opponent}{g.game_number === RESERVED_GAME_NUMBER ? " ★" : ""}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className="inline-block rounded-md px-[10px] py-0.5 text-xs font-medium"
+                            style={{
+                              fontFamily: "'Oswald', sans-serif",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
+                              backgroundColor: `${mc(owner)}22`,
+                              color: mc(owner)
+                            }}
+                          >
+                            {owner}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : null}
 
         {/* Raw Submissions */}
         {submittedMembers.length > 0 ? (
-          <motion.section
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="section-panel mt-5 space-y-4 p-5"
-          >
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-1 rounded-full bg-white/20" />
-              <span className="text-base text-white oswald">Raw Submissions</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {submittedMembers.map((member) => (
-                <button key={member.name} onClick={() => setActiveSubmissionTab(member.name)} className={`min-h-[36px] rounded-lg px-4 text-xs font-semibold transition ${activeSubmissionTab === member.name ? "bg-[var(--navy)] text-white shadow-lg" : "border border-white/8 bg-white/[0.03] text-white/55"}`}>
-                  {member.name}
+          <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-6">
+            <h4 className="mb-4 text-lg font-semibold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+              Raw Submissions
+            </h4>
+            <div className="mb-4 flex flex-wrap gap-1">
+              {submittedMembers.map((m) => (
+                <button key={m.name} onClick={() => setAllocTab(`raw-${m.name}`)} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === `raw-${m.name}` ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  {m.name}
                 </button>
               ))}
             </div>
-            <div className="overflow-hidden rounded-xl border border-white/6 bg-[rgba(10,22,40,0.6)]">
-              <div className="max-h-[420px] overflow-auto thin-scrollbar">
-                <table className="data-table min-w-full text-left">
-                  <thead>
-                    <tr>
-                      <th>Rank</th>
-                      <th>Date</th>
-                      <th>Opponent</th>
-                      <th>Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(submissionMap[activeSubmissionTab]?.ranked_game_ids || []).map((gameNumber, index) => {
-                      const game = games.find((item) => item.game_number === gameNumber);
-                      if (!game) return null;
-                      const teamColor = getTeamColor(game.opponent);
-                      return (
-                        <tr key={`${activeSubmissionTab}-${gameNumber}`} className="text-white/80">
-                          <td>
-                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--gold)]/12 text-xs font-bold text-[var(--gold)] oswald">
-                              {index + 1}
-                            </span>
-                          </td>
-                          <td>{formatGameDate(game.date)}</td>
-                          <td>
-                            <div className="flex items-center gap-2">
-                              <div className="flex h-6 w-6 items-center justify-center rounded-md text-[8px] font-bold text-white oswald" style={{ backgroundColor: teamColor }}>
-                                {getTeamAbbreviation(game.opponent).slice(0, 2)}
-                              </div>
-                              {game.opponent}
-                            </div>
-                          </td>
-                          <td className="text-white/50">{game.start_time}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </motion.section>
+            {submittedMembers.map((m) => {
+              if (allocTab !== `raw-${m.name}`) return null;
+              const ranked = submissionMap[m.name]?.ranked_game_ids || [];
+              return (
+                <div key={m.name} className="thin-scrollbar max-h-[500px] overflow-y-auto rounded-lg">
+                  <table className="at">
+                    <thead><tr><th>Rank</th><th>Date</th><th>Opponent</th><th>Time</th></tr></thead>
+                    <tbody>
+                      {ranked.map((gid, idx) => {
+                        const g = games.find((x) => x.game_number === gid);
+                        if (!g) return null;
+                        return (
+                          <tr key={gid}>
+                            <td className="font-semibold text-[var(--gold)]">{idx + 1}</td>
+                            <td>{g.day_of_week}, {formatGameDate(g.date)}</td>
+                            <td>{g.opponent}</td>
+                            <td>{g.start_time}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })}
+          </div>
         ) : null}
       </div>
-
       <AppToast toast={toast} onClose={() => setToast("")} />
     </div>
   );

@@ -1,27 +1,25 @@
 import React from "react";
 
-export default function FilterPills({ label, options, activeValue, onChange }) {
+export default function FilterPills({ options, activeValue, onChange }) {
   return (
-    <div className="space-y-2">
-      <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/35">{label}</div>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map((option) => {
-          const active = activeValue === option;
-          return (
-            <button
-              key={option}
-              onClick={() => onChange(option)}
-              className={`min-h-[36px] rounded-lg px-3.5 text-xs font-semibold transition-all ${
-                active
-                  ? "bg-[var(--navy)] text-white shadow-lg shadow-blue-900/20"
-                  : "border border-white/8 bg-white/[0.03] text-white/55 hover:bg-white/[0.06] hover:text-white/80"
-              }`}
-            >
-              {option}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <>
+      {options.map((option) => {
+        const active = activeValue === option;
+        return (
+          <button
+            key={option}
+            onClick={() => onChange(option)}
+            className={`rounded-lg px-[14px] py-1.5 text-[13px] font-medium transition-all ${
+              active
+                ? "border border-[var(--navy)] bg-[var(--navy)] text-white"
+                : "border border-white/10 bg-transparent text-white/50 hover:border-white/20 hover:text-white"
+            }`}
+            style={{ fontFamily: "'Source Sans 3', sans-serif" }}
+          >
+            {option}
+          </button>
+        );
+      })}
+    </>
   );
 }

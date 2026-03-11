@@ -1,56 +1,46 @@
 import React from "react";
-import { motion } from "framer-motion";
 
 export default function MemberCard({ member, hasSubmitted, rankedCount, onClick }) {
   return (
-    <motion.button
+    <div
       onClick={onClick}
-      whileHover={{ y: -6, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 400, damping: 20 }}
-      className="glass-card group relative flex min-h-[200px] flex-col rounded-2xl p-5 text-left"
+      className="group relative cursor-pointer overflow-hidden rounded-[14px] border-2 border-white/[0.06] bg-[var(--slate)] p-6 text-center transition-all duration-[250ms] hover:-translate-y-1 hover:border-white/[0.15] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
     >
-      {/* Top accent bar */}
+      {/* Top accent bar - only shows on hover */}
       <div
-        className="absolute inset-x-0 top-0 h-[3px] rounded-t-2xl transition-all duration-300 group-hover:h-[4px]"
-        style={{ backgroundColor: member.accent_color, opacity: 0.7 }}
+        className="absolute inset-x-0 top-0 h-1 opacity-0 transition-opacity duration-[250ms] group-hover:opacity-100"
+        style={{ backgroundColor: member.accent_color }}
       />
 
       {/* Status dot */}
-      <div className="absolute right-4 top-4 flex items-center gap-2">
-        {hasSubmitted && rankedCount > 0 ? (
-          <span className="rounded-full bg-[rgba(34,197,94,0.12)] px-2 py-0.5 text-[10px] font-semibold text-[#22C55E]">
-            {rankedCount} ranked
-          </span>
-        ) : null}
-        <div
-          className={`h-3 w-3 rounded-full shadow-lg status-dot-pulse`}
-          style={{ backgroundColor: hasSubmitted ? "#22C55E" : "#EAB308" }}
-        />
-      </div>
+      <div
+        className="absolute right-[14px] top-[14px] h-[10px] w-[10px] rounded-full"
+        style={{
+          backgroundColor: hasSubmitted ? "#22C55E" : "#EAB308",
+          border: "2px solid var(--slate)"
+        }}
+      />
 
       {/* Avatar */}
       <div
-        className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl font-bold text-white shadow-xl oswald"
-        style={{
-          background: `linear-gradient(135deg, ${member.accent_color}, ${member.accent_color}CC)`,
-          boxShadow: `0 8px 24px ${member.accent_color}40`
-        }}
+        className="mx-auto mb-[14px] flex h-[56px] w-[56px] items-center justify-center rounded-full border-2 border-white/15 text-2xl font-semibold text-white"
+        style={{ fontFamily: "'Oswald', sans-serif", backgroundColor: member.accent_color }}
       >
-        {member.name.slice(0, 1)}
+        {member.name[0]}
       </div>
 
-      <div className="mt-auto">
-        <div className="text-2xl text-white oswald">{member.name}</div>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="rounded-md bg-white/5 px-2 py-0.5 text-xs font-semibold text-white/80">{member.share_count} games</span>
-          <span className="text-white/30">·</span>
-          <span className="text-xs text-white/50">Rank top {member.rank_max}</span>
-        </div>
+      {/* Name */}
+      <div
+        className="mb-1 text-lg font-semibold"
+        style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+      >
+        {member.name}
       </div>
 
-      {/* Hover shimmer */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-    </motion.button>
+      {/* Share info */}
+      <div className="text-[13px] text-white/45">
+        {member.share_count} games · Rank top {member.rank_max}
+      </div>
+    </div>
   );
 }

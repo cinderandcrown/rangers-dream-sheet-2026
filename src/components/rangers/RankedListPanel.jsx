@@ -1,118 +1,134 @@
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import { ArrowDown, ArrowUp, GripVertical, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { formatGameMeta, getTeamColor } from "./utils";
+import { getTeamColor } from "./utils";
+import { format, parseISO } from "date-fns";
 
-export default function RankedListPanel({ games, memberColor, onDragEnd, onMoveUp, onMoveDown, onRemove, onClear, onSubmit, disabled, isPending }) {
+export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown, onRemove, onClear, onSubmit, disabled, isPending }) {
   return (
-    <aside className="thin-scrollbar order-first rounded-2xl border border-white/8 bg-gradient-to-b from-[rgba(30,41,59,0.9)] to-[rgba(20,30,48,0.95)] p-4 lg:order-last lg:sticky lg:top-[72px] lg:max-h-[calc(100vh-96px)] lg:overflow-y-auto">
+    <div
+      className="thin-scrollbar sticky top-[100px] flex max-h-[calc(100vh-120px)] flex-col rounded-2xl border border-white/[0.08] bg-[var(--slate)] p-5"
+      style={{ order: 1 }}
+    >
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-1 rounded-full bg-[var(--gold)]" />
-          <span className="text-lg text-[var(--gold)] oswald">Your Rankings</span>
-        </div>
+      <h4
+        className="mb-[14px] flex items-center justify-between text-base font-semibold text-[var(--gold)]"
+        style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1.5px" }}
+      >
+        <span>Your Rankings</span>
         {games.length > 0 ? (
           <button
             onClick={onClear}
-            className="rounded-lg border border-white/8 px-3 py-1.5 text-xs font-semibold text-white/50 transition hover:bg-white/5 hover:text-white/80"
+            className="rounded-[10px] border border-white/12 bg-transparent px-[10px] py-1 text-[11px] font-medium text-white/70 transition hover:border-white/25 hover:text-white"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
-            Clear All
+            Clear
           </button>
         ) : null}
-      </div>
+      </h4>
 
-      {/* Empty state */}
-      {games.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/8 px-6 py-16 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
-            <span className="text-3xl">⚾</span>
+      {/* List */}
+      <div className="thin-scrollbar mx-[-8px] flex-1 overflow-y-auto px-2">
+        {games.length === 0 ? (
+          <div className="px-4 py-10 text-center text-sm leading-relaxed text-white/25">
+            <p>Click on games to start<br />building your dream list</p>
+            <p className="mt-2 text-xs">#1 = your most wanted game</p>
           </div>
-          <div className="text-base text-white/70 oswald">Click on games to start building your dream list</div>
-          <div className="mt-2 text-sm text-white/40">#1 = your most wanted game</div>
-        </div>
-      ) : (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="rankings">
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
-                <AnimatePresence initial={false}>
+        ) : (
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="rankings">
+              {(provided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
                   {games.map((game, index) => (
                     <Draggable key={String(game.game_number)} draggableId={String(game.game_number)} index={index}>
                       {(dragProvided, snapshot) => (
-                        <motion.div
+                        <div
                           ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className={`group rounded-xl border p-3 transition ${
-                            snapshot.isDragging
-                              ? "border-[var(--gold)]/30 bg-[rgba(191,160,72,0.1)] shadow-2xl"
-                              : "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
+                          {...dragProvided.dragHandleProps}
+                          className={`ri-row mb-1 flex cursor-grab items-center gap-[10px] rounded-lg border border-transparent bg-white/[0.03] p-[8px_10px] transition-all ${
+                            snapshot.isDragging ? "border-[var(--gold)] bg-[rgba(191,160,72,0.1)] opacity-50" : "hover:border-white/[0.08] hover:bg-white/[0.06]"
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            {/* Rank number */}
-                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--gold)]/15 text-sm font-bold text-[var(--gold)] oswald">
-                              {index + 1}
+                          {/* Rank number */}
+                          <span
+                            className="w-6 flex-shrink-0 text-center text-sm font-semibold text-[var(--gold)]"
+                            style={{ fontFamily: "'Oswald', sans-serif" }}
+                          >
+                            {index + 1}
+                          </span>
+
+                          {/* Team dot */}
+                          <div
+                            className="h-1.5 w-1.5 flex-shrink-0 rounded-full"
+                            style={{ backgroundColor: getTeamColor(game.opponent) }}
+                          />
+
+                          {/* Game info */}
+                          <div className="min-w-0 flex-1">
+                            <div
+                              className="truncate text-[13px] font-medium"
+                              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}
+                            >
+                              {game.opponent}
                             </div>
-
-                            {/* Drag handle */}
-                            <div {...dragProvided.dragHandleProps} className="flex-shrink-0 cursor-grab text-white/25 active:cursor-grabbing">
-                              <GripVertical className="h-4 w-4" />
-                            </div>
-
-                            {/* Team dot */}
-                            <div className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: getTeamColor(game.opponent) }} />
-
-                            {/* Game info */}
-                            <div className="min-w-0 flex-1">
-                              <div className="truncate text-sm font-semibold text-white oswald">{game.opponent}</div>
-                              <div className="truncate text-xs text-white/50">{formatGameMeta(game)}</div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex flex-shrink-0 items-center gap-0.5">
-                              <button onClick={() => onMoveUp(index)} disabled={index === 0} className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition hover:bg-white/5 hover:text-white/70 disabled:opacity-20">
-                                <ArrowUp className="h-3.5 w-3.5" />
-                              </button>
-                              <button onClick={() => onMoveDown(index)} disabled={index === games.length - 1} className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition hover:bg-white/5 hover:text-white/70 disabled:opacity-20">
-                                <ArrowDown className="h-3.5 w-3.5" />
-                              </button>
-                              <button onClick={() => onRemove(game.game_number)} className="flex h-8 w-8 items-center justify-center rounded-lg text-red-400/60 transition hover:bg-red-500/10 hover:text-red-400">
-                                <X className="h-3.5 w-3.5" />
-                              </button>
+                            <div className="text-[11px] text-white/40">
+                              {game.day_of_week} {format(parseISO(game.date), "MMM d")} · {game.start_time}
                             </div>
                           </div>
-                        </motion.div>
+
+                          {/* Actions - hover reveal on desktop */}
+                          <div className="ri-actions flex items-center gap-0.5">
+                            <div className="flex flex-col gap-0.5">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onMoveUp(index); }}
+                                disabled={index === 0}
+                                className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-white/[0.06] text-[10px] text-white/50 disabled:opacity-30"
+                              >
+                                ▲
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onMoveDown(index); }}
+                                disabled={index === games.length - 1}
+                                className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-white/[0.06] text-[10px] text-white/50 disabled:opacity-30"
+                              >
+                                ▼
+                              </button>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onRemove(game.game_number); }}
+                              className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-sm text-[var(--red)]"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </Draggable>
                   ))}
-                </AnimatePresence>
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      )}
-
-      {/* Submit button */}
-      <button
-        onClick={onSubmit}
-        disabled={disabled}
-        className="btn-primary-red mt-5 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl px-5 text-base font-semibold text-white shadow-lg shadow-red-900/30 transition hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-30 oswald"
-      >
-        {isPending ? (
-          <span className="flex items-center gap-2">
-            <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" /></svg>
-            Saving…
-          </span>
-        ) : (
-          "✓ Submit Rankings"
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         )}
-      </button>
-    </aside>
+      </div>
+
+      {/* Submit */}
+      <div className="mt-4 border-t border-white/[0.06] pt-4">
+        <button
+          onClick={onSubmit}
+          disabled={disabled}
+          className="w-full rounded-[10px] px-3 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          style={{
+            fontFamily: "'Oswald', sans-serif",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            background: "linear-gradient(135deg, var(--red), #8B0000)"
+          }}
+        >
+          {isPending ? "Saving…" : "✓ Submit Rankings"}
+        </button>
+      </div>
+    </div>
   );
 }
