@@ -3,6 +3,27 @@ import { RESERVED_GAME_NUMBER } from "./constants";
 import { getTeamColor } from "./utils";
 import { format, parseISO } from "date-fns";
 
+function GameTags({ game }) {
+  const tags = [];
+  if (game.is_holiday) tags.push({ label: game.is_holiday, color: "#EAB308", bg: "rgba(234,179,8,0.15)" });
+  if (game.promotional_event) tags.push({ label: game.promotional_event, color: "#60A5FA", bg: "rgba(96,165,250,0.12)" });
+  if (game.is_day_game) tags.push({ label: "Day Game", color: "#F59E0B", bg: "rgba(245,158,11,0.12)" });
+  if (tags.length === 0) return null;
+  return (
+    <div className="mt-1.5 flex flex-wrap gap-1">
+      {tags.map((t) => (
+        <span
+          key={t.label}
+          className="inline-block rounded-md px-[6px] py-[1px] text-[10px] font-semibold"
+          style={{ color: t.color, backgroundColor: t.bg }}
+        >
+          {t.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function GameCard({ game, rankNumber, onSelect }) {
   const isReserved = game.game_number === RESERVED_GAME_NUMBER;
   const isRanked = Boolean(rankNumber);
@@ -13,7 +34,7 @@ export default function GameCard({ game, rankNumber, onSelect }) {
   return (
     <div
       onClick={() => !isRanked && !isReserved && onSelect(game)}
-      className={`relative flex items-center gap-[14px] rounded-xl border p-[14px_16px] transition-all duration-200 ${
+      className={`relative flex items-start gap-[14px] rounded-xl border p-[14px_16px] transition-all duration-200 ${
         isReserved
           ? "cursor-default border-dashed border-[rgba(191,160,72,0.4)] bg-[rgba(191,160,72,0.05)] opacity-55"
           : isRanked
@@ -43,7 +64,7 @@ export default function GameCard({ game, rankNumber, onSelect }) {
 
       {/* Team color badge */}
       <div
-        className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-[10px] text-[14px] font-semibold text-white"
+        className="mt-0.5 flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-[10px] text-[14px] font-semibold text-white"
         style={{ fontFamily: "'Oswald', sans-serif", backgroundColor: teamColor }}
       >
         {abbr}
@@ -60,6 +81,7 @@ export default function GameCard({ game, rankNumber, onSelect }) {
         <div className="mt-0.5 text-[12.5px] text-white/45">
           {game.day_of_week}, {dateLabel} · {game.start_time}
         </div>
+        {!isReserved ? <GameTags game={game} /> : null}
       </div>
     </div>
   );
