@@ -4,7 +4,8 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, onClick 
   return (
     <div
       onClick={onClick}
-      className="group relative cursor-pointer overflow-hidden rounded-[14px] border-2 border-white/[0.06] bg-[var(--slate)] p-6 text-center transition-all duration-[250ms] hover:-translate-y-1 hover:border-white/[0.15] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+      className="group relative cursor-pointer overflow-hidden rounded-[14px] border-2 border-white/[0.06] p-6 text-center transition-all duration-[250ms] hover:-translate-y-1 hover:border-white/[0.15] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+      style={{ backgroundColor: '#1E293B' }}
     >
       {/* Top accent bar - only shows on hover */}
       <div
@@ -17,7 +18,7 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, onClick 
         className="absolute right-[14px] top-[14px] h-[10px] w-[10px] rounded-full"
         style={{
           backgroundColor: hasSubmitted ? "#22C55E" : "#EAB308",
-          border: "2px solid var(--slate)"
+          border: "2px solid #1E293B"
         }}
       />
 
