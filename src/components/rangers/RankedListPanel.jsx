@@ -7,7 +7,7 @@ import { format, parseISO } from "date-fns";
 export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown, onRemove, onClear, onSubmit, disabled, isPending }) {
   return (
     <div
-      className="thin-scrollbar sticky top-[100px] flex max-h-[calc(100vh-120px)] flex-col rounded-2xl border border-white/[0.08] bg-[var(--slate)] p-5"
+      className="thin-scrollbar lg:sticky lg:top-[100px] flex max-h-[60vh] lg:max-h-[calc(100vh-120px)] flex-col rounded-2xl border border-white/[0.08] bg-[var(--slate)] p-4 sm:p-5"
       style={{ order: 1 }}
     >
       {/* Header */}

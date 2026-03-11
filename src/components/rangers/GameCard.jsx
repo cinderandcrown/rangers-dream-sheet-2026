@@ -36,7 +36,7 @@ export default function GameCard({ game, rankNumber, onSelect }) {
   return (
     <div
       onClick={() => !isRanked && !isReserved && onSelect(game)}
-      className={`relative flex items-start gap-[14px] rounded-xl border p-[14px_16px] transition-all duration-200 ${
+      className={`relative flex items-start gap-2 sm:gap-[14px] rounded-xl border p-[10px_12px] sm:p-[14px_16px] transition-all duration-200 ${
         isReserved
           ? "cursor-default border-dashed border-[rgba(191,160,72,0.4)] bg-[rgba(191,160,72,0.05)] opacity-55"
           : isRanked
@@ -66,14 +66,14 @@ export default function GameCard({ game, rankNumber, onSelect }) {
 
       {/* Team logo */}
       <div
-        className="mt-0.5 flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-[10px] overflow-hidden"
+        className="mt-0.5 flex h-[34px] w-[34px] sm:h-[42px] sm:w-[42px] flex-shrink-0 items-center justify-center rounded-[8px] sm:rounded-[10px] overflow-hidden"
         style={{ backgroundColor: logoUrl ? "rgba(255,255,255,0.06)" : teamColor }}
       >
         {logoUrl ? (
           <img
             src={logoUrl}
             alt={game.opponent}
-            className="h-[32px] w-[32px] object-contain"
+            className="h-[26px] w-[26px] sm:h-[32px] sm:w-[32px] object-contain"
           />
         ) : (
           <span
@@ -88,12 +88,12 @@ export default function GameCard({ game, rankNumber, onSelect }) {
       {/* Info */}
       <div className="min-w-0 flex-1">
         <div
-          className="truncate text-[15px] font-medium"
+          className="truncate text-[13px] sm:text-[15px] font-medium"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
         >
           {game.opponent}{isReserved ? " ★" : ""}
         </div>
-        <div className="mt-0.5 text-[12.5px] text-white/45">
+        <div className="mt-0.5 text-[11px] sm:text-[12.5px] text-white/45">
           {game.day_of_week}, {dateLabel} · {game.start_time}
         </div>
         {!isReserved ? <GameTags game={game} /> : null}
