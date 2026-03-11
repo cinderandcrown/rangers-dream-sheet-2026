@@ -1,6 +1,7 @@
 import React from "react";
 import { RESERVED_GAME_NUMBER } from "./constants";
 import { getTeamColor } from "./utils";
+import { getTeamLogoUrl } from "./teamLogos";
 import { format, parseISO } from "date-fns";
 
 function GameTags({ game }) {
