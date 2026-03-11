@@ -47,7 +47,11 @@ export function buildAllocationPlan(games, members, submissions) {
   const assignedGameNumbers = new Set();
   const submissionMap = Object.fromEntries(submissions.map((submission) => [submission.member_name, submission]));
 
-  while (allocations.length < DRAFTABLE_GAME_COUNT && submittedMembers.length > 0) {
+  let safetyLimit = DRAFTABLE_GAME_COUNT * 2;
+  while (allocations.length < DRAFTABLE_GAME_COUNT && submittedMembers.length > 0 && safetyLimit > 0) {
+    safetyLimit -= 1;
+    let madeProgress = false;
+
     for (const member of submittedMembers) {
       if (allocations.length >= DRAFTABLE_GAME_COUNT) break;
       if (counts[member.name] >= targets[member.name]) continue;
@@ -69,6 +73,7 @@ export function buildAllocationPlan(games, members, submissions) {
 
       assignedGameNumbers.add(selection.gameNumber);
       counts[member.name] += 1;
+      madeProgress = true;
       allocations.push({
         game_number: selection.gameNumber,
         assigned_to: member.name,
@@ -76,6 +81,8 @@ export function buildAllocationPlan(games, members, submissions) {
         ...(selection.rank_position ? { rank_position: selection.rank_position } : {})
       });
     }
+
+    if (!madeProgress) break;
   }
 
   return {
