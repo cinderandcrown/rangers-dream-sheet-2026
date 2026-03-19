@@ -1,31 +1,9 @@
 import { DRAFTABLE_GAME_COUNT, OUTLOOK_LOCATION, RESERVED_GAME_NUMBER } from "./constants";
 import { addHoursToTime, csvEscape, downloadCsv, formatGameDate, formatOutlookDate, sortGames } from "./utils";
 
-export function calculateTargets(submittedMembers) {
-  const totalShares = submittedMembers.reduce((sum, member) => sum + member.share_count, 0);
-  const ordered = [...submittedMembers].sort((a, b) => b.share_count - a.share_count);
-  const targets = ordered.map((member) => ({
-    name: member.name,
-    target: Math.round((member.share_count / totalShares) * DRAFTABLE_GAME_COUNT),
-    share_count: member.share_count,
-  }));
-
-  let difference = DRAFTABLE_GAME_COUNT - targets.reduce((sum, item) => sum + item.target, 0);
-  let index = 0;
-
-  while (difference !== 0 && targets.length > 0) {
-    const current = targets[index % targets.length];
-    if (difference > 0) {
-      current.target += 1;
-      difference -= 1;
-    } else if (current.target > 0) {
-      current.target -= 1;
-      difference += 1;
-    }
-    index += 1;
-  }
-
-  return targets.reduce((acc, item) => ({ ...acc, [item.name]: item.target }), {});
+export function calculateTargets(allMembers) {
+  // Targets are always the fixed share_count for each member — never recalculated proportionally.
+  return allMembers.reduce((acc, member) => ({ ...acc, [member.name]: member.share_count }), {});
 }
 
 export function buildAllocationPlan(games, members, submissions) {
