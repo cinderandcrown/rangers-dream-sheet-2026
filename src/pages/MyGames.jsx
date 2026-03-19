@@ -104,14 +104,43 @@ export default function MyGames() {
       <div>
         <BrandHeader showBack onBack={() => setAuthedMember(null)} />
         <div className="mx-auto max-w-[600px] px-6 py-16 text-center">
-          <div className="text-[48px] mb-4">⏳</div>
+          <div
+            className="mx-auto mb-4 flex h-[60px] w-[60px] items-center justify-center rounded-full border-[2px] border-[var(--gold)] bg-[var(--red)] text-[24px] font-bold text-white shadow-[0_4px_12px_rgba(192,17,31,0.3)]"
+            style={{ fontFamily: "'Oswald', sans-serif" }}
+          >
+            TX
+          </div>
           <h2
             className="text-xl font-bold text-white/80 mb-2"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
-            Allocations Coming Soon
+            Schedule Coming Soon
           </h2>
-          <p className="text-white/50 text-[14px]">Clark hasn't run the allocation yet. Check back after the deadline!</p>
+          <p className="text-white/50 text-[14px] mb-6">Your schedule hasn't been published yet. Clark will run the allocation after the deadline — check back soon! 🏟️</p>
+          <button
+            onClick={() => setAuthedMember(null)}
+            className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70 hover:text-white transition"
+          >
+            Go Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (memberGames.length === 0) {
+    return (
+      <div>
+        <BrandHeader showBack onBack={() => setAuthedMember(null)} />
+        <div className="mx-auto max-w-[600px] px-6 py-16 text-center">
+          <div className="text-[48px] mb-4">🤔</div>
+          <h2
+            className="text-xl font-bold text-white/80 mb-2"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+          >
+            No Games Assigned
+          </h2>
+          <p className="text-white/50 text-[14px]">No games are assigned to {authedMember.name} yet. This may be an error — contact Clark.</p>
         </div>
       </div>
     );

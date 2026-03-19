@@ -177,6 +177,11 @@ export default function Rank() {
               {member.name}'s Dream Sheet
             </h3>
             <p className="mt-0.5 text-sm text-white/50">Click games to rank them (1 = most wanted). Drag to reorder.</p>
+            {new Date() > new Date("2026-03-18T23:59:59") && (
+              <p className="mt-1 text-[12px] text-[#EAB308]" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                ⏰ The deadline was March 18th, but your submission will still be recorded.
+              </p>
+            )}
           </div>
           <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--slate)] px-3 sm:px-5 py-[10px]">
