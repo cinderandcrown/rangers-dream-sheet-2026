@@ -38,7 +38,13 @@ export default function MyGames() {
 
   const isLoading = seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || allocationsQuery.isLoading || submissionsQuery.isLoading;
 
+  // Build enriched game list with allocation metadata
+  const memberAllocations = authedMember ? allocations.filter((a) => a.assigned_to === authedMember.name) : [];
+  const allocationByGame = Object.fromEntries(memberAllocations.map((a) => [a.game_number, a]));
   const memberGames = authedMember ? getMemberScheduleData(authedMember.name, games, allocations) : [];
+
+  const groupGames = memberGames.filter((g) => (allocationByGame[g.game_number]?.ticket_type || "group") === "group");
+  const personalGames = memberGames.filter((g) => allocationByGame[g.game_number]?.ticket_type === "personal");
 
   // Group by month
   const monthGroups = {};
@@ -128,7 +134,7 @@ export default function MyGames() {
                 {authedMember.name}'s Games
               </h1>
               <p className="mt-1 text-[13px] sm:text-[14px] text-white/70">
-                {memberGames.length} games · 2026 Rangers Season
+                {groupGames.length} group games{personalGames.length > 0 ? ` + ${personalGames.length} personal` : ""} · 2026 Season
               </p>
             </div>
             <div
@@ -142,7 +148,7 @@ export default function MyGames() {
           {/* Quick Stats */}
           <div className="mt-5 grid grid-cols-3 gap-3">
             <div className="rounded-xl bg-white/[0.08] px-3 py-2.5 text-center">
-              <div className="text-[18px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>{memberGames.length}</div>
+              <div className="text-[18px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>{groupGames.length}{personalGames.length > 0 ? <span className="text-[12px] text-[var(--gold)]">+{personalGames.length}</span> : null}</div>
               <div className="text-[10px] text-white/50" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>Total</div>
             </div>
             <div className="rounded-xl bg-white/[0.08] px-3 py-2.5 text-center">
@@ -214,6 +220,7 @@ export default function MyGames() {
                       game={game}
                       memberName={authedMember.name}
                       onInfoClick={setDetailGame}
+                      allocation={allocationByGame[game.game_number]}
                     />
                   ))}
                 </div>
