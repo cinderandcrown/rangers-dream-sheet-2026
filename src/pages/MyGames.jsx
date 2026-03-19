@@ -120,7 +120,7 @@ export default function MyGames() {
           <p className="text-white/50 text-[14px] mb-6">Your schedule hasn't been published yet. Clark will run the allocation after the deadline — check back soon! 🏟️</p>
           <button
             onClick={() => setAuthedMember(null)}
-            className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70 hover:text-white transition"
+            className="rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition"
           >
             Go Home
           </button>
