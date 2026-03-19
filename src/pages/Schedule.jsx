@@ -10,11 +10,13 @@ import ScheduleStats from "@/components/rangers/ScheduleStats";
 import { getMemberScheduleData } from "@/components/rangers/scheduleExports";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
 import { Printer } from "lucide-react";
+import GameDetailModal from "@/components/rangers/GameDetailModal";
 
 export default function Schedule() {
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const memberName = urlParams.get("memberName");
+  const [selectedGame, setSelectedGame] = React.useState(null);
 
   const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), initialData: [] });
   const membersQuery = useQuery({ queryKey: ["members"], queryFn: () => base44.entities.Member.list(), initialData: [] });
@@ -104,8 +106,18 @@ export default function Schedule() {
 
         {/* Month cards */}
         {orderedMonths.map((month) => (
-          <ScheduleMonthCard key={month} month={month} games={monthGroups[month]} />
+          <ScheduleMonthCard key={month} month={month} games={monthGroups[month]} onGameClick={setSelectedGame} />
         ))}
+
+        {/* Game Detail Modal */}
+        {selectedGame && (
+          <GameDetailModal
+            game={selectedGame}
+            allocation={allocations.find((a) => a.game_number === selectedGame.game_number)}
+            members={members}
+            onClose={() => setSelectedGame(null)}
+          />
+        )}
 
         {/* Stats */}
         <ScheduleStats games={memberGames} />
