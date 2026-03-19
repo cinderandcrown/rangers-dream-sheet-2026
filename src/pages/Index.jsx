@@ -152,7 +152,8 @@ export default function Index() {
           </div>
 
           {/* Footer branding */}
-          <div className="text-center py-6 mt-8 border-t border-white/[0.04]">
+          <div className="flex items-center justify-center gap-2 py-6 mt-8 border-t border-white/[0.04]">
+            <img src="https://media.base44.com/images/public/69b1a5ab39d1912af6d745af/1f8631791_CinderCrown-MuteLogo.png" alt="Cinder & Crown" className="h-4 w-4 opacity-[0.15]" />
             <p className="text-[11px] text-white/[0.12] tracking-wide">
               Built by <a href="https://cinderandcrown.com" target="_blank" rel="noopener noreferrer" className="text-white/20 hover:text-white/40 underline underline-offset-2 transition">Cinder & Crown Creative</a>
             </p>
