@@ -139,8 +139,19 @@ export default function Index() {
             onToast={setToast}
           />
 
+          {/* My Schedule link */}
+          <div className="mt-10 text-center">
+            <button
+              onClick={() => navigate("/MyGames")}
+              className="inline-flex items-center gap-2 rounded-xl border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-6 py-3 text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.3)] hover:bg-[rgba(191,160,72,0.1)]"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+            >
+              📅 View My Game Schedule
+            </button>
+          </div>
+
           {/* Admin access */}
-          <div className="mt-12 text-center">
+          <div className="mt-6 text-center">
             <button
               onClick={() => navigate(createPageUrl("Admin"))}
               className="text-[12px] text-white/20 underline underline-offset-2 transition hover:text-white/40"
