@@ -43,6 +43,13 @@ export default function Index() {
     initialData: [],
   });
 
+  const allocationsQuery = useQuery({
+    queryKey: ["allocations"],
+    queryFn: () => base44.entities.Allocation.list(),
+    enabled: seedQuery.isSuccess,
+    initialData: [],
+  });
+
   const members = sortMembers(membersQuery.data);
   const submissionMap = Object.fromEntries(submissionsQuery.data.map((s) => [s.member_name, s]));
   const submittedCount = members.filter((m) => submissionMap[m.name]).length;
