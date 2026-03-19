@@ -152,7 +152,7 @@ export default function Index() {
           <div className="mt-8 text-center">
             <button
               onClick={() => navigate(createPageUrl("Admin"))}
-              className="text-[11px] text-white/15 underline underline-offset-2 transition hover:text-white/35"
+              className="min-h-[44px] px-3 text-[11px] text-white/15 underline underline-offset-2 transition hover:text-white/35"
               style={{ fontFamily: "'Source Sans 3', sans-serif" }}
             >
               Admin Dashboard →
