@@ -15,6 +15,8 @@ import { sortGames, sortMembers } from "@/components/rangers/utils";
 import { getMemberScheduleData } from "@/components/rangers/scheduleExports";
 import { generateAllGamesIcs, downloadIcsFile } from "@/components/rangers/icsGenerator";
 import PrintableCalendar from "@/components/rangers/PrintableCalendar";
+import NextGameSpotlight from "@/components/rangers/NextGameSpotlight";
+import ShareSchedule from "@/components/rangers/ShareSchedule";
 
 export default function MyGames() {
   const navigate = useNavigate();
@@ -183,6 +185,14 @@ export default function MyGames() {
           </button>
         </div>
 
+        {/* Next Game Spotlight */}
+        <NextGameSpotlight
+          memberGames={memberGames}
+          memberName={authedMember.name}
+          accentColor={authedMember.accent_color}
+          onToast={setToast}
+        />
+
         {/* Month sections */}
         {orderedMonths.map((month) => {
           const monthGames = monthGroups[month];
@@ -229,28 +239,14 @@ export default function MyGames() {
           );
         })}
 
-        {/* Next game highlight */}
-        {(() => {
-          const today = new Date();
-          const nextGame = memberGames.find((g) => parseISO(g.date) >= today);
-          if (!nextGame) return null;
-          return (
-            <div className="mt-6 rounded-xl border border-[rgba(191,160,72,0.12)] overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(191,160,72,0.06), rgba(191,160,72,0.02))" }}>
-              <div className="px-5 py-4">
-                <div className="text-[10px] font-semibold tracking-[2px] text-[var(--gold)]/60 mb-1.5" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
-                  Next Game
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-[15px] font-semibold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                    vs {nextGame.opponent}
-                  </div>
-                  <span className="text-white/20">·</span>
-                  <span className="text-[13px] text-white/50">{format(parseISO(nextGame.date), "EEE, MMM d")} · {nextGame.start_time}</span>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
+        {/* Old next game highlight removed — replaced by NextGameSpotlight above */}
+
+        {/* Share schedule */}
+        <ShareSchedule
+          memberName={authedMember.name}
+          memberGames={memberGames}
+          onToast={setToast}
+        />
 
         {/* Tip */}
         <div className="mt-4 rounded-xl border border-white/[0.04] bg-white/[0.02] px-5 py-4">

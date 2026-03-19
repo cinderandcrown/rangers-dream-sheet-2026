@@ -107,7 +107,12 @@ export default function Admin() {
             <p className="mb-4 text-sm text-white/50">Weighted round-robin draft across 80 draftable games (Opening Day reserved). Clark drafts first as group owner, then by share count. After running, you can swap any game assignment before finalizing.</p>
             <div className="flex flex-wrap gap-[10px]">
               <button
-                onClick={() => allocationMutation.mutate()}
+                onClick={() => {
+                  if (allocations.length > 0) {
+                    if (!window.confirm(`⚠️ Re-running allocation will replace the current assignments. ${allocations.length} games are currently allocated. Continue?`)) return;
+                  }
+                  allocationMutation.mutate();
+                }}
                 disabled={members.length === 0 || allocationMutation.isPending}
                 className="btn-red-gradient rounded-[10px] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:opacity-40"
                 style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
@@ -158,6 +163,7 @@ export default function Admin() {
               members={members}
               games={games}
               allocations={allocations}
+              onToast={setToast}
             />
           )}
 

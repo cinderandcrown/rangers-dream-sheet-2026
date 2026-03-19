@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { downloadMemberScheduleCsv } from "./adminHelpers";
 import { downloadMasterExcel, downloadMemberExcel, getMemberScheduleData, generateAllSchedulesHtml } from "./scheduleExports";
+import CopyEmailSummary from "./CopyEmailSummary";
 
-export default function ScheduleDistribution({ members, games, allocations }) {
+export default function ScheduleDistribution({ members, games, allocations, onToast }) {
   const navigate = useNavigate();
 
   const handleViewSchedule = (name) => {
@@ -86,6 +87,7 @@ export default function ScheduleDistribution({ members, games, allocations }) {
         >
           📥 All Schedules (Printable)
         </button>
+        <CopyEmailSummary members={members} games={games} allocations={allocations} onToast={onToast} />
       </div>
     </div>
   );

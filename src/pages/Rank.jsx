@@ -160,7 +160,12 @@ export default function Rank() {
 
   return (
     <div>
-      <BrandHeader showBack onBack={() => navigate(createPageUrl("Index"))} />
+      <BrandHeader showBack onBack={() => {
+        if (rankedGameIds.length > 0 && !saveMutation.isSuccess) {
+          if (!window.confirm("You have unsaved rankings. Leave anyway?")) return;
+        }
+        navigate(createPageUrl("Index"));
+      }} />
       <div className="relative z-[1] mx-auto max-w-[1200px] px-3 sm:px-6 py-4 sm:py-6">
         {/* Top bar */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
