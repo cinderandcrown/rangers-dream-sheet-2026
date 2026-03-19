@@ -2,10 +2,10 @@ import React from "react";
 import { format, parseISO } from "date-fns";
 import { CalendarPlus } from "lucide-react";
 import { getTeamLogoUrl } from "./teamLogos";
-import { getTeamColor } from "./utils";
+import { getTeamColor, getTeamAbbreviation } from "./utils";
 import { generateSingleGameIcs, downloadIcsFile } from "./icsGenerator";
 
-export default function MyGameCard({ game, memberName, onInfoClick }) {
+export default function MyGameCard({ game, memberName, onInfoClick, index }) {
   const logoUrl = getTeamLogoUrl(game.opponent);
   const teamColor = getTeamColor(game.opponent);
   const d = parseISO(game.date);
@@ -25,19 +25,27 @@ export default function MyGameCard({ game, memberName, onInfoClick }) {
 
   return (
     <div
-      className="group relative flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--slate)] p-3 sm:p-4 transition-all hover:border-white/[0.12] cursor-pointer"
+      className="group relative flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 sm:p-4 transition-all hover:border-white/[0.15] hover:bg-white/[0.04] cursor-pointer"
       onClick={() => onInfoClick && onInfoClick(game)}
     >
-      {/* Team logo */}
+      {/* Game number badge */}
+      <div className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white/[0.08] text-[9px] font-bold text-white/40" style={{ fontFamily: "'Oswald', sans-serif" }}>
+        {game.game_number}
+      </div>
+
+      {/* Team logo with accent border */}
       <div
-        className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-[10px] overflow-hidden"
-        style={{ backgroundColor: logoUrl ? "rgba(255,255,255,0.06)" : teamColor }}
+        className="flex h-[48px] w-[48px] flex-shrink-0 items-center justify-center rounded-[12px] overflow-hidden"
+        style={{
+          backgroundColor: logoUrl ? "rgba(255,255,255,0.06)" : teamColor,
+          border: `2px solid ${teamColor}40`,
+        }}
       >
         {logoUrl ? (
-          <img src={logoUrl} alt={game.opponent} className="h-[32px] w-[32px] object-contain" />
+          <img src={logoUrl} alt={game.opponent} className="h-[34px] w-[34px] object-contain" />
         ) : (
           <span className="text-[14px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>
-            {game.opponent.slice(0, 3).toUpperCase()}
+            {getTeamAbbreviation(game.opponent)}
           </span>
         )}
       </div>
@@ -60,13 +68,17 @@ export default function MyGameCard({ game, memberName, onInfoClick }) {
             </span>
           )}
         </div>
-        <div className="mt-0.5 text-[12px] text-white/45">
-          {dateLabel} · {game.start_time} CT
+        <div className="mt-0.5 flex items-center gap-1.5 text-[12px] text-white/45">
+          <span>{dateLabel}</span>
+          <span className="text-white/20">·</span>
+          <span>{game.start_time} CT</span>
+          <span className="text-white/20">·</span>
+          <span>{game.start_time_et} ET</span>
         </div>
         {tags.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-1">
+          <div className="mt-1.5 flex flex-wrap gap-1">
             {tags.map((t) => (
-              <span key={t.label} className="inline-block rounded-md px-[5px] py-[1px] text-[9px] font-semibold" style={{ color: t.color, backgroundColor: t.bg }}>
+              <span key={t.label} className="inline-block rounded-md px-[6px] py-[2px] text-[9px] font-semibold" style={{ color: t.color, backgroundColor: t.bg }}>
                 {t.label}
               </span>
             ))}
@@ -74,13 +86,13 @@ export default function MyGameCard({ game, memberName, onInfoClick }) {
         )}
       </div>
 
-      {/* Add to Calendar */}
+      {/* Add to Calendar button */}
       <button
         onClick={handleAddToCalendar}
-        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-white/40 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)]"
+        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95"
         title="Add to Calendar"
       >
-        <CalendarPlus className="h-4 w-4" />
+        <CalendarPlus className="h-[18px] w-[18px]" />
       </button>
     </div>
   );

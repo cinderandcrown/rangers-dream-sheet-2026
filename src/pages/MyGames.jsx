@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { CalendarDays, Download, ChevronDown, ChevronUp } from "lucide-react";
+import { CalendarDays, Download, ChevronDown, ChevronUp, Printer } from "lucide-react";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
 import AppToast from "@/components/rangers/AppToast";
@@ -13,6 +13,7 @@ import useSeedData from "@/components/rangers/useSeedData";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
 import { getMemberScheduleData } from "@/components/rangers/scheduleExports";
 import { generateAllGamesIcs, downloadIcsFile } from "@/components/rangers/icsGenerator";
+import PrintableCalendar from "@/components/rangers/PrintableCalendar";
 
 export default function MyGames() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function MyGames() {
   const [toast, setToast] = React.useState("");
   const [detailGame, setDetailGame] = React.useState(null);
   const [expandedMonth, setExpandedMonth] = React.useState(null);
+  const [showPrintCalendar, setShowPrintCalendar] = React.useState(false);
 
   const membersQuery = useQuery({ queryKey: ["members"], queryFn: () => base44.entities.Member.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), enabled: seedQuery.isSuccess, initialData: [] });
@@ -153,16 +155,26 @@ export default function MyGames() {
           </div>
         </div>
 
-        {/* Export All Button */}
-        <button
-          onClick={handleExportAll}
-          className="mb-6 flex w-full items-center justify-center gap-2.5 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] py-3.5 text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
-          style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
-        >
-          <CalendarDays className="h-4.5 w-4.5" />
-          Export All {memberGames.length} Games to Calendar
-          <Download className="h-3.5 w-3.5 ml-1" />
-        </button>
+        {/* Action buttons */}
+        <div className="mb-6 grid grid-cols-2 gap-3">
+          <button
+            onClick={handleExportAll}
+            className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] py-3.5 text-[12px] sm:text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+          >
+            <CalendarDays className="h-4 w-4" />
+            <span className="hidden sm:inline">Export to</span> Calendar
+            <Download className="h-3 w-3" />
+          </button>
+          <button
+            onClick={() => setShowPrintCalendar(true)}
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3.5 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+          >
+            <Printer className="h-4 w-4" />
+            Print Calendar
+          </button>
+        </div>
 
         {/* Month sections */}
         {orderedMonths.map((month) => {
@@ -209,10 +221,33 @@ export default function MyGames() {
           );
         })}
 
+        {/* Next game highlight */}
+        {(() => {
+          const today = new Date();
+          const nextGame = memberGames.find((g) => parseISO(g.date) >= today);
+          if (!nextGame) return null;
+          return (
+            <div className="mt-6 rounded-xl border border-[rgba(191,160,72,0.12)] overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(191,160,72,0.06), rgba(191,160,72,0.02))" }}>
+              <div className="px-5 py-4">
+                <div className="text-[10px] font-semibold tracking-[2px] text-[var(--gold)]/60 mb-1.5" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
+                  Next Game
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-[15px] font-semibold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    vs {nextGame.opponent}
+                  </div>
+                  <span className="text-white/20">·</span>
+                  <span className="text-[13px] text-white/50">{format(parseISO(nextGame.date), "EEE, MMM d")} · {nextGame.start_time}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Tip */}
-        <div className="mt-6 rounded-xl border border-white/[0.04] bg-white/[0.02] px-5 py-4">
+        <div className="mt-4 rounded-xl border border-white/[0.04] bg-white/[0.02] px-5 py-4">
           <p className="text-[12px] text-white/35 leading-relaxed">
-            <strong className="text-white/50">Tip:</strong> Tap the <span className="text-[var(--gold)]">calendar icon</span> on any game to add it individually, or use the gold button above to export all games at once. The .ics file works with Apple Calendar, Google Calendar, and Outlook.
+            <strong className="text-white/50">Tip:</strong> Tap the <span className="text-[var(--gold)]">calendar icon</span> on any game to add it individually. Use <span className="text-white/50">Export to Calendar</span> for all games at once (.ics for Apple, Google, & Outlook), or <span className="text-white/50">Print Calendar</span> for a fridge-ready monthly view.
           </p>
         </div>
 
@@ -234,6 +269,16 @@ export default function MyGames() {
           allocation={allocations.find((a) => a.game_number === detailGame.game_number)}
           members={members}
           onClose={() => setDetailGame(null)}
+        />
+      )}
+
+      {/* Print calendar modal */}
+      {showPrintCalendar && authedMember && (
+        <PrintableCalendar
+          memberName={authedMember.name}
+          accentColor={authedMember.accent_color}
+          memberGames={memberGames}
+          onClose={() => setShowPrintCalendar(false)}
         />
       )}
 
