@@ -64,7 +64,7 @@ export default function Index() {
 
         {/* Members section */}
         <PullToRefresh onRefresh={handleRefresh}>
-        <div className="mx-auto max-w-[780px] px-6 pb-16">
+        <div className="mx-auto max-w-[780px] px-6 pb-24">
           {/* Section label */}
           <div className="mb-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.06]" />
@@ -100,35 +100,33 @@ export default function Index() {
             })}
           </div>
 
-          {/* Deadline banner */}
-          <div
-            className="mx-auto max-w-[540px] overflow-hidden rounded-2xl border border-[rgba(191,160,72,0.12)]"
-            style={{ background: "linear-gradient(135deg, rgba(191,160,72,0.08), rgba(191,160,72,0.03))" }}
-          >
-            <div className="flex items-center gap-3 px-6 py-4">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[rgba(191,160,72,0.12)] text-lg">
-                📅
-              </div>
+          {/* Quick actions row */}
+          <div className="mb-10 mx-auto max-w-[540px] grid grid-cols-2 gap-3">
+            <button
+              onClick={() => navigate("/MyGames")}
+              className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-4 py-3.5 text-[12px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.3)] hover:bg-[rgba(191,160,72,0.1)] hover:-translate-y-0.5"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+            >
+              📅 My Game Schedule
+            </button>
+            <div
+              className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3.5 text-center"
+            >
               <div>
-                <div
-                  className="text-[12px] font-semibold tracking-[2px] text-[var(--gold)]"
-                  style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}
-                >
-                  Submission Deadline
+                <div className="text-[12px] font-semibold tracking-[1px] text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
+                  Deadline
                 </div>
-                <div className="text-[14px] text-white/60">
-                  Please submit your rankings by <strong className="text-white/80">{DEADLINE_LABEL}</strong>
-                </div>
+                <div className="text-[13px] text-white/50 font-medium">{DEADLINE_LABEL}</div>
               </div>
             </div>
           </div>
 
-          {/* How it works — subtle helper text */}
-          <div className="mx-auto mt-10 max-w-[520px]">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <StepCard num="1" text="Select your name & enter email" />
-              <StepCard num="2" text="Rank your favorite home games" />
-              <StepCard num="3" text="Clark runs the draft allocation" />
+          {/* How it works */}
+          <div className="mx-auto mb-10 max-w-[500px]">
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <StepCard num="1" text="Select name & enter email" />
+              <StepCard num="2" text="Rank your favorite games" />
+              <StepCard num="3" text="Clark runs the allocation" />
             </div>
           </div>
 
@@ -139,22 +137,11 @@ export default function Index() {
             onToast={setToast}
           />
 
-          {/* My Schedule link */}
-          <div className="mt-10 text-center">
-            <button
-              onClick={() => navigate("/MyGames")}
-              className="inline-flex items-center gap-2 rounded-xl border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-6 py-3 text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.3)] hover:bg-[rgba(191,160,72,0.1)]"
-              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
-            >
-              📅 View My Game Schedule
-            </button>
-          </div>
-
           {/* Admin access */}
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <button
               onClick={() => navigate(createPageUrl("Admin"))}
-              className="text-[12px] text-white/20 underline underline-offset-2 transition hover:text-white/40"
+              className="text-[11px] text-white/15 underline underline-offset-2 transition hover:text-white/35"
               style={{ fontFamily: "'Source Sans 3', sans-serif" }}
             >
               Admin Dashboard →
