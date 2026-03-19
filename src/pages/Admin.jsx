@@ -64,7 +64,7 @@ export default function Admin() {
   const allocations = allocationsQuery.data;
   const submittedMembers = members.filter((m) => submissions.some((s) => s.member_name === m.name));
   const submissionMap = Object.fromEntries(submissions.map((s) => [s.member_name, s]));
-  const targets = submittedMembers.length > 0 ? calculateTargets(submittedMembers) : {};
+  const targets = members.length > 0 ? calculateTargets(members) : {};
 
   if (seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || submissionsQuery.isLoading || allocationsQuery.isLoading) {
     return <LoadingScreen />;
