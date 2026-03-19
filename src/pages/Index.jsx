@@ -167,14 +167,14 @@ export default function Index() {
 
 function StepCard({ num, text }) {
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-1.5">
       <div
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-[13px] font-bold text-white/40"
+        className="flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-[11px] font-bold text-white/30"
         style={{ fontFamily: "'Oswald', sans-serif" }}
       >
         {num}
       </div>
-      <p className="text-[12px] leading-[1.4] text-white/30">{text}</p>
+      <p className="text-[11px] leading-[1.35] text-white/25">{text}</p>
     </div>
   );
 }
