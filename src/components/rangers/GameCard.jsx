@@ -116,13 +116,13 @@ export default function GameCard({ game, rankNumber, onSelect, onInfoClick }) {
         {!isReserved ? <GameTags game={game} /> : null}
       </div>
 
-      {/* Info button */}
+      {/* Info button — 44px tap target */}
       {onInfoClick && (
         <button
           onClick={(e) => { e.stopPropagation(); onInfoClick(game); }}
-          className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-white/30 transition hover:bg-white/[0.12] hover:text-white/60"
+          className="absolute bottom-1 right-1 flex h-[44px] w-[44px] items-center justify-center rounded-full text-white/30 transition hover:bg-white/[0.12] hover:text-white/60"
         >
-          <Info className="h-3.5 w-3.5" />
+          <Info className="h-4 w-4" />
         </button>
       )}
     </div>
