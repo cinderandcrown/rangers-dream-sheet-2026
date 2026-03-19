@@ -29,24 +29,24 @@ function CalendarMonth({ year, monthIndex, monthName, games, memberName, accentC
   }
 
   return (
-    <div className="calendar-month" style={{ pageBreakInside: "avoid", marginBottom: "24px" }}>
+    <div className="calendar-month" style={{ pageBreakInside: "avoid", marginBottom: "8px" }}>
       {/* Month header */}
       <div
         style={{
           background: "#003278",
           color: "#fff",
-          padding: "10px 16px",
-          borderRadius: "10px 10px 0 0",
+          padding: "4px 10px",
+          borderRadius: "6px 6px 0 0",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: "20px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px" }}>
-          {monthName} 2026
+        <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: "13px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px" }}>
+          {monthName}
         </div>
-        <div style={{ fontSize: "12px", opacity: 0.7 }}>
-          {games.length} game{games.length !== 1 ? "s" : ""}
+        <div style={{ fontSize: "10px", opacity: 0.7 }}>
+          {games.length}
         </div>
       </div>
 
@@ -54,18 +54,17 @@ function CalendarMonth({ year, monthIndex, monthName, games, memberName, accentC
       <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #ddd" }}>
         <thead>
           <tr>
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
               <th
-                key={d}
+                key={i}
                 style={{
                   width: "14.28%",
-                  padding: "6px 4px",
-                  fontSize: "10px",
+                  padding: "2px",
+                  fontSize: "8px",
                   fontFamily: "'Oswald', sans-serif",
                   textTransform: "uppercase",
-                  letterSpacing: "1px",
-                  color: "#666",
-                  borderBottom: "2px solid #C0111F",
+                  color: "#888",
+                  borderBottom: "1px solid #C0111F",
                   textAlign: "center",
                   background: "#f8f8f8",
                 }}
@@ -88,22 +87,22 @@ function CalendarMonth({ year, monthIndex, monthName, games, memberName, accentC
                   <td
                     key={di}
                     style={{
-                      border: "1px solid #e5e5e5",
-                      padding: "3px",
+                      border: "1px solid #e8e8e8",
+                      padding: "1px",
                       verticalAlign: "top",
-                      height: "72px",
+                      height: "44px",
                       background: !inMonth ? "#f5f5f5" : isWeekend ? "#fafafa" : "#fff",
                     }}
                   >
                     {inMonth && (
-                      <div style={{ position: "relative" }}>
+                      <div>
                         <div
                           style={{
-                            fontSize: "11px",
-                            color: game ? "#003278" : "#999",
+                            fontSize: "8px",
+                            color: game ? "#003278" : "#aaa",
                             fontWeight: game ? 700 : 400,
-                            padding: "1px 3px",
-                            fontFamily: "'Source Sans 3', sans-serif",
+                            padding: "0 2px",
+                            lineHeight: "1.2",
                           }}
                         >
                           {format(day, "d")}
@@ -111,21 +110,21 @@ function CalendarMonth({ year, monthIndex, monthName, games, memberName, accentC
                         {game && (
                           <div
                             style={{
-                              marginTop: "2px",
-                              padding: "3px 4px",
-                              borderRadius: "5px",
+                              marginTop: "1px",
+                              padding: "2px 2px",
+                              borderRadius: "3px",
                               background: getTeamColor(game.opponent),
                               color: "#fff",
-                              fontSize: "9px",
+                              fontSize: "7px",
                               fontFamily: "'Oswald', sans-serif",
                               textTransform: "uppercase",
-                              letterSpacing: "0.3px",
-                              lineHeight: "1.3",
+                              letterSpacing: "0.2px",
+                              lineHeight: "1.2",
                               textAlign: "center",
                             }}
                           >
-                            <div style={{ fontWeight: 600 }}>vs {getTeamAbbreviation(game.opponent)}</div>
-                            <div style={{ fontSize: "8px", opacity: 0.85, fontFamily: "'Source Sans 3', sans-serif" }}>
+                            <div style={{ fontWeight: 600 }}>{getTeamAbbreviation(game.opponent)}</div>
+                            <div style={{ fontSize: "6px", opacity: 0.85 }}>
                               {game.start_time}
                             </div>
                           </div>
@@ -171,13 +170,13 @@ export default function PrintableCalendar({ memberName, accentColor, memberGames
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Source Sans 3', Arial, sans-serif; background: #fff; color: #333; padding: 20px; }
+  body { font-family: 'Source Sans 3', Arial, sans-serif; background: #fff; color: #333; padding: 10px; }
   @media print {
-    body { padding: 12px; }
+    body { padding: 6px; }
     .calendar-month { page-break-inside: avoid; }
     .no-print { display: none !important; }
   }
-  @page { margin: 0.4in; size: letter; }
+  @page { margin: 0.25in; size: letter; }
   table { width: 100%; border-collapse: collapse; }
 </style>
 </head><body>
@@ -226,72 +225,58 @@ ${calendarEl.innerHTML}
 
         {/* Calendar content */}
         <div id="printable-calendar-content">
-          {/* Title banner */}
+          {/* Compact title banner */}
           <div
             style={{
               background: "#003278",
-              borderLeft: `6px solid ${accentColor}`,
-              borderRadius: "12px",
-              padding: "20px 24px",
-              marginBottom: "24px",
+              borderLeft: `4px solid ${accentColor}`,
+              borderRadius: "8px",
+              padding: "10px 14px",
+              marginBottom: "10px",
               color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div>
-                <div
-                  style={{
-                    fontFamily: "'Oswald', sans-serif",
-                    fontSize: "28px",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "2px",
-                  }}
-                >
-                  {memberName}'s 2026 Rangers Schedule
-                </div>
-                <div style={{ fontSize: "14px", opacity: 0.7, marginTop: "4px" }}>
-                  {memberGames.length} Home Games · Globe Life Field · Arlington, TX
-                </div>
-              </div>
+            <div>
               <div
                 style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  background: accentColor,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "22px",
-                  fontWeight: 700,
                   fontFamily: "'Oswald', sans-serif",
-                  color: "#fff",
-                  flexShrink: 0,
+                  fontSize: "16px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "1.5px",
                 }}
               >
-                {memberName[0]}
+                {memberName}'s 2026 Rangers Schedule
+              </div>
+              <div style={{ fontSize: "10px", opacity: 0.6, marginTop: "2px" }}>
+                {memberGames.length} Games · Globe Life Field · {weekendCount} Weekend / {memberGames.length - weekendCount} Weekday
               </div>
             </div>
-            {/* Quick stats bar */}
-            <div style={{ display: "flex", gap: "24px", marginTop: "12px", fontSize: "12px" }}>
-              <div>
-                <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: "18px", fontWeight: 700 }}>{memberGames.length}</span>
-                <span style={{ marginLeft: "4px", opacity: 0.6, textTransform: "uppercase", letterSpacing: "1px", fontSize: "10px" }}>Total</span>
-              </div>
-              <div>
-                <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: "18px", fontWeight: 700, color: "#BFA048" }}>{weekendCount}</span>
-                <span style={{ marginLeft: "4px", opacity: 0.6, textTransform: "uppercase", letterSpacing: "1px", fontSize: "10px" }}>Weekend</span>
-              </div>
-              <div>
-                <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: "18px", fontWeight: 700 }}>{memberGames.length - weekendCount}</span>
-                <span style={{ marginLeft: "4px", opacity: 0.6, textTransform: "uppercase", letterSpacing: "1px", fontSize: "10px" }}>Weekday</span>
-              </div>
+            <div
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "50%",
+                background: accentColor,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "14px",
+                fontWeight: 700,
+                fontFamily: "'Oswald', sans-serif",
+                color: "#fff",
+                flexShrink: 0,
+              }}
+            >
+              {memberName[0]}
             </div>
           </div>
 
-          {/* Month grids — 2 columns */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          {/* Month grids — 2 columns compact */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
             {monthOrder
               .filter((mo) => gamesByMonth[mo.name])
               .map((mo) => (
@@ -307,48 +292,33 @@ ${calendarEl.innerHTML}
               ))}
           </div>
 
-          {/* Game list at bottom */}
-          <div style={{ marginTop: "28px", borderTop: "2px solid #003278", paddingTop: "16px" }}>
-            <div
-              style={{
-                fontFamily: "'Oswald', sans-serif",
-                fontSize: "16px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-                color: "#003278",
-                marginBottom: "10px",
-              }}
-            >
-              Complete Game List
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px", fontSize: "11px" }}>
-              {memberGames.map((g, i) => (
+          {/* Compact game list */}
+          <div style={{ marginTop: "8px", borderTop: "1px solid #003278", paddingTop: "6px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px", fontSize: "8px" }}>
+              {memberGames.map((g) => (
                 <div
                   key={g.game_number}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "8px",
-                    padding: "5px 8px",
-                    background: i % 2 === 0 ? "#f8f9fa" : "#fff",
-                    borderRadius: "4px",
+                    gap: "4px",
+                    padding: "2px 4px",
                   }}
                 >
                   <div
                     style={{
-                      width: "6px",
-                      height: "6px",
+                      width: "4px",
+                      height: "4px",
                       borderRadius: "50%",
                       background: getTeamColor(g.opponent),
                       flexShrink: 0,
                     }}
                   />
-                  <span style={{ fontWeight: 600, color: "#003278", minWidth: "65px" }}>
-                    {format(parseISO(g.date), "EEE MMM d")}
+                  <span style={{ fontWeight: 600, color: "#003278" }}>
+                    {format(parseISO(g.date), "M/d")}
                   </span>
-                  <span style={{ color: "#555" }}>vs {g.opponent}</span>
-                  <span style={{ marginLeft: "auto", color: "#888", fontSize: "10px" }}>{g.start_time}</span>
+                  <span style={{ color: "#666" }}>{g.opponent}</span>
+                  <span style={{ marginLeft: "auto", color: "#999", fontSize: "7px" }}>{g.start_time}</span>
                 </div>
               ))}
             </div>
@@ -357,16 +327,15 @@ ${calendarEl.innerHTML}
           {/* Footer */}
           <div
             style={{
-              marginTop: "20px",
+              marginTop: "6px",
               textAlign: "center",
-              fontSize: "9px",
-              color: "#aaa",
-              fontFamily: "'Source Sans 3', sans-serif",
+              fontSize: "7px",
+              color: "#bbb",
               letterSpacing: "1px",
               textTransform: "uppercase",
             }}
           >
-            Rangers Dream Sheet 2026 · Generated {format(new Date(), "MMMM d, yyyy")}
+            Rangers Dream Sheet 2026 · {format(new Date(), "MMM d, yyyy")}
           </div>
         </div>
       </div>
