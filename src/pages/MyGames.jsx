@@ -1,0 +1,243 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import { CalendarDays, Download, ChevronDown, ChevronUp } from "lucide-react";
+import BrandHeader from "@/components/rangers/BrandHeader";
+import LoadingScreen from "@/components/rangers/LoadingScreen";
+import AppToast from "@/components/rangers/AppToast";
+import MyGameCard from "@/components/rangers/MyGameCard";
+import MemberLoginGate from "@/components/rangers/MemberLoginGate";
+import GameDetailModal from "@/components/rangers/GameDetailModal";
+import useSeedData from "@/components/rangers/useSeedData";
+import { sortGames, sortMembers } from "@/components/rangers/utils";
+import { getMemberScheduleData } from "@/components/rangers/scheduleExports";
+import { generateAllGamesIcs, downloadIcsFile } from "@/components/rangers/icsGenerator";
+
+export default function MyGames() {
+  const navigate = useNavigate();
+  const seedQuery = useSeedData();
+  const [authedMember, setAuthedMember] = React.useState(null);
+  const [authedEmail, setAuthedEmail] = React.useState(null);
+  const [toast, setToast] = React.useState("");
+  const [detailGame, setDetailGame] = React.useState(null);
+  const [expandedMonth, setExpandedMonth] = React.useState(null);
+
+  const membersQuery = useQuery({ queryKey: ["members"], queryFn: () => base44.entities.Member.list(), enabled: seedQuery.isSuccess, initialData: [] });
+  const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), enabled: seedQuery.isSuccess, initialData: [] });
+  const allocationsQuery = useQuery({ queryKey: ["allocations"], queryFn: () => base44.entities.Allocation.list(), enabled: seedQuery.isSuccess, initialData: [] });
+  const submissionsQuery = useQuery({ queryKey: ["submissions"], queryFn: () => base44.entities.Submission.list(), enabled: seedQuery.isSuccess, initialData: [] });
+
+  const members = sortMembers(membersQuery.data);
+  const games = sortGames(gamesQuery.data);
+  const allocations = allocationsQuery.data;
+  const submissions = submissionsQuery.data;
+
+  const isLoading = seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || allocationsQuery.isLoading || submissionsQuery.isLoading;
+
+  if (isLoading) return <LoadingScreen />;
+
+  // Login gate
+  if (!authedMember) {
+    return (
+      <MemberLoginGate
+        members={members}
+        onLogin={(member, email) => {
+          // Verify email matches submission
+          const sub = submissions.find((s) => s.member_name === member.name);
+          if (sub && sub.member_email && sub.member_email.toLowerCase() !== email.toLowerCase()) {
+            setToast("Email doesn't match — use the email from your submission");
+            return;
+          }
+          setAuthedMember(member);
+          setAuthedEmail(email);
+        }}
+      />
+    );
+  }
+
+  if (allocations.length === 0) {
+    return (
+      <div>
+        <BrandHeader showBack onBack={() => setAuthedMember(null)} />
+        <div className="mx-auto max-w-[600px] px-6 py-16 text-center">
+          <div className="text-[48px] mb-4">⏳</div>
+          <h2
+            className="text-xl font-bold text-white/80 mb-2"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+          >
+            Allocations Coming Soon
+          </h2>
+          <p className="text-white/50 text-[14px]">Clark hasn't run the allocation yet. Check back after the deadline!</p>
+        </div>
+      </div>
+    );
+  }
+
+  const memberGames = getMemberScheduleData(authedMember.name, games, allocations);
+
+  // Group by month
+  const monthGroups = {};
+  memberGames.forEach((g) => {
+    if (!monthGroups[g.month]) monthGroups[g.month] = [];
+    monthGroups[g.month].push(g);
+  });
+  const monthOrder = ["April", "May", "June", "July", "August", "September"];
+  const orderedMonths = monthOrder.filter((m) => monthGroups[m]);
+
+  // Stats
+  const weekendCount = memberGames.filter((g) => ["Fri", "Sat", "Sun"].includes(g.day_of_week)).length;
+  const dayGameCount = memberGames.filter((g) => g.is_day_game).length;
+
+  const handleExportAll = () => {
+    const ics = generateAllGamesIcs(memberGames, authedMember.name);
+    downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
+    setToast("Calendar file downloaded — open it to add all games!");
+  };
+
+  // Initialize all months expanded
+  React.useEffect(() => {
+    if (orderedMonths.length > 0 && expandedMonth === null) {
+      setExpandedMonth("all");
+    }
+  }, [orderedMonths.length]);
+
+  const toggleMonth = (month) => {
+    setExpandedMonth((prev) => (prev === month ? "all" : month));
+  };
+
+  return (
+    <div>
+      <BrandHeader showBack onBack={() => setAuthedMember(null)} />
+
+      <div className="relative z-[1] mx-auto max-w-[680px] px-4 sm:px-6 py-6 sm:py-8">
+        {/* Header */}
+        <div
+          className="mb-6 overflow-hidden rounded-2xl px-6 sm:px-8 py-6 sm:py-7"
+          style={{ background: "#003278", borderLeft: `6px solid ${authedMember.accent_color}` }}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1
+                className="text-[22px] sm:text-[28px] font-bold text-white"
+                style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}
+              >
+                {authedMember.name}'s Games
+              </h1>
+              <p className="mt-1 text-[13px] sm:text-[14px] text-white/70">
+                {memberGames.length} games · 2026 Rangers Season
+              </p>
+            </div>
+            <div
+              className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-[20px] font-bold text-white"
+              style={{ background: authedMember.accent_color }}
+            >
+              {authedMember.name[0]}
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="mt-5 grid grid-cols-3 gap-3">
+            <div className="rounded-xl bg-white/[0.08] px-3 py-2.5 text-center">
+              <div className="text-[18px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>{memberGames.length}</div>
+              <div className="text-[10px] text-white/50" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>Total</div>
+            </div>
+            <div className="rounded-xl bg-white/[0.08] px-3 py-2.5 text-center">
+              <div className="text-[18px] font-bold text-[var(--gold)]" style={{ fontFamily: "'Oswald', sans-serif" }}>{weekendCount}</div>
+              <div className="text-[10px] text-white/50" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>Weekend</div>
+            </div>
+            <div className="rounded-xl bg-white/[0.08] px-3 py-2.5 text-center">
+              <div className="text-[18px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>{dayGameCount}</div>
+              <div className="text-[10px] text-white/50" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>Day Games</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Export All Button */}
+        <button
+          onClick={handleExportAll}
+          className="mb-6 flex w-full items-center justify-center gap-2.5 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] py-3.5 text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
+          style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+        >
+          <CalendarDays className="h-4.5 w-4.5" />
+          Export All {memberGames.length} Games to Calendar
+          <Download className="h-3.5 w-3.5 ml-1" />
+        </button>
+
+        {/* Month sections */}
+        {orderedMonths.map((month) => {
+          const monthGames = monthGroups[month];
+          const isExpanded = expandedMonth === "all" || expandedMonth === month;
+
+          return (
+            <div key={month} className="mb-3 overflow-hidden rounded-xl border border-white/[0.06] bg-[var(--slate)]">
+              {/* Month header — clickable */}
+              <button
+                onClick={() => toggleMonth(month)}
+                className="flex w-full items-center justify-between bg-white/[0.03] px-5 py-3 text-left transition hover:bg-white/[0.05]"
+              >
+                <div className="flex items-center gap-2">
+                  <h3
+                    className="text-[14px] font-semibold text-white"
+                    style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+                  >
+                    ⚾ {month}
+                  </h3>
+                  <span className="text-[12px] text-white/40">{monthGames.length} game{monthGames.length !== 1 ? "s" : ""}</span>
+                </div>
+                {isExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-white/30" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-white/30" />
+                )}
+              </button>
+
+              {/* Game cards */}
+              {isExpanded && (
+                <div className="space-y-[1px] bg-white/[0.02] p-2 sm:p-3">
+                  {monthGames.map((game) => (
+                    <MyGameCard
+                      key={game.game_number}
+                      game={game}
+                      memberName={authedMember.name}
+                      onInfoClick={setDetailGame}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Tip */}
+        <div className="mt-6 rounded-xl border border-white/[0.04] bg-white/[0.02] px-5 py-4">
+          <p className="text-[12px] text-white/35 leading-relaxed">
+            <strong className="text-white/50">Tip:</strong> Tap the <span className="text-[var(--gold)]">calendar icon</span> on any game to add it individually, or use the gold button above to export all games at once. The .ics file works with Apple Calendar, Google Calendar, and Outlook.
+          </p>
+        </div>
+
+        {/* Back */}
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => navigate("/")}
+            className="text-[12px] text-white/30 underline underline-offset-2 transition hover:text-white/50"
+          >
+            ← Back to Home
+          </button>
+        </div>
+      </div>
+
+      {/* Game detail modal */}
+      {detailGame && (
+        <GameDetailModal
+          game={detailGame}
+          allocation={allocations.find((a) => a.game_number === detailGame.game_number)}
+          members={members}
+          onClose={() => setDetailGame(null)}
+        />
+      )}
+
+      <AppToast toast={toast} onClose={() => setToast("")} />
+    </div>
+  );
+}
