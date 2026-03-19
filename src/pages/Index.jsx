@@ -66,19 +66,19 @@ export default function Index() {
         <PullToRefresh onRefresh={handleRefresh}>
         <div className="mx-auto max-w-[780px] px-6 pb-24">
           {/* Section label */}
-          <div className="mb-5 flex items-center gap-3">
+          <div className="mb-4 flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.06]" />
             <span
-              className="text-[11px] font-semibold tracking-[3px] text-white/25"
+              className="text-[10px] font-semibold tracking-[2.5px] text-white/20"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}
             >
-              Select Your Name
+              Tap Your Name to Start
             </span>
             <div className="h-px flex-1 bg-white/[0.06]" />
           </div>
 
           {/* Member Grid */}
-          <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+          <div className="mb-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
             {members.map((member) => {
               const submission = submissionMap[member.name];
               return (

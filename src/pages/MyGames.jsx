@@ -252,15 +252,8 @@ export default function MyGames() {
           </p>
         </div>
 
-        {/* Back */}
-        <div className="mt-8 text-center">
-          <button
-            onClick={() => navigate("/")}
-            className="text-[12px] text-white/30 underline underline-offset-2 transition hover:text-white/50"
-          >
-            ← Back to Home
-          </button>
-        </div>
+        {/* Spacer for bottom nav */}
+        <div className="h-20" />
       </div>
 
       {/* Game detail modal */}
