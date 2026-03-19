@@ -1,4 +1,5 @@
 import React from "react";
+import { Info } from "lucide-react";
 import { RESERVED_GAME_NUMBER } from "./constants";
 import { getTeamColor } from "./utils";
 import { getTeamLogoUrl } from "./teamLogos";
@@ -25,7 +26,7 @@ function GameTags({ game }) {
   );
 }
 
-export default function GameCard({ game, rankNumber, onSelect }) {
+export default function GameCard({ game, rankNumber, onSelect, onInfoClick }) {
   const isReserved = game.game_number === RESERVED_GAME_NUMBER;
   const isRanked = Boolean(rankNumber);
   const teamColor = getTeamColor(game.opponent);
@@ -98,6 +99,16 @@ export default function GameCard({ game, rankNumber, onSelect }) {
         </div>
         {!isReserved ? <GameTags game={game} /> : null}
       </div>
+
+      {/* Info button */}
+      {onInfoClick && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onInfoClick(game); }}
+          className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-white/30 transition hover:bg-white/[0.12] hover:text-white/60"
+        >
+          <Info className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 }
