@@ -1,221 +1,437 @@
 import React, { useState, useEffect } from "react";
 
-const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
-  id: i,
-  left: `${8 + Math.random() * 84}%`,
-  size: 1.5 + Math.random() * 2,
-  duration: 8 + Math.random() * 12,
-  delay: Math.random() * 8,
-  color: i % 3 === 0 ? "rgba(192,17,31,0.25)" : i % 3 === 1 ? "rgba(191,160,72,0.3)" : "rgba(255,255,255,0.15)",
-}));
+function StatCell({ label, value, isGold }) {
+  return (
+    <div className="hero-stat-cell" style={{
+      flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+      gap: 2, padding: "14px 12px",
+    }}>
+      <span className="hero-stat-value" style={{
+        fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700,
+        lineHeight: 1, color: isGold ? "#BFA048" : "white",
+      }}>
+        {value}
+      </span>
+      <span style={{
+        fontFamily: "'Oswald', sans-serif", fontSize: 9, fontWeight: 500,
+        letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.3)",
+      }}>
+        {label}
+      </span>
+    </div>
+  );
+}
 
-function ProgressRing({ submitted, total, allIn }) {
+function SubmissionCell({ submitted, total, allIn }) {
   const radius = 14;
   const circumference = 2 * Math.PI * radius;
   const progress = (submitted / total) * circumference;
 
   return (
-    <svg width="36" height="36" className="hero-progress-ring flex-shrink-0">
-      <circle cx="18" cy="18" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
-      <circle
-        cx="18" cy="18" r={radius} fill="none"
-        stroke={allIn ? "#22C55E" : "#BFA048"}
-        strokeWidth="2.5" strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={circumference - progress}
-      />
-    </svg>
+    <div className="hero-stat-cell" style={{
+      flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+      gap: 10, padding: "14px 12px",
+    }}>
+      <svg width="36" height="36" className="hero-progress-ring-v2" style={{ flexShrink: 0 }}>
+        <circle cx="18" cy="18" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
+        <circle cx="18" cy="18" r={radius} fill="none"
+          stroke={allIn ? "#22C55E" : "#BFA048"}
+          strokeWidth="2.5" strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference - progress}
+        />
+      </svg>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1 }}>
+        <span className="hero-stat-value" style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 700,
+          lineHeight: 1, color: allIn ? "#22C55E" : "white",
+        }}>
+          {submitted}/{total}
+        </span>
+        <span style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 9, fontWeight: 500,
+          letterSpacing: 1.5, textTransform: "uppercase",
+          color: allIn ? "rgba(34,197,94,0.6)" : "rgba(255,255,255,0.3)",
+        }}>
+          {allIn ? "All In!" : "Submitted"}
+        </span>
+      </div>
+    </div>
   );
 }
 
 export default function HeroSection({ totalGames, submittedCount, totalMembers }) {
-  const [animatedGames, setAnimatedGames] = useState(0);
-  const [animatedSubmitted, setAnimatedSubmitted] = useState(0);
-  const [daysUntil, setDaysUntil] = useState(null);
+  const [daysUntil, setDaysUntil] = useState(0);
+  const [count, setCount] = useState({ games: 0, submitted: 0 });
 
   useEffect(() => {
+    const opening = new Date("2026-04-03T15:05:00-05:00");
+    const now = new Date();
+    const diff = Math.max(0, Math.ceil((opening - now) / (1000 * 60 * 60 * 24)));
+    setDaysUntil(diff);
+
     const duration = 1200;
     const steps = 30;
     const interval = duration / steps;
     let step = 0;
     const timer = setInterval(() => {
       step++;
-      const ease = 1 - Math.pow(1 - step / steps, 3);
-      setAnimatedGames(Math.round(totalGames * ease));
-      setAnimatedSubmitted(Math.round(submittedCount * ease));
+      const progress = step / steps;
+      const ease = 1 - Math.pow(1 - progress, 3);
+      setCount({
+        games: Math.round(totalGames * ease),
+        submitted: Math.round(submittedCount * ease),
+      });
       if (step >= steps) clearInterval(timer);
     }, interval);
     return () => clearInterval(timer);
   }, [totalGames, submittedCount]);
 
-  useEffect(() => {
-    const opening = new Date("2026-04-03T15:05:00-05:00");
-    const now = new Date();
-    setDaysUntil(Math.max(0, Math.ceil((opening - now) / (1000 * 60 * 60 * 24))));
-  }, []);
-
   const allIn = submittedCount === totalMembers;
 
   return (
-    <div className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0A1628 0%, #0D1B30 50%, #0A1628 100%)" }}>
-      {/* ── Background layers ── */}
+    <div className="hero-wrap-v2">
+      <style>{`
+        .hero-wrap-v2 {
+          position: relative;
+          overflow: hidden;
+          background: linear-gradient(180deg, #0A1628 0%, #0D1B30 50%, #0A1628 100%);
+          padding: 0 0 16px;
+        }
 
-      {/* Glow orbs */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="hero-orb absolute left-1/2 -translate-x-1/2 -top-[150px] h-[400px] w-[400px] rounded-full" style={{ background: "rgba(0,50,120,0.15)", filter: "blur(80px)", animationDuration: "7s", animationDelay: "1s" }} />
-        <div className="absolute -right-[80px] -top-[100px] h-[300px] w-[300px] rounded-full" style={{ background: "rgba(192,17,31,0.12)", filter: "blur(80px)", animation: "heroOrbPulse 6s ease-in-out infinite" }} />
-        <div className="absolute -left-[60px] -bottom-[50px] h-[250px] w-[250px] rounded-full" style={{ background: "rgba(191,160,72,0.08)", filter: "blur(80px)", animation: "heroOrbPulse 8s ease-in-out 2s infinite" }} />
+        .hero-wrap-v2 .hero-field-lines-v2 {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -45%) rotate(45deg);
+          width: 400px;
+          height: 400px;
+          opacity: 0;
+          animation: heroFieldFadeInV2 2s ease-out 0.3s forwards;
+        }
+
+        .hero-wrap-v2 .diamond-v2 {
+          position: absolute;
+          inset: 0;
+          border: 1px solid rgba(191,160,72,0.06);
+          border-radius: 4px;
+        }
+        .hero-wrap-v2 .diamond-v2:nth-child(2) {
+          inset: 40px;
+          border-color: rgba(191,160,72,0.04);
+        }
+        .hero-wrap-v2 .diamond-v2:nth-child(3) {
+          inset: 80px;
+          border-color: rgba(191,160,72,0.03);
+        }
+
+        .hero-wrap-v2 .base-v2 {
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          background: rgba(191,160,72,0.12);
+          transform: rotate(-45deg);
+        }
+        .hero-wrap-v2 .base-v2.home { bottom: -4px; left: 50%; margin-left: -4px; }
+        .hero-wrap-v2 .base-v2.first { right: -4px; top: 50%; margin-top: -4px; }
+        .hero-wrap-v2 .base-v2.second { top: -4px; left: 50%; margin-left: -4px; }
+        .hero-wrap-v2 .base-v2.third { left: -4px; top: 50%; margin-top: -4px; }
+
+        .hero-wrap-v2 .hero-arc-v2 {
+          position: absolute;
+          top: 30%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 600px;
+          height: 300px;
+          border: 1px solid rgba(192,17,31,0.08);
+          border-radius: 50%;
+          border-bottom: none;
+          opacity: 0;
+          animation: heroArcFadeInV2 1.5s ease-out 0.5s forwards;
+        }
+        .hero-wrap-v2 .hero-arc-v2::after {
+          content: '';
+          position: absolute;
+          top: -1px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 80px;
+          height: 3px;
+          background: linear-gradient(90deg, transparent, rgba(192,17,31,0.3), transparent);
+          border-radius: 2px;
+        }
+
+        .hero-wrap-v2 .orb-v2 {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          pointer-events: none;
+        }
+        .hero-wrap-v2 .orb-red-v2 {
+          width: 300px; height: 300px;
+          background: rgba(192,17,31,0.12);
+          top: -100px; right: -80px;
+          animation: heroOrbPulseSimpleV2 6s ease-in-out infinite;
+        }
+        .hero-wrap-v2 .orb-gold-v2 {
+          width: 250px; height: 250px;
+          background: rgba(191,160,72,0.08);
+          bottom: -50px; left: -60px;
+          animation: heroOrbPulseSimpleV2 8s ease-in-out 2s infinite;
+        }
+        .hero-wrap-v2 .orb-navy-v2 {
+          width: 400px; height: 400px;
+          background: rgba(0,50,120,0.15);
+          top: -150px; left: 50%;
+          transform: translateX(-50%);
+          animation: heroOrbPulseV2 7s ease-in-out 1s infinite;
+        }
+
+        .hero-wrap-v2 .particles-v2 {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+        }
+        .hero-wrap-v2 .particle-v2 {
+          position: absolute;
+          border-radius: 50%;
+          animation: heroFloatV2 linear infinite;
+        }
+
+        .hero-wrap-v2 .hero-pill-v2 {
+          opacity: 0;
+          transform: translateY(12px);
+          animation: heroSlideUpV2 0.6s ease-out 0.2s forwards;
+        }
+        .hero-wrap-v2 .hero-headline-v2 {
+          opacity: 0;
+          transform: translateY(16px);
+          animation: heroSlideUpV2 0.7s ease-out 0.4s forwards;
+        }
+        .hero-wrap-v2 .hero-sub-v2 {
+          opacity: 0;
+          transform: translateY(12px);
+          animation: heroSlideUpV2 0.6s ease-out 0.65s forwards;
+        }
+        .hero-wrap-v2 .hero-stats-v2 {
+          opacity: 0;
+          transform: translateY(16px) scale(0.97);
+          animation: heroStatsInV2 0.7s ease-out 0.85s forwards;
+        }
+        .hero-wrap-v2 .hero-countdown-v2 {
+          opacity: 0;
+          transform: translateY(10px);
+          animation: heroSlideUpV2 0.5s ease-out 1.1s forwards;
+        }
+
+        .hero-wrap-v2 .shimmer-text-v2 {
+          background: linear-gradient(105deg, rgba(255,255,255,0) 40%, rgba(191,160,72,0.15) 50%, rgba(255,255,255,0) 60%);
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          animation: heroShimmerV2 4s ease-in-out 2s infinite;
+        }
+
+        .hero-stat-cell {
+          position: relative;
+          transition: all 0.2s;
+        }
+        .hero-stat-cell:hover {
+          background: rgba(255,255,255,0.03);
+        }
+        .hero-stat-cell .hero-stat-value {
+          transition: transform 0.2s;
+        }
+        .hero-stat-cell:hover .hero-stat-value {
+          transform: scale(1.08);
+        }
+
+        .hero-progress-ring-v2 {
+          transform: rotate(-90deg);
+        }
+        .hero-progress-ring-v2 circle {
+          transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-wrap-v2 .red-underline-v2 {
+          position: absolute;
+          bottom: -3px;
+          left: 0;
+          height: 3px;
+          width: 0;
+          background: linear-gradient(90deg, transparent, #C0111F, transparent);
+          border-radius: 2px;
+          animation: heroUnderlineGrowV2 0.8s ease-out 0.9s forwards;
+        }
+
+        @keyframes heroSlideUpV2 {
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heroStatsInV2 {
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes heroFieldFadeInV2 {
+          to { opacity: 1; }
+        }
+        @keyframes heroArcFadeInV2 {
+          to { opacity: 1; }
+        }
+        @keyframes heroOrbPulseV2 {
+          0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+          50% { opacity: 0.6; transform: translateX(-50%) scale(1.15); }
+        }
+        @keyframes heroOrbPulseSimpleV2 {
+          0%, 100% { opacity: 1; scale: 1; }
+          50% { opacity: 0.5; scale: 1.2; }
+        }
+        @keyframes heroShimmerV2 {
+          0%, 100% { background-position: 200% center; }
+          50% { background-position: -200% center; }
+        }
+        @keyframes heroFloatV2 {
+          from { transform: translateY(100vh) translateX(0); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          to { transform: translateY(-20px) translateX(30px); opacity: 0; }
+        }
+        @keyframes heroUnderlineGrowV2 {
+          to { width: 100%; }
+        }
+
+        @media (max-width: 640px) {
+          .hero-wrap-v2 .hero-field-lines-v2 { display: none; }
+          .hero-wrap-v2 .hero-arc-v2 { display: none; }
+        }
+      `}</style>
+
+      {/* Background layers */}
+      <div className="orb-v2 orb-navy-v2" />
+      <div className="orb-v2 orb-red-v2" />
+      <div className="orb-v2 orb-gold-v2" />
+
+      {/* Diamond field lines */}
+      <div className="hero-field-lines-v2">
+        <div className="diamond-v2" />
+        <div className="diamond-v2" />
+        <div className="diamond-v2" />
+        <div className="base-v2 home" />
+        <div className="base-v2 first" />
+        <div className="base-v2 second" />
+        <div className="base-v2 third" />
       </div>
 
-      {/* Baseball diamond field lines — hidden on mobile */}
-      <div className="pointer-events-none absolute inset-0 hidden sm:flex items-center justify-center hero-field-lines" aria-hidden="true">
-        <div className="relative" style={{ width: "400px", height: "400px", transform: "rotate(45deg)" }}>
-          {[0, 40, 80].map((inset, i) => (
-            <div
-              key={i}
-              className="absolute"
-              style={{
-                inset: `${inset}px`,
-                border: `1px solid rgba(191,160,72,${0.06 - i * 0.01})`,
-                borderRadius: "4px",
-              }}
-            />
-          ))}
-          <div className="absolute h-2 w-2 rounded-sm bg-[rgba(191,160,72,0.12)]" style={{ bottom: "-4px", left: "50%", marginLeft: "-4px", transform: "rotate(-45deg)" }} />
-          <div className="absolute h-2 w-2 rounded-sm bg-[rgba(191,160,72,0.12)]" style={{ right: "-4px", top: "50%", marginTop: "-4px", transform: "rotate(-45deg)" }} />
-          <div className="absolute h-2 w-2 rounded-sm bg-[rgba(191,160,72,0.12)]" style={{ top: "-4px", left: "50%", marginLeft: "-4px", transform: "rotate(-45deg)" }} />
-          <div className="absolute h-2 w-2 rounded-sm bg-[rgba(191,160,72,0.12)]" style={{ left: "-4px", top: "50%", marginTop: "-4px", transform: "rotate(-45deg)" }} />
-        </div>
-      </div>
+      {/* Arc */}
+      <div className="hero-arc-v2" />
 
       {/* Floating particles */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        {PARTICLES.map((p) => (
+      <div className="particles-v2">
+        {[...Array(12)].map((_, i) => (
           <div
-            key={p.id}
-            className="hero-particle absolute rounded-full"
+            key={i}
+            className="particle-v2"
             style={{
-              left: p.left,
-              bottom: "-10px",
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              background: p.color,
-              animationDuration: `${p.duration}s`,
-              animationDelay: `${p.delay}s`,
+              left: `${8 + Math.random() * 84}%`,
+              animationDuration: `${8 + Math.random() * 12}s`,
+              animationDelay: `${Math.random() * 8}s`,
+              width: `${1.5 + Math.random() * 2}px`,
+              height: `${1.5 + Math.random() * 2}px`,
+              background: i % 3 === 0 ? "rgba(192,17,31,0.25)" : i % 3 === 1 ? "rgba(191,160,72,0.3)" : "rgba(255,255,255,0.15)",
             }}
           />
         ))}
       </div>
 
-      {/* Arc line */}
-      <div className="pointer-events-none absolute left-1/2 top-[20%] -translate-x-1/2 hero-arc" aria-hidden="true">
-        <div
-          style={{
-            width: "600px",
-            height: "300px",
-            borderTop: "1px solid rgba(192,17,31,0.08)",
-            borderLeft: "1px solid rgba(192,17,31,0.04)",
-            borderRight: "1px solid rgba(192,17,31,0.04)",
-            borderRadius: "300px 300px 0 0",
-            position: "relative",
-          }}
-        >
-          <div className="absolute top-[-1px] left-1/2 -translate-x-1/2 h-[3px] w-[80px] rounded-full" style={{ background: "linear-gradient(90deg, transparent, rgba(192,17,31,0.3), transparent)" }} />
-        </div>
-      </div>
+      {/* Content */}
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 780, margin: "0 auto", padding: "48px 24px 16px", textAlign: "center" }}>
 
-      {/* ── Content ── */}
-      <div className="relative z-[1] mx-auto max-w-[780px] px-6 pb-4 pt-8 sm:pt-10 text-center">
         {/* Season pill */}
-        <div
-          className="mb-5 inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-5 py-2"
-          style={{ opacity: 0, animation: "heroSlideUp 0.6s ease-out 0.2s forwards", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
-        >
-          <span className="text-base">⚾</span>
-          <span className="oswald text-[11px] font-semibold tracking-[3px] text-white/60">
-            2026 SEASON · GLOBE LIFE FIELD
-          </span>
+        <div className="hero-pill-v2" style={{ marginBottom: 24 }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 10,
+            borderRadius: 40, border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(255,255,255,0.03)", padding: "8px 20px",
+            backdropFilter: "blur(8px)",
+          }}>
+            <span style={{ fontSize: 16 }}>⚾</span>
+            <span style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 600,
+              letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.6)",
+            }}>
+              2026 Season · Globe Life Field
+            </span>
+          </div>
         </div>
+
+        {/* Headline */}
+        <h2 className="hero-headline-v2 shimmer-text-v2" style={{
+          fontFamily: "'Oswald', sans-serif", fontWeight: 700,
+          fontSize: "clamp(36px, 7vw, 62px)", textTransform: "uppercase",
+          letterSpacing: 2, lineHeight: 0.9, marginBottom: 16,
+        }}>
+          It's{" "}
+          <span style={{ position: "relative", display: "inline-block", color: "#C0111F" }}>
+            Baseball Time
+            <span className="red-underline-v2" />
+          </span>
+          <br />
+          in <span style={{ color: "#BFA048" }}>Texas</span>
+        </h2>
 
         {/* Subtitle */}
-        <p
-          className="mx-auto mb-6 max-w-[480px] text-[14px] sm:text-[15px] leading-[1.6] text-white/40"
-          style={{ opacity: 0, animation: "heroSlideUp 0.6s ease-out 0.4s forwards" }}
-        >
+        <p className="hero-sub-v2" style={{
+          fontFamily: "'Source Sans 3', sans-serif", fontSize: 15,
+          color: "rgba(255,255,255,0.4)", lineHeight: 1.6, maxWidth: 460,
+          margin: "0 auto 32px",
+        }}>
           Tap your name, rank the games you want most, and submit your Dream Sheet.
         </p>
 
         {/* Stats row */}
-        <div
-          className="mx-auto mb-4 flex max-w-[520px] items-stretch justify-center overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02]"
-          style={{ opacity: 0, animation: "heroStatsIn 0.7s ease-out 0.6s forwards", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
-        >
-          {/* Games */}
-          <div className="flex flex-1 flex-col items-center justify-center gap-0.5 px-3 sm:px-4 py-3 transition-all duration-200 hover:bg-white/[0.03] group cursor-default">
-            <span className="oswald text-[20px] sm:text-[22px] font-bold leading-none text-white transition-transform duration-200 group-hover:scale-110">
-              {animatedGames}
-            </span>
-            <span className="oswald text-[8px] sm:text-[9px] font-medium tracking-[1.5px] text-white/30">
-              HOME GAMES
-            </span>
-          </div>
-
-          <div className="w-px bg-white/[0.06] my-2.5" />
-
-          {/* Submitted */}
-          <div className="flex flex-1 items-center justify-center gap-2 px-3 sm:px-4 py-3 transition-all duration-200 hover:bg-white/[0.03] group cursor-default">
-            <ProgressRing submitted={animatedSubmitted} total={totalMembers} allIn={allIn} />
-            <div className="flex flex-col items-start gap-0.5">
-              <span className={`oswald text-[20px] sm:text-[22px] font-bold leading-none transition-transform duration-200 group-hover:scale-110 ${allIn ? "text-green-400" : "text-white"}`}>
-                {animatedSubmitted}/{totalMembers}
-              </span>
-              <span className={`oswald text-[8px] sm:text-[9px] font-medium tracking-[1.5px] ${allIn ? "text-green-400/60" : "text-white/30"}`}>
-                {allIn ? "ALL IN!" : "SUBMITTED"}
-              </span>
-            </div>
-          </div>
-
-          <div className="w-px bg-white/[0.06] my-2.5" />
-
-          {/* Deadline */}
-          <div className="flex flex-1 flex-col items-center justify-center gap-0.5 px-3 sm:px-4 py-3 transition-all duration-200 hover:bg-white/[0.03] group cursor-default">
-            <span className="oswald text-[20px] sm:text-[22px] font-bold leading-none transition-transform duration-200 group-hover:scale-110" style={{ color: "var(--gold)" }}>
-              Mar 18
-            </span>
-            <span className="oswald text-[8px] sm:text-[9px] font-medium tracking-[1.5px] text-white/30">
-              DEADLINE
-            </span>
-          </div>
+        <div className="hero-stats-v2" style={{
+          display: "flex", maxWidth: 520, margin: "0 auto 20px",
+          borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(255,255,255,0.02)", overflow: "hidden",
+          backdropFilter: "blur(8px)",
+        }}>
+          <StatCell label="Home Games" value={count.games} />
+          <div style={{ width: 1, background: "rgba(255,255,255,0.06)", margin: "10px 0" }} />
+          <SubmissionCell submitted={count.submitted} total={totalMembers} allIn={allIn} />
+          <div style={{ width: 1, background: "rgba(255,255,255,0.06)", margin: "10px 0" }} />
+          <StatCell label="Deadline" value="Mar 18" isGold />
         </div>
 
-        {/* Opening Day countdown */}
-        {daysUntil !== null && (
-          <div
-            className="mx-auto mb-2 inline-flex items-center gap-2 rounded-[10px] px-4 py-1.5"
-            style={{
-              opacity: 0,
-              animation: "heroSlideUp 0.5s ease-out 0.85s forwards",
-              background: daysUntil > 0 ? "rgba(192,17,31,0.08)" : "rgba(34,197,94,0.08)",
-              border: `1px solid ${daysUntil > 0 ? "rgba(192,17,31,0.12)" : "rgba(34,197,94,0.15)"}`,
-            }}
-          >
-            {daysUntil > 0 ? (
-              <span className="text-[12px] text-white/50">
-                🏟️{" "}
-                <strong className="oswald font-bold" style={{ color: "var(--red)" }}>{daysUntil}</strong>
-                <span className="oswald text-[12px] font-medium tracking-[1px] uppercase text-white/50">
-                  {" "}DAYS UNTIL OPENING DAY
-                </span>
-                <span className="text-white/25 mx-1.5">·</span>
-                <span className="oswald text-[12px] font-medium tracking-[1px] uppercase text-white/50">
-                  APR 3 VS REDS
-                </span>
-              </span>
-            ) : (
-              <span className="oswald text-[12px] font-semibold tracking-[1px] uppercase text-green-400">
-                ⚾ The 2026 Season is Live!
-              </span>
-            )}
+        {/* Countdown */}
+        {daysUntil > 0 ? (
+          <div className="hero-countdown-v2" style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "6px 16px", borderRadius: 10,
+            background: "rgba(192,17,31,0.08)", border: "1px solid rgba(192,17,31,0.12)",
+          }}>
+            <span style={{ fontSize: 14 }}>🏟️</span>
+            <span style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 500,
+              letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.5)",
+            }}>
+              <span style={{ color: "#C0111F", fontWeight: 700 }}>{daysUntil}</span> days until Opening Day
+              <span style={{ color: "rgba(255,255,255,0.25)", margin: "0 6px" }}>·</span>
+              Apr 3 vs Reds
+            </span>
+          </div>
+        ) : (
+          <div className="hero-countdown-v2" style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "6px 16px", borderRadius: 10,
+            background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)",
+          }}>
+            <span style={{ fontSize: 14 }}>⚾</span>
+            <span style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 600,
+              letterSpacing: 1, textTransform: "uppercase", color: "#22C55E",
+            }}>
+              The 2026 Season is Live!
+            </span>
           </div>
         )}
       </div>
