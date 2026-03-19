@@ -203,7 +203,6 @@ export default function MyGames() {
           >
             <CalendarDays className="h-4 w-4" />
             <span className="hidden sm:inline">Export to</span> Calendar
-            <Download className="h-3 w-3" />
           </button>
           <button
             onClick={() => setShowPrintCalendar(true)}
@@ -212,6 +211,22 @@ export default function MyGames() {
           >
             <Printer className="h-4 w-4" />
             Print Calendar
+          </button>
+          <button
+            onClick={() => downloadMemberScheduleCsv(authedMember.name, games, allocations)}
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3.5 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+          >
+            <Download className="h-4 w-4" />
+            CSV
+          </button>
+          <button
+            onClick={() => downloadMemberExcel(authedMember.name, authedMember.accent_color, games, allocations)}
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3.5 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+          >
+            <Download className="h-4 w-4" />
+            Excel
           </button>
         </div>
 
