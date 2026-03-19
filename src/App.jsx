@@ -43,7 +43,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <>
-    <Routes>
+      <Routes>
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
           <MainPage />
@@ -66,8 +66,8 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
-    </Routes>
-    <BottomNav />
+      </Routes>
+      <BottomNav />
     </>
   );
 };
