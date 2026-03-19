@@ -1,8 +1,9 @@
 import React from "react";
 import { format, parseISO } from "date-fns";
 import { getTeamColor } from "./utils";
+import { getTeamLogoUrl } from "./teamLogos";
 
-export default function ScheduleMonthCard({ month, games }) {
+export default function ScheduleMonthCard({ month, games, onGameClick }) {
   return (
     <div className="mb-4 overflow-hidden rounded-[14px] border border-white/[0.06] bg-[var(--slate)]">
       {/* Month header */}
@@ -24,22 +25,25 @@ export default function ScheduleMonthCard({ month, games }) {
         const dateLabel = format(d, "EEE, MMM d");
         const isWeekend = ["Fri", "Sat", "Sun"].includes(game.day_of_week);
         const teamColor = getTeamColor(game.opponent);
+        const logoUrl = getTeamLogoUrl(game.opponent);
 
         return (
           <div
             key={game.game_number}
-            className="grid items-center border-t border-white/[0.04] px-5 py-[10px] text-[14px]"
+            className="grid items-center border-t border-white/[0.04] px-5 py-[10px] text-[14px] cursor-pointer transition hover:bg-white/[0.04]"
             style={{
               gridTemplateColumns: "130px 1fr 90px 60px",
               background: i % 2 === 1 ? "rgba(255,255,255,0.015)" : undefined,
             }}
+            onClick={() => onGameClick && onGameClick(game)}
           >
             <div className="text-white/80">{dateLabel}</div>
             <div className="flex items-center gap-2">
-              <span
-                className="h-2 w-2 flex-shrink-0 rounded-full"
-                style={{ background: teamColor }}
-              />
+              {logoUrl ? (
+                <img src={logoUrl} alt={game.opponent} className="h-5 w-5 flex-shrink-0 object-contain" />
+              ) : (
+                <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ background: teamColor }} />
+              )}
               <span className="text-white/90">vs {game.opponent}</span>
             </div>
             <div className="text-right text-white/60">{game.start_time}</div>
