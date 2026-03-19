@@ -13,6 +13,7 @@ import useSeedData from "@/components/rangers/useSeedData";
 import { DAY_OPTIONS, MONTH_OPTIONS } from "@/components/rangers/constants";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
+import GameDetailModal from "@/components/rangers/GameDetailModal";
 
 function reorder(items, startIndex, endIndex) {
   const next = [...items];
@@ -34,10 +35,12 @@ export default function Rank() {
   const [rankedGameIds, setRankedGameIds] = React.useState([]);
   const [toast, setToast] = React.useState("");
   const [loaded, setLoaded] = React.useState(false);
+  const [detailGame, setDetailGame] = React.useState(null);
 
   const membersQuery = useQuery({ queryKey: ["members"], queryFn: () => base44.entities.Member.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const submissionQuery = useQuery({ queryKey: ["submission", memberName], queryFn: () => base44.entities.Submission.filter({ member_name: memberName }), enabled: seedQuery.isSuccess && Boolean(memberName), initialData: [] });
+  const allocationsQuery = useQuery({ queryKey: ["allocations"], queryFn: () => base44.entities.Allocation.list(), enabled: seedQuery.isSuccess, initialData: [] });
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -191,6 +194,7 @@ export default function Rank() {
                 game={game}
                 rankNumber={rankedGameIds.indexOf(game.game_number) + 1 || null}
                 onSelect={addGame}
+                onInfoClick={setDetailGame}
               />
             ))}
           </div>
@@ -216,6 +220,14 @@ export default function Rank() {
         </div>
       </div>
       <AppToast toast={toast} onClose={() => setToast("")} />
+      {detailGame && (
+        <GameDetailModal
+          game={detailGame}
+          allocation={allocationsQuery.data.find((a) => a.game_number === detailGame.game_number)}
+          members={sortMembers(membersQuery.data)}
+          onClose={() => setDetailGame(null)}
+        />
+      )}
     </div>
   );
 }
