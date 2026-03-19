@@ -108,7 +108,7 @@ export default function Admin() {
             <div className="flex flex-wrap gap-[10px]">
               <button
                 onClick={() => allocationMutation.mutate()}
-                disabled={submittedMembers.length === 0 || allocationMutation.isPending}
+                disabled={members.length === 0 || allocationMutation.isPending}
                 className="btn-red-gradient rounded-[10px] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] disabled:opacity-40"
                 style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
               >
@@ -119,7 +119,7 @@ export default function Admin() {
                   <button onClick={() => downloadMasterScheduleCsv(games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
                     📥 Master CSV
                   </button>
-                  {submittedMembers.map((m) => (
+                  {members.map((m) => (
                     <button key={m.name} onClick={() => downloadMemberScheduleCsv(m.name, games, allocations)} className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
                       📥 {m.name}'s CSV
                     </button>
@@ -134,7 +134,7 @@ export default function Admin() {
             <div className="mb-5">
               <AllocationEditor
                 games={games}
-                members={submittedMembers}
+                members={members}
                 allocations={allocations}
                 targets={targets}
                 onToast={setToast}
@@ -145,7 +145,7 @@ export default function Admin() {
           {/* Preference Analytics */}
           {allocations.length > 0 && submissions.length > 0 && (
             <AnalyticsDashboard
-              members={submittedMembers}
+              members={members}
               games={games}
               submissions={submissions}
               allocations={allocations}
@@ -155,7 +155,7 @@ export default function Admin() {
           {/* Schedule Distribution */}
           {allocations.length > 0 && (
             <ScheduleDistribution
-              members={submittedMembers}
+              members={members}
               games={games}
               allocations={allocations}
             />
