@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { format, parseISO } from "date-fns";
+import { GAME_SEED_DATA, TEAM_COLORS, TEAM_ABBREVIATIONS } from "./constants";
 
 function StatCell({ label, value, isGold }) {
   return (
@@ -60,7 +62,19 @@ function SubmissionCell({ submitted, total, allIn }) {
   );
 }
 
-export default function HeroSection({ totalGames, submittedCount, totalMembers }) {
+function getNextGame(allocations) {
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+  const upcoming = GAME_SEED_DATA
+    .filter(g => g.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  if (!upcoming.length) return null;
+  const game = upcoming[0];
+  const alloc = allocations?.find(a => a.game_number === game.game_number);
+  return { ...game, owner: alloc?.assigned_to || null };
+}
+
+export default function HeroSection({ totalGames, submittedCount, totalMembers, allocations }) {
   const [daysUntil, setDaysUntil] = useState(0);
   const [count, setCount] = useState({ games: 0, submitted: 0 });
 
@@ -88,6 +102,8 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
   }, [totalGames, submittedCount]);
 
   const allIn = submittedCount === totalMembers;
+  const nextGame = getNextGame(allocations);
+  const seasonLive = daysUntil <= 0;
 
   return (
     <div className="hero-wrap-v2">
@@ -205,25 +221,25 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
           transform: translateY(12px);
           animation: heroSlideUpV2 0.6s ease-out 0.2s forwards;
         }
+        .hero-wrap-v2 .hero-event-card-v2 {
+          opacity: 0;
+          transform: translateY(12px);
+          animation: heroSlideUpV2 0.6s ease-out 0.35s forwards;
+        }
         .hero-wrap-v2 .hero-headline-v2 {
           opacity: 0;
           transform: translateY(16px);
-          animation: heroSlideUpV2 0.7s ease-out 0.4s forwards;
+          animation: heroSlideUpV2 0.7s ease-out 0.55s forwards;
         }
         .hero-wrap-v2 .hero-sub-v2 {
           opacity: 0;
           transform: translateY(12px);
-          animation: heroSlideUpV2 0.6s ease-out 0.65s forwards;
+          animation: heroSlideUpV2 0.6s ease-out 0.7s forwards;
         }
         .hero-wrap-v2 .hero-stats-v2 {
           opacity: 0;
           transform: translateY(16px) scale(0.97);
           animation: heroStatsInV2 0.7s ease-out 0.85s forwards;
-        }
-        .hero-wrap-v2 .hero-countdown-v2 {
-          opacity: 0;
-          transform: translateY(10px);
-          animation: heroSlideUpV2 0.5s ease-out 1.1s forwards;
         }
 
         .hero-wrap-v2 .shimmer-text-v2 {
@@ -263,7 +279,7 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
           width: 0;
           background: linear-gradient(90deg, transparent, #C0111F, transparent);
           border-radius: 2px;
-          animation: heroUnderlineGrowV2 0.8s ease-out 0.9s forwards;
+          animation: heroUnderlineGrowV2 0.8s ease-out 1.0s forwards;
         }
 
         @keyframes heroSlideUpV2 {
@@ -311,7 +327,6 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
       <div className="orb-v2 orb-red-v2" />
       <div className="orb-v2 orb-gold-v2" />
 
-      {/* Diamond field lines */}
       <div className="hero-field-lines-v2">
         <div className="diamond-v2" />
         <div className="diamond-v2" />
@@ -322,10 +337,8 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
         <div className="base-v2 third" />
       </div>
 
-      {/* Arc */}
       <div className="hero-arc-v2" />
 
-      {/* Floating particles */}
       <div className="particles-v2">
         {[...Array(12)].map((_, i) => (
           <div
@@ -344,10 +357,10 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
       </div>
 
       {/* Content */}
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 780, margin: "0 auto", padding: "48px 24px 16px", textAlign: "center" }}>
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 780, margin: "0 auto", padding: "44px 24px 16px", textAlign: "center" }}>
 
         {/* Season pill */}
-        <div className="hero-pill-v2" style={{ marginBottom: 24 }}>
+        <div className="hero-pill-v2" style={{ marginBottom: 16 }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 10,
             borderRadius: 40, border: "1px solid rgba(255,255,255,0.08)",
@@ -363,6 +376,15 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
             </span>
           </div>
         </div>
+
+        {/* Countdown / Next Game — prominent card below pill */}
+        {daysUntil > 0 ? (
+          <CountdownCard daysUntil={daysUntil} />
+        ) : nextGame ? (
+          <NextGameCard game={nextGame} />
+        ) : (
+          <SeasonLiveCard />
+        )}
 
         {/* Headline */}
         <h2 className="hero-headline-v2 shimmer-text-v2" style={{
@@ -383,14 +405,14 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
         <p className="hero-sub-v2" style={{
           fontFamily: "'Source Sans 3', sans-serif", fontSize: 15,
           color: "rgba(255,255,255,0.4)", lineHeight: 1.6, maxWidth: 460,
-          margin: "0 auto 32px",
+          margin: "0 auto 28px",
         }}>
           Tap your name, rank the games you want most, and submit your Dream Sheet.
         </p>
 
         {/* Stats row */}
         <div className="hero-stats-v2" style={{
-          display: "flex", maxWidth: 520, margin: "0 auto 20px",
+          display: "flex", maxWidth: 520, margin: "0 auto 0",
           borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)",
           background: "rgba(255,255,255,0.02)", overflow: "hidden",
           backdropFilter: "blur(8px)",
@@ -401,39 +423,122 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers }
           <div style={{ width: 1, background: "rgba(255,255,255,0.06)", margin: "10px 0" }} />
           <StatCell label="Deadline" value="Mar 18" isGold />
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Countdown */}
-        {daysUntil > 0 ? (
-          <div className="hero-countdown-v2" style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "6px 16px", borderRadius: 10,
-            background: "rgba(192,17,31,0.08)", border: "1px solid rgba(192,17,31,0.12)",
+function CountdownCard({ daysUntil }) {
+  return (
+    <div className="hero-event-card-v2" style={{ marginBottom: 24 }}>
+      <div style={{
+        display: "inline-flex", alignItems: "center", gap: 14,
+        padding: "12px 24px", borderRadius: 14,
+        background: "rgba(192,17,31,0.06)", border: "1px solid rgba(192,17,31,0.12)",
+        backdropFilter: "blur(8px)",
+      }}>
+        <span style={{ fontSize: 22 }}>🏟️</span>
+        <div style={{ textAlign: "left" }}>
+          <div style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 700,
+            lineHeight: 1, color: "white", letterSpacing: 1,
           }}>
-            <span style={{ fontSize: 14 }}>🏟️</span>
-            <span style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 500,
-              letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.5)",
-            }}>
-              <span style={{ color: "#C0111F", fontWeight: 700 }}>{daysUntil}</span> days until Opening Day
-              <span style={{ color: "rgba(255,255,255,0.25)", margin: "0 6px" }}>·</span>
-              Apr 3 vs Reds
+            <span style={{ color: "#C0111F", fontSize: 26 }}>{daysUntil}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.5)", marginLeft: 6, textTransform: "uppercase", letterSpacing: 1.5 }}>
+              days until Opening Day
             </span>
           </div>
-        ) : (
-          <div className="hero-countdown-v2" style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "6px 16px", borderRadius: 10,
-            background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)",
+          <div style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 500,
+            letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 3,
           }}>
-            <span style={{ fontSize: 14 }}>⚾</span>
+            Apr 3 · Reds · 3:05 PM CT
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NextGameCard({ game }) {
+  const teamColor = TEAM_COLORS[game.opponent] || "#475569";
+  const teamAbbr = TEAM_ABBREVIATIONS[game.opponent] || game.opponent.slice(0, 3).toUpperCase();
+  const gameDate = format(parseISO(game.date), "EEE, MMM d");
+  const now = new Date();
+  const gameDay = new Date(game.date + "T00:00:00");
+  const daysAway = Math.max(0, Math.ceil((gameDay - now) / (1000 * 60 * 60 * 24)));
+  const isToday = daysAway === 0;
+  const isTomorrow = daysAway === 1;
+  const dayLabel = isToday ? "TODAY" : isTomorrow ? "TOMORROW" : `In ${daysAway} days`;
+
+  return (
+    <div className="hero-event-card-v2" style={{ marginBottom: 24 }}>
+      <div style={{
+        display: "inline-flex", alignItems: "center", gap: 16,
+        padding: "14px 24px", borderRadius: 14,
+        background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+        backdropFilter: "blur(8px)",
+      }}>
+        {/* Team color dot */}
+        <div style={{
+          width: 44, height: 44, borderRadius: 10, background: teamColor,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 700, color: "white",
+          letterSpacing: 1, flexShrink: 0,
+        }}>
+          {teamAbbr}
+        </div>
+        <div style={{ textAlign: "left" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 600,
-              letterSpacing: 1, textTransform: "uppercase", color: "#22C55E",
+              fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 600,
+              letterSpacing: 1.5, textTransform: "uppercase",
+              color: isToday ? "#22C55E" : "#BFA048",
             }}>
-              The 2026 Season is Live!
+              Next Game · {dayLabel}
             </span>
           </div>
-        )}
+          <div style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 17, fontWeight: 700,
+            lineHeight: 1.1, color: "white", letterSpacing: 0.5, marginTop: 2,
+          }}>
+            vs {game.opponent}
+          </div>
+          <div style={{
+            fontFamily: "'Source Sans 3', sans-serif", fontSize: 12,
+            color: "rgba(255,255,255,0.4)", marginTop: 3,
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            <span>{gameDate} · {game.start_time}</span>
+            {game.owner && (
+              <>
+                <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+                <span style={{ color: "#BFA048" }}>🎟 {game.owner}</span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SeasonLiveCard() {
+  return (
+    <div className="hero-event-card-v2" style={{ marginBottom: 24 }}>
+      <div style={{
+        display: "inline-flex", alignItems: "center", gap: 10,
+        padding: "12px 24px", borderRadius: 14,
+        background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.12)",
+        backdropFilter: "blur(8px)",
+      }}>
+        <span style={{ fontSize: 22 }}>⚾</span>
+        <span style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 700,
+          letterSpacing: 1.5, textTransform: "uppercase", color: "#22C55E",
+        }}>
+          The 2026 Season is Live!
+        </span>
       </div>
     </div>
   );
