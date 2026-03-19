@@ -386,26 +386,11 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers, 
           <SeasonLiveCard />
         )}
 
-        {/* Headline */}
-        <h2 className="hero-headline-v2 shimmer-text-v2" style={{
-          fontFamily: "'Oswald', sans-serif", fontWeight: 700,
-          fontSize: "clamp(36px, 7vw, 62px)", textTransform: "uppercase",
-          letterSpacing: 2, lineHeight: 0.9, marginBottom: 16,
-        }}>
-          It's{" "}
-          <span style={{ position: "relative", display: "inline-block", color: "#C0111F" }}>
-            Baseball Time
-            <span className="red-underline-v2" />
-          </span>
-          <br />
-          in <span style={{ color: "#BFA048" }}>Texas</span>
-        </h2>
-
         {/* Subtitle */}
         <p className="hero-sub-v2" style={{
           fontFamily: "'Source Sans 3', sans-serif", fontSize: 15,
           color: "rgba(255,255,255,0.4)", lineHeight: 1.6, maxWidth: 460,
-          margin: "0 auto 28px",
+          margin: "0 auto 24px",
         }}>
           Tap your name, rank the games you want most, and submit your Dream Sheet.
         </p>
