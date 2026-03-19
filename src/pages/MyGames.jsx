@@ -248,7 +248,7 @@ export default function MyGames() {
               {/* Month header — clickable */}
               <button
                 onClick={() => toggleMonth(month)}
-                className="flex w-full items-center justify-between bg-white/[0.03] px-5 py-3 text-left transition hover:bg-white/[0.05]"
+                className="flex w-full items-center justify-between bg-white/[0.03] px-5 min-h-[48px] py-3 text-left transition hover:bg-white/[0.05]"
               >
                 <div className="flex items-center gap-2">
                   <h3
