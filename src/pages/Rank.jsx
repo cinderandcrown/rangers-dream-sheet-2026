@@ -112,7 +112,7 @@ export default function Rank() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center text-center">
         <div className="mb-4 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>Member not found</div>
-        <button onClick={() => navigate(createPageUrl("Index"))} className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70">Back</button>
+        <button onClick={() => navigate(createPageUrl("Index"))} className="rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back</button>
       </div>
     );
   }
