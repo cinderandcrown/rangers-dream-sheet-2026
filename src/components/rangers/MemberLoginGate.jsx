@@ -183,7 +183,7 @@ export default function MemberLoginGate({ members, onLogin }) {
           )}
           <button
             type="submit"
-            className="btn-red-gradient mt-5 w-full rounded-xl py-4 text-[14px] font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)]"
+            className="btn-red-gradient mt-5 w-full rounded-xl min-h-[48px] py-4 text-[14px] font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)]"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1.5px" }}
           >
             View My Schedule →
