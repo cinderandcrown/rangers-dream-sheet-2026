@@ -146,6 +146,76 @@ button.btn-red-gradient {
   .ri-actions { opacity: 1; }
 }
 
+/* Hero section animations */
+@keyframes heroSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroStatsIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes heroOrbPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.15); }
+}
+@keyframes heroShimmer {
+  0%, 100% { background-position: 200% center; }
+  50% { background-position: -200% center; }
+}
+@keyframes heroUnderlineGrow {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes heroFloat {
+  from { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  to { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+}
+@keyframes heroFieldFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes heroArcFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hero-orb {
+  will-change: transform, opacity;
+  animation: heroOrbPulse 7s ease-in-out infinite;
+}
+.hero-particle {
+  will-change: transform, opacity;
+  animation: heroFloat 12s linear infinite;
+}
+.hero-field-lines {
+  opacity: 0;
+  animation: heroFieldFadeIn 2s ease-out 0.5s forwards;
+}
+.hero-arc {
+  opacity: 0;
+  animation: heroArcFadeIn 1s ease-out 0.5s forwards;
+}
+.hero-shimmer-text {
+  background: linear-gradient(105deg, transparent 40%, rgba(191,160,72,0.12) 50%, transparent 60%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: heroShimmer 4s ease-in-out infinite;
+}
+.hero-underline-grow {
+  width: 0;
+  animation: heroUnderlineGrow 0.8s ease-out 0.9s forwards;
+}
+.hero-progress-ring {
+  transform: rotate(-90deg);
+}
+.hero-progress-ring circle {
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Landing page entrance animations */
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(20px); }
