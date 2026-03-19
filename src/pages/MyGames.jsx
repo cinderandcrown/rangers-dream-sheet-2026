@@ -206,7 +206,7 @@ export default function MyGames() {
           </button>
           <button
             onClick={() => setShowPrintCalendar(true)}
-            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3.5 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
             <Printer className="h-4 w-4" />
@@ -214,7 +214,7 @@ export default function MyGames() {
           </button>
           <button
             onClick={() => downloadMemberScheduleCsv(authedMember.name, games, allocations)}
-            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3.5 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
             <Download className="h-4 w-4" />
@@ -222,7 +222,7 @@ export default function MyGames() {
           </button>
           <button
             onClick={() => downloadMemberExcel(authedMember.name, authedMember.accent_color, games, allocations)}
-            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3.5 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
             <Download className="h-4 w-4" />
