@@ -68,6 +68,7 @@ export default function Index() {
             totalGames={GAME_SEED_DATA.length}
             submittedCount={submittedCount}
             totalMembers={members.length}
+            allocations={allocationsQuery.data}
           />
         </div>
 
