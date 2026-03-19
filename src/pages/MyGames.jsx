@@ -35,6 +35,39 @@ export default function MyGames() {
 
   const isLoading = seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || allocationsQuery.isLoading || submissionsQuery.isLoading;
 
+  const memberGames = authedMember ? getMemberScheduleData(authedMember.name, games, allocations) : [];
+
+  // Group by month
+  const monthGroups = {};
+  memberGames.forEach((g) => {
+    if (!monthGroups[g.month]) monthGroups[g.month] = [];
+    monthGroups[g.month].push(g);
+  });
+  const monthOrder = ["April", "May", "June", "July", "August", "September"];
+  const orderedMonths = monthOrder.filter((m) => monthGroups[m]);
+
+  // Stats
+  const weekendCount = memberGames.filter((g) => ["Fri", "Sat", "Sun"].includes(g.day_of_week)).length;
+  const dayGameCount = memberGames.filter((g) => g.is_day_game).length;
+
+  // Initialize all months expanded
+  React.useEffect(() => {
+    if (orderedMonths.length > 0 && expandedMonth === null) {
+      setExpandedMonth("all");
+    }
+  }, [orderedMonths.length]);
+
+  const toggleMonth = (month) => {
+    setExpandedMonth((prev) => (prev === month ? "all" : month));
+  };
+
+  const handleExportAll = () => {
+    if (!authedMember) return;
+    const ics = generateAllGamesIcs(memberGames, authedMember.name);
+    downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
+    setToast("Calendar file downloaded — open it to add all games!");
+  };
+
   if (isLoading) return <LoadingScreen />;
 
   // Login gate
@@ -43,7 +76,6 @@ export default function MyGames() {
       <MemberLoginGate
         members={members}
         onLogin={(member, email) => {
-          // Verify email matches submission
           const sub = submissions.find((s) => s.member_name === member.name);
           if (sub && sub.member_email && sub.member_email.toLowerCase() !== email.toLowerCase()) {
             setToast("Email doesn't match — use the email from your submission");
@@ -73,38 +105,6 @@ export default function MyGames() {
       </div>
     );
   }
-
-  const memberGames = getMemberScheduleData(authedMember.name, games, allocations);
-
-  // Group by month
-  const monthGroups = {};
-  memberGames.forEach((g) => {
-    if (!monthGroups[g.month]) monthGroups[g.month] = [];
-    monthGroups[g.month].push(g);
-  });
-  const monthOrder = ["April", "May", "June", "July", "August", "September"];
-  const orderedMonths = monthOrder.filter((m) => monthGroups[m]);
-
-  // Stats
-  const weekendCount = memberGames.filter((g) => ["Fri", "Sat", "Sun"].includes(g.day_of_week)).length;
-  const dayGameCount = memberGames.filter((g) => g.is_day_game).length;
-
-  const handleExportAll = () => {
-    const ics = generateAllGamesIcs(memberGames, authedMember.name);
-    downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
-    setToast("Calendar file downloaded — open it to add all games!");
-  };
-
-  // Initialize all months expanded
-  React.useEffect(() => {
-    if (orderedMonths.length > 0 && expandedMonth === null) {
-      setExpandedMonth("all");
-    }
-  }, [orderedMonths.length]);
-
-  const toggleMonth = (month) => {
-    setExpandedMonth((prev) => (prev === month ? "all" : month));
-  };
 
   return (
     <div>
