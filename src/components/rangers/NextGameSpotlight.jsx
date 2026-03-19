@@ -32,11 +32,16 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
   else if (daysUntil === 1) countdownLabel = "🔥 Tomorrow!";
   else if (daysUntil <= 7) countdownLabel = `In ${daysUntil} days`;
 
-  const handleAddToCalendar = (e) => {
+  const [calLoading, setCalLoading] = React.useState(false);
+
+  const handleAddToCalendar = async (e) => {
     e.stopPropagation();
+    if (calLoading) return;
+    setCalLoading(true);
     const ics = generateSingleGameIcs(nextGame, memberName);
-    downloadIcsFile(ics, `rangers-next-game.ics`);
-    if (onToast) onToast("Added to calendar!");
+    await downloadIcsFile(ics, `rangers-next-game.ics`);
+    setCalLoading(false);
+    if (onToast) onToast("Calendar opened — tap Add to save!");
   };
 
   return (
@@ -98,10 +103,15 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
         <div className="mt-4 flex gap-2">
           <button
             onClick={handleAddToCalendar}
-            className="flex items-center gap-1.5 rounded-lg border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] px-3 py-2 text-[11px] font-semibold text-[var(--gold)] transition hover:bg-[rgba(191,160,72,0.12)]"
+            disabled={calLoading}
+            className="flex items-center gap-1.5 rounded-lg border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] px-3 min-h-[44px] py-2 text-[11px] font-semibold text-[var(--gold)] transition hover:bg-[rgba(191,160,72,0.12)] disabled:opacity-50"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
           >
-            <CalendarPlus className="h-3.5 w-3.5" /> Add to Calendar
+            {calLoading ? (
+              <div className="h-3.5 w-3.5 border-2 border-[var(--gold)]/30 border-t-[var(--gold)] rounded-full animate-spin" />
+            ) : (
+              <CalendarPlus className="h-3.5 w-3.5" />
+            )} Add to Calendar
           </button>
           <a
             href="https://maps.google.com/?q=Globe+Life+Field+Arlington+TX"

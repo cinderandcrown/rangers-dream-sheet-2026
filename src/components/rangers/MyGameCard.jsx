@@ -14,10 +14,15 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
   const dateLabel = format(d, "EEE, MMM d");
   const isWeekend = ["Fri", "Sat", "Sun"].includes(game.day_of_week);
 
-  const handleAddToCalendar = (e) => {
+  const [calLoading, setCalLoading] = React.useState(false);
+
+  const handleAddToCalendar = async (e) => {
     e.stopPropagation();
+    if (calLoading) return;
+    setCalLoading(true);
     const ics = generateSingleGameIcs(game, memberName);
-    downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}-${format(d, "MMM-d")}.ics`);
+    await downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}-${format(d, "MMM-d")}.ics`);
+    setCalLoading(false);
   };
 
   const tags = [];
@@ -100,10 +105,15 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
       {/* Add to Calendar button */}
       <button
         onClick={handleAddToCalendar}
-        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95"
+        disabled={calLoading}
+        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95 disabled:opacity-40"
         title="Add to Calendar"
       >
-        <CalendarPlus className="h-[18px] w-[18px]" />
+        {calLoading ? (
+          <div className="h-4 w-4 border-2 border-white/20 border-t-[var(--gold)] rounded-full animate-spin" />
+        ) : (
+          <CalendarPlus className="h-[18px] w-[18px]" />
+        )}
       </button>
     </div>
   );
