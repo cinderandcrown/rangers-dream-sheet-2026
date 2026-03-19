@@ -106,29 +106,22 @@ export function generateAllGamesIcs(games, memberName) {
   ].join("\r\n");
 }
 
-export function downloadIcsFile(icsContent, filename) {
+/**
+ * Upload ICS content as a real file, then open the URL.
+ * A real hosted URL is required for iOS & Android to trigger their
+ * native "Add to Calendar" prompt — blob/data URIs don't work.
+ * Returns the file URL (or null on error).
+ */
+export async function downloadIcsFile(icsContent, filename) {
+  const { base44 } = await import("@/api/base44Client");
+
   const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+  const file = new File([blob], filename, { type: "text/calendar" });
 
-  // Safari (especially iOS) blocks blob download links — use data URI + window.open fallback
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-  if (isIOS || isSafari) {
-    // Convert to data URI which Safari can handle
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const dataUrl = reader.result;
-      window.open(dataUrl, "_blank");
-    };
-    reader.readAsDataURL(blob);
-  } else {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
+  // Open the hosted URL — this lets iOS/Android recognise the .ics and
+  // offer to add events to the native calendar app.
+  window.open(file_url, "_blank");
+  return file_url;
 }
