@@ -93,14 +93,14 @@ export default function EmailLoginModal({ memberName, onConfirm, onCancel }) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 rounded-xl border border-white/[0.08] bg-transparent py-3 text-[13px] font-medium text-white/50 transition-all hover:border-white/15 hover:text-white/80"
+                className="flex-1 rounded-xl border border-white/[0.08] bg-transparent min-h-[48px] py-3 text-[13px] font-medium text-white/50 transition-all hover:border-white/15 hover:text-white/80"
                 style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 rounded-xl py-3 text-[13px] font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(192,17,31,0.35)]"
+                className="flex-1 rounded-xl min-h-[48px] py-3 text-[13px] font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(192,17,31,0.35)]"
                 style={{
                   fontFamily: "'Oswald', sans-serif",
                   textTransform: "uppercase",
