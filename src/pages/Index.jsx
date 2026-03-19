@@ -56,17 +56,19 @@ export default function Index() {
       <BrandHeader />
       <div className="relative z-[1]">
         {/* Hero */}
-        <HeroSection
-          totalGames={GAME_SEED_DATA.length}
-          submittedCount={submittedCount}
-          totalMembers={members.length}
-        />
+        <div className="animate-fade-slide-up">
+          <HeroSection
+            totalGames={GAME_SEED_DATA.length}
+            submittedCount={submittedCount}
+            totalMembers={members.length}
+          />
+        </div>
 
         {/* Members section */}
         <PullToRefresh onRefresh={handleRefresh}>
         <div className="mx-auto max-w-[780px] px-6 pb-24">
           {/* Section label */}
-          <div className="mb-4 flex items-center gap-3">
+          <div className="mb-4 flex items-center gap-3 animate-fade-in" style={{ animationDelay: "200ms" }}>
             <div className="h-px flex-1 bg-white/[0.06]" />
             <span
               className="text-[10px] font-semibold tracking-[2.5px] text-white/20"
@@ -79,29 +81,30 @@ export default function Index() {
 
           {/* Member Grid */}
           <div className="mb-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
-            {members.map((member) => {
+            {members.map((member, i) => {
               const submission = submissionMap[member.name];
               return (
-                <MemberCard
-                  key={member.id}
-                  member={member}
-                  hasSubmitted={Boolean(submission)}
-                  rankedCount={submission?.ranked_game_ids?.length || 0}
-                  isLocked={submission?.is_locked}
-                  onClick={() => {
-                    if (submission?.is_locked) {
-                      setToast(`${member.name}'s submission is locked by admin`);
-                      return;
-                    }
-                    setLoginMember(member);
-                  }}
-                />
+                <div key={member.id} className="animate-card-entrance" style={{ animationDelay: `${300 + i * 80}ms` }}>
+                  <MemberCard
+                    member={member}
+                    hasSubmitted={Boolean(submission)}
+                    rankedCount={submission?.ranked_game_ids?.length || 0}
+                    isLocked={submission?.is_locked}
+                    onClick={() => {
+                      if (submission?.is_locked) {
+                        setToast(`${member.name}'s submission is locked by admin`);
+                        return;
+                      }
+                      setLoginMember(member);
+                    }}
+                  />
+                </div>
               );
             })}
           </div>
 
           {/* Quick actions row */}
-          <div className="mb-10 mx-auto max-w-[540px] grid grid-cols-2 gap-3">
+          <div className="mb-10 mx-auto max-w-[540px] grid grid-cols-2 gap-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
             <button
               onClick={() => navigate("/MyGames")}
               className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-4 py-3.5 text-[12px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.3)] hover:bg-[rgba(191,160,72,0.1)] hover:-translate-y-0.5"
@@ -146,6 +149,13 @@ export default function Index() {
             >
               Admin Dashboard →
             </button>
+          </div>
+
+          {/* Footer branding */}
+          <div className="text-center py-6 mt-8 border-t border-white/[0.04]">
+            <p className="text-[11px] text-white/[0.12] tracking-wide">
+              Built by <a href="https://cinderandcrown.com" target="_blank" rel="noopener noreferrer" className="text-white/20 hover:text-white/40 underline underline-offset-2 transition">Cinder & Crown Creative</a>
+            </p>
           </div>
         </div>
         </PullToRefresh>

@@ -146,6 +146,57 @@ button.btn-red-gradient {
   .ri-actions { opacity: 1; }
 }
 
+/* Landing page entrance animations */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes cardEntrance {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.6s ease-out both;
+}
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.animate-card-entrance {
+  opacity: 0;
+  animation: cardEntrance 0.4s ease-out forwards;
+}
+
+/* Game card click flash */
+@keyframes goldFlash {
+  0% { box-shadow: 0 0 0 2px var(--gold); }
+  100% { box-shadow: 0 0 0 2px transparent; }
+}
+@keyframes checkPop {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.game-card-flash {
+  animation: goldFlash 0.3s ease-out;
+}
+.game-card-check {
+  animation: checkPop 0.35s ease-out forwards;
+}
+
+/* Ranked list top-pick pulse */
+@keyframes topPickPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+.top-pick-pulse {
+  animation: topPickPulse 2s ease-in-out infinite;
+}
+
 /* Print styles for Schedule page */
 @media print {
   html, body, #root {

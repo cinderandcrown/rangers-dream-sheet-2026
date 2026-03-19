@@ -60,6 +60,7 @@ export default function Rank() {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(["submission", memberName], ctx.prev);
+      setToast("Save failed — please try again");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["submissions"] });
@@ -79,6 +80,18 @@ export default function Rank() {
       setLoaded(true);
     }
   }, [submissionQuery.data, loaded]);
+
+  // Warn before leaving with unsaved changes
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (rankedGameIds.length > 0 && !saveMutation.isSuccess) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [rankedGameIds.length, saveMutation.isSuccess]);
 
   const member = sortMembers(membersQuery.data).find((item) => item.name === memberName);
   const games = sortGames(gamesQuery.data);
@@ -160,27 +173,42 @@ export default function Rank() {
             </h3>
             <p className="mt-0.5 text-sm text-white/50">Click games to rank them (1 = most wanted). Drag to reorder.</p>
           </div>
-          <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--slate)] px-3 sm:px-5 py-[10px]">
-            <div className="h-2 w-24 sm:w-40 overflow-hidden rounded-lg bg-white/[0.08]">
-              <div
-                className="h-full rounded-lg transition-all duration-400"
-                style={{
-                  width: `${Math.min(progress, 100)}%`,
-                  background: progress >= 100 ? "#22C55E" : `linear-gradient(90deg, ${member.accent_color}, var(--gold))`
-                }}
-              />
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--slate)] px-3 sm:px-5 py-[10px]">
+              <div className="h-2 w-24 sm:w-40 overflow-hidden rounded-lg bg-white/[0.08]">
+                <div
+                  className="h-full rounded-lg transition-all duration-400"
+                  style={{
+                    width: `${Math.min(progress, 100)}%`,
+                    background: progress >= 100 ? "#22C55E" : `linear-gradient(90deg, ${member.accent_color}, var(--gold))`
+                  }}
+                />
+              </div>
+              <span className="whitespace-nowrap text-[15px] font-medium" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                {rankedGameIds.length} / {member.rank_max}
+              </span>
             </div>
-            <span className="whitespace-nowrap text-[15px] font-medium" style={{ fontFamily: "'Oswald', sans-serif" }}>
-              {rankedGameIds.length} / {member.rank_max}
-            </span>
+            <p className="text-[12px] text-white/35" style={{ fontFamily: "'Oswald', sans-serif" }}>
+              {rankedGameIds.length === 0
+                ? "Tap any game below to start"
+                : progress >= 100
+                  ? "All set! Review your list and submit 👇"
+                  : progress >= 75
+                    ? `Almost done — just ${member.rank_max - rankedGameIds.length} left!`
+                    : progress >= 50
+                      ? "Over halfway! Keep it rolling"
+                      : progress >= 25
+                        ? `Nice — you're ${progress}% there`
+                        : `Great start! ${member.rank_max - rankedGameIds.length} more to go`}
+            </p>
           </div>
         </div>
 
         {/* Filters */}
         <div className="mb-5 flex flex-wrap gap-1.5 sm:gap-2 overflow-x-auto thin-scrollbar">
-          <FilterPills options={["All", ...["April", "May", "June", "July", "August", "September"]]} activeValue={monthFilter} onChange={setMonthFilter} />
+          <FilterPills options={["All", ...["April", "May", "June", "July", "August", "September"]]} activeValue={monthFilter} onChange={setMonthFilter} games={games} countKey="month" />
           <span className="w-2" />
-          <FilterPills options={DAY_OPTIONS} activeValue={dayFilter} onChange={setDayFilter} />
+          <FilterPills options={DAY_OPTIONS} activeValue={dayFilter} onChange={setDayFilter} games={games} countKey="day_of_week" />
         </div>
 
         {/* Two column layout */}

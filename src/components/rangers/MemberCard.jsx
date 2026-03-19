@@ -6,8 +6,20 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, isLocked
   return (
     <div
       onClick={onClick}
-      className="member-card group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.06] transition-all duration-300 hover:-translate-y-1.5 hover:border-white/[0.12] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] active:scale-[0.96] active:border-white/[0.15]"
-      style={{ backgroundColor: "rgba(30,41,59,0.7)", backdropFilter: "blur(12px)", minHeight: "44px" }}
+      className="member-card group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.06] transition-all duration-300 hover:-translate-y-1.5 hover:border-white/[0.12] active:scale-[0.96] active:border-white/[0.15]"
+      style={{
+        backgroundColor: "rgba(30,41,59,0.7)",
+        backdropFilter: "blur(12px)",
+        minHeight: "44px",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `0 0 20px 0 ${member.accent_color}15, 0 12px 40px rgba(0,0,0,0.4)`;
+        e.currentTarget.style.borderColor = `${member.accent_color}30`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = "";
+        e.currentTarget.style.borderColor = "";
+      }}
     >
       {/* Top accent bar — always visible, uses member color */}
       <div

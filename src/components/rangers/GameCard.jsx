@@ -33,11 +33,21 @@ export default function GameCard({ game, rankNumber, onSelect, onInfoClick }) {
   const logoUrl = getTeamLogoUrl(game.opponent);
   const abbr = game.opponent.slice(0, 3).toUpperCase();
   const dateLabel = format(parseISO(game.date), "MMM d");
+  const [justAdded, setJustAdded] = React.useState(false);
+
+  const handleClick = () => {
+    if (isRanked || isReserved) return;
+    setJustAdded(true);
+    onSelect(game);
+    setTimeout(() => setJustAdded(false), 400);
+  };
 
   return (
     <div
-      onClick={() => !isRanked && !isReserved && onSelect(game)}
+      onClick={handleClick}
       className={`game-card relative flex items-start gap-2 sm:gap-[14px] rounded-xl border p-[10px_12px] sm:p-[14px_16px] transition-all duration-200 ${
+        justAdded ? "game-card-flash" : ""
+      } ${
         isReserved
           ? "cursor-default border-dashed border-[rgba(191,160,72,0.4)] bg-[rgba(191,160,72,0.05)] opacity-55"
           : isRanked
@@ -45,6 +55,12 @@ export default function GameCard({ game, rankNumber, onSelect, onInfoClick }) {
             : "cursor-pointer border-white/[0.06] bg-[var(--slate)] hover:-translate-y-0.5 hover:border-white/[0.15] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
       }`}
     >
+      {/* Check animation on add */}
+      {justAdded && (
+        <div className="game-card-check pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          <span className="text-[28px] text-[var(--gold)]">✓</span>
+        </div>
+      )}
       {/* Rank badge */}
       {isRanked ? (
         <div

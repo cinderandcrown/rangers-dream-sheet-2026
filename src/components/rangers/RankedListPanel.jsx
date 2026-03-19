@@ -28,7 +28,11 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
       </h4>
 
       {/* List */}
-      <div className="thin-scrollbar mx-[-8px] flex-1 overflow-y-auto px-2">
+      <div className="thin-scrollbar relative mx-[-8px] flex-1 overflow-y-auto px-2">
+        {/* Scroll fade indicator */}
+        {games.length > 6 && (
+          <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[var(--slate)] to-transparent z-10" />
+        )}
         {games.length === 0 ? (
           <div className="px-4 py-10 text-center text-sm leading-relaxed text-white/25">
             <p>Click on games to start<br />building your dream list</p>
@@ -50,13 +54,21 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
                             snapshot.isDragging ? "border-[var(--gold)] bg-[rgba(191,160,72,0.1)] opacity-50" : "hover:border-white/[0.08] hover:bg-white/[0.06]"
                           }`}
                         >
-                          {/* Rank number */}
+                          {/* Rank number with special badges for top 3 */}
                           <span
-                            className="w-6 flex-shrink-0 text-center text-sm font-semibold text-[var(--gold)]"
-                            style={{ fontFamily: "'Oswald', sans-serif" }}
+                            className={`w-6 flex-shrink-0 text-center text-sm font-semibold ${index === 0 ? "top-pick-pulse" : ""}`}
+                            style={{
+                              fontFamily: "'Oswald', sans-serif",
+                              color: index === 0 ? "#BFA048" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "var(--gold)",
+                            }}
                           >
                             {index + 1}
                           </span>
+                          {index === 0 && (
+                            <span className="absolute -top-1 left-5 text-[8px] font-bold text-green-400" style={{ fontFamily: "'Oswald', sans-serif", letterSpacing: "0.5px" }}>
+                              TOP
+                            </span>
+                          )}
 
                           {/* Team logo */}
                           <div

@@ -1,10 +1,21 @@
 import React from "react";
 
-export default function FilterPills({ options, activeValue, onChange }) {
+export default function FilterPills({ options, activeValue, onChange, games, countKey }) {
+  const counts = React.useMemo(() => {
+    if (!games || !countKey) return {};
+    const map = { All: games.length };
+    games.forEach((g) => {
+      const key = countKey === "month" ? g.month : g.day_of_week;
+      map[key] = (map[key] || 0) + 1;
+    });
+    return map;
+  }, [games, countKey]);
+
   return (
     <>
       {options.map((option) => {
         const active = activeValue === option;
+        const count = counts[option];
         return (
           <button
             key={option}
@@ -17,6 +28,9 @@ export default function FilterPills({ options, activeValue, onChange }) {
             style={{ fontFamily: "'Source Sans 3', sans-serif" }}
           >
             {option}
+            {count != null && (
+              <span className={active ? "text-white/60 ml-1" : "text-white/30 ml-1"}>({count})</span>
+            )}
           </button>
         );
       })}
