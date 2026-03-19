@@ -5,7 +5,9 @@ import { getTeamLogoUrl } from "./teamLogos";
 import { getTeamColor, getTeamAbbreviation } from "./utils";
 import { generateSingleGameIcs, downloadIcsFile } from "./icsGenerator";
 
-export default function MyGameCard({ game, memberName, onInfoClick, index }) {
+export default function MyGameCard({ game, memberName, onInfoClick, index, allocation }) {
+  const isPersonal = allocation?.ticket_type === "personal";
+  const sectionNote = allocation?.section_note || "";
   const logoUrl = getTeamLogoUrl(game.opponent);
   const teamColor = getTeamColor(game.opponent);
   const d = parseISO(game.date);
@@ -25,7 +27,11 @@ export default function MyGameCard({ game, memberName, onInfoClick, index }) {
 
   return (
     <div
-      className="group relative flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 sm:p-4 transition-all hover:border-white/[0.15] hover:bg-white/[0.04] cursor-pointer"
+      className="group relative flex items-center gap-3 rounded-xl border p-3 sm:p-4 transition-all hover:border-white/[0.15] hover:bg-white/[0.04] cursor-pointer"
+      style={{
+        borderColor: isPersonal ? "rgba(191,160,72,0.2)" : "rgba(255,255,255,0.06)",
+        background: isPersonal ? "rgba(191,160,72,0.04)" : "rgba(255,255,255,0.02)",
+      }}
       onClick={() => onInfoClick && onInfoClick(game)}
     >
       {/* Game number badge */}
@@ -75,8 +81,13 @@ export default function MyGameCard({ game, memberName, onInfoClick, index }) {
           <span className="text-white/20">·</span>
           <span>{game.start_time_et} ET</span>
         </div>
-        {tags.length > 0 && (
+        {(tags.length > 0 || isPersonal) && (
           <div className="mt-1.5 flex flex-wrap gap-1">
+            {isPersonal && (
+              <span className="inline-block rounded-md px-[6px] py-[2px] text-[9px] font-semibold" style={{ color: "#BFA048", backgroundColor: "rgba(191,160,72,0.2)", fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Personal {sectionNote ? `· ${sectionNote}` : ""}
+              </span>
+            )}
             {tags.map((t) => (
               <span key={t.label} className="inline-block rounded-md px-[6px] py-[2px] text-[9px] font-semibold" style={{ color: t.color, backgroundColor: t.bg }}>
                 {t.label}
