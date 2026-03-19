@@ -1,12 +1,25 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CalendarDays, Home } from "lucide-react";
+import { CalendarDays, ChevronLeft, Home } from "lucide-react";
+
+// Sub-routes that should show a back button automatically
+const SUB_ROUTES = {
+  "/MyGames": "/",
+  "/Rank": "/",
+  "/Admin": "/",
+  "/Schedule": "/",
+};
 
 export default function BrandHeader({ showBack, onBack }) {
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === "/";
   const isMyGames = location.pathname === "/MyGames";
+
+  // Centralized back logic: explicit onBack wins, otherwise auto-detect
+  const autoBackTarget = SUB_ROUTES[location.pathname];
+  const shouldShowBack = showBack || (!isHome && Boolean(autoBackTarget));
+  const handleBack = onBack || (() => navigate(autoBackTarget || "/"));
 
   return (
     <header
@@ -20,17 +33,17 @@ export default function BrandHeader({ showBack, onBack }) {
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 py-2.5 sm:py-3">
         <div className="flex items-center gap-3">
-          {/* Back button or logo */}
-          {showBack ? (
+          {/* Back button or logo — min 44px tap target */}
+          {shouldShowBack ? (
             <button
-              onClick={onBack}
-              className="flex h-[36px] w-[36px] sm:h-[40px] sm:w-[40px] items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white/50 transition hover:bg-white/[0.08] hover:text-white"
+              onClick={handleBack}
+              className="flex h-[44px] w-[44px] items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white/50 transition hover:bg-white/[0.08] hover:text-white active:scale-95"
             >
-              <span className="text-[16px]">←</span>
+              <ChevronLeft className="h-5 w-5" />
             </button>
           ) : (
             <div
-              className="flex h-[36px] w-[36px] sm:h-[42px] sm:w-[42px] flex-shrink-0 items-center justify-center rounded-full border-[2px] border-[var(--gold)] bg-[var(--red)] text-[14px] sm:text-[18px] font-bold text-white shadow-[0_4px_12px_rgba(192,17,31,0.3)]"
+              className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-full border-[2px] border-[var(--gold)] bg-[var(--red)] text-[16px] font-bold text-white shadow-[0_4px_12px_rgba(192,17,31,0.3)]"
               style={{ fontFamily: "'Oswald', sans-serif" }}
             >
               TX
@@ -52,24 +65,24 @@ export default function BrandHeader({ showBack, onBack }) {
           </div>
         </div>
 
-        {/* Desktop nav links */}
+        {/* Desktop nav links — 44px touch targets */}
         <div className="hidden sm:flex items-center gap-1">
           {!isHome && (
             <button
               onClick={() => navigate("/")}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-semibold text-white/40 transition hover:bg-white/[0.06] hover:text-white/70"
+              className="flex items-center gap-1.5 rounded-lg px-3 min-h-[44px] text-[11px] font-semibold text-white/40 transition hover:bg-white/[0.06] hover:text-white/70"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
             >
-              <Home className="h-3.5 w-3.5" /> Home
+              <Home className="h-4 w-4" /> Home
             </button>
           )}
           {!isMyGames && (
             <button
               onClick={() => navigate("/MyGames")}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-semibold text-[var(--gold)]/60 transition hover:bg-[rgba(191,160,72,0.08)] hover:text-[var(--gold)]"
+              className="flex items-center gap-1.5 rounded-lg px-3 min-h-[44px] text-[11px] font-semibold text-[var(--gold)]/60 transition hover:bg-[rgba(191,160,72,0.08)] hover:text-[var(--gold)]"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
             >
-              <CalendarDays className="h-3.5 w-3.5" /> My Games
+              <CalendarDays className="h-4 w-4" /> My Games
             </button>
           )}
         </div>
