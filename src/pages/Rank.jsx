@@ -125,7 +125,7 @@ export default function Rank() {
           <div className="text-4xl mb-4">🚫</div>
           <div className="mb-2 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>Email Doesn't Match</div>
           <p className="text-sm text-white/50 max-w-md">{member.name}'s Dream Sheet was submitted with a different email address. Please use the same email you originally signed in with.</p>
-          <button onClick={() => navigate(createPageUrl("Index"))} className="mt-6 rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70 hover:text-white transition">Back to Home</button>
+          <button onClick={() => navigate(createPageUrl("Index"))} className="mt-6 rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back to Home</button>
         </div>
       </div>
     );
@@ -140,7 +140,7 @@ export default function Rank() {
           <div className="text-4xl mb-4">🔒</div>
           <div className="mb-2 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>Submission Locked</div>
           <p className="text-sm text-white/50 max-w-md">{member.name}'s submission has been locked by the admin. Contact Clark if you need to make changes.</p>
-          <button onClick={() => navigate(createPageUrl("Index"))} className="mt-6 rounded-lg border border-white/15 px-4 py-2 text-sm text-white/70 hover:text-white transition">Back to Home</button>
+          <button onClick={() => navigate(createPageUrl("Index"))} className="mt-6 rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back to Home</button>
         </div>
       </div>
     );
