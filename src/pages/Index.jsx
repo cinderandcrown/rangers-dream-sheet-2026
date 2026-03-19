@@ -115,7 +115,7 @@ export default function Index() {
           <div className="mb-10 mx-auto max-w-[540px] grid grid-cols-2 gap-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
             <button
               onClick={() => navigate("/MyGames")}
-              className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-4 py-3.5 text-[12px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.3)] hover:bg-[rgba(191,160,72,0.1)] hover:-translate-y-0.5"
+              className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-4 min-h-[48px] py-3 text-[12px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.3)] hover:bg-[rgba(191,160,72,0.1)] hover:-translate-y-0.5"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
             >
               📅 My Game Schedule
