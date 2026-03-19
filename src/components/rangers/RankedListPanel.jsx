@@ -95,27 +95,27 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
                             </div>
                           </div>
 
-                          {/* Actions - hover reveal on desktop */}
+                          {/* Actions - hover reveal on desktop, always visible on mobile */}
                           <div className="ri-actions flex items-center gap-1">
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-0.5">
                               <button
                                 onClick={(e) => { e.stopPropagation(); onMoveUp(index); }}
                                 disabled={index === 0}
-                                className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
+                                className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
                               >
                                 ▲
                               </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); onMoveDown(index); }}
                                 disabled={index === games.length - 1}
-                                className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
+                                className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
                               >
                                 ▼
                               </button>
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); onRemove(game.game_number); }}
-                              className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-sm text-[var(--red)] active:bg-[rgba(192,17,31,0.3)] active:scale-90 transition-transform"
+                              className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-sm text-[var(--red)] active:bg-[rgba(192,17,31,0.3)] active:scale-90 transition-transform"
                             >
                               ✕
                             </button>
