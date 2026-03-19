@@ -9,31 +9,32 @@ export function calculateTargets(allMembers) {
 export function buildAllocationPlan(games, members, submissions) {
   const gamesByNumber = Object.fromEntries(games.map((game) => [game.game_number, game]));
   const draftableGames = sortGames(games).filter((game) => game.game_number !== RESERVED_GAME_NUMBER);
-  const submittedMembers = members
-    .filter((member) => submissions.some((submission) => submission.member_name === member.name))
-    .sort((a, b) => {
-      // Clark (owner) always drafts first, then by share count
-      if (a.name === "Clark") return -1;
-      if (b.name === "Clark") return 1;
-      return b.share_count - a.share_count;
-    });
-
-  const targets = calculateTargets(submittedMembers);
-  const counts = Object.fromEntries(submittedMembers.map((member) => [member.name, 0]));
-  const pointers = Object.fromEntries(submittedMembers.map((member) => [member.name, 0]));
-  const allocations = [];
-  const assignedGameNumbers = new Set();
   const submissionMap = Object.fromEntries(submissions.map((submission) => [submission.member_name, submission]));
 
+  // ALL members participate in the draft — sorted: Clark first, then by share count descending
+  const allMembers = [...members].sort((a, b) => {
+    if (a.name === "Clark") return -1;
+    if (b.name === "Clark") return 1;
+    return b.share_count - a.share_count;
+  });
+
+  // Targets are always the fixed share_count (George=32, Sandy=24, Clark=9, Chase=8, Ed=7)
+  const targets = calculateTargets(allMembers);
+  const counts = Object.fromEntries(allMembers.map((member) => [member.name, 0]));
+  const pointers = Object.fromEntries(allMembers.map((member) => [member.name, 0]));
+  const allocations = [];
+  const assignedGameNumbers = new Set();
+
   let safetyLimit = DRAFTABLE_GAME_COUNT * 2;
-  while (allocations.length < DRAFTABLE_GAME_COUNT && submittedMembers.length > 0 && safetyLimit > 0) {
+  while (allocations.length < DRAFTABLE_GAME_COUNT && safetyLimit > 0) {
     safetyLimit -= 1;
     let madeProgress = false;
 
-    for (const member of submittedMembers) {
+    for (const member of allMembers) {
       if (allocations.length >= DRAFTABLE_GAME_COUNT) break;
       if (counts[member.name] >= targets[member.name]) continue;
 
+      // Try to assign from this member's ranked preferences (if they submitted)
       const rankedIds = submissionMap[member.name]?.ranked_game_ids || [];
       let assignedFromRank = null;
 
@@ -45,6 +46,7 @@ export function buildAllocationPlan(games, members, submissions) {
         break;
       }
 
+      // Fallback: next available unassigned draftable game
       const fallbackGame = draftableGames.find((game) => !assignedGameNumbers.has(game.game_number));
       const selection = assignedFromRank || (fallbackGame ? { gameNumber: fallbackGame.game_number, was_ranked: false } : null);
       if (!selection) continue;
@@ -68,7 +70,7 @@ export function buildAllocationPlan(games, members, submissions) {
     counts,
     targets,
     gamesByNumber,
-    submittedMembers,
+    allMembers,
   };
 }
 
