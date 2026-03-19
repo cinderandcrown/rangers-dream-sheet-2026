@@ -33,7 +33,7 @@ export default function BottomNav() {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className="group flex flex-col items-center gap-0.5 px-5 py-1.5 transition-all"
+              className="group flex min-h-[48px] min-w-[48px] flex-col items-center justify-center gap-0.5 px-5 py-2 transition-all"
             >
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${
