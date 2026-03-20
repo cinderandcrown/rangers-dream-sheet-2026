@@ -1,6 +1,5 @@
 import { parseISO, format } from "date-fns";
 import { OUTLOOK_LOCATION } from "./constants";
-import { base44 } from "@/api/base44Client";
 
 /**
  * Convert "3:05 PM" CT to an ICS-formatted datetime string in UTC.
