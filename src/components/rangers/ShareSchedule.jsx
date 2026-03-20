@@ -53,14 +53,16 @@ export default function ShareSchedule({ memberName, memberGames, onToast }) {
       <div className="flex gap-2">
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-white/50 transition hover:bg-white/[0.06] hover:text-white/70"
+          aria-label="Copy schedule summary to clipboard"
+          className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 min-h-[44px] py-2.5 text-[11px] font-semibold text-white/50 transition hover:bg-white/[0.06] hover:text-white/70"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
         >
           <Copy className="h-3.5 w-3.5" /> Copy Summary
         </button>
         <button
           onClick={handleShare}
-          className="flex items-center gap-1.5 rounded-lg border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-3 py-2 text-[11px] font-semibold text-[var(--gold)] transition hover:bg-[rgba(191,160,72,0.1)]"
+          aria-label="Share schedule link"
+          className="flex items-center gap-1.5 rounded-lg border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-4 min-h-[44px] py-2.5 text-[11px] font-semibold text-[var(--gold)] transition hover:bg-[rgba(191,160,72,0.1)]"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
         >
           <Share2 className="h-3.5 w-3.5" /> Share Link

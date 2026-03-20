@@ -6,6 +6,10 @@ export default function MemberCard({ member, hasSubmitted, rankedCount, isLocked
   return (
     <div
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      aria-label={`Select ${member.name} — ${hasSubmitted ? "submitted" : "not started"}`}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
       className="member-card group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.06] transition-all duration-300 hover:-translate-y-1.5 hover:border-white/[0.12] active:scale-[0.96] active:border-white/[0.15]"
       style={{
         backgroundColor: "rgba(30,41,59,0.7)",

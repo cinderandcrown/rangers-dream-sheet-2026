@@ -101,20 +101,23 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
                               <button
                                 onClick={(e) => { e.stopPropagation(); onMoveUp(index); }}
                                 disabled={index === 0}
-                                className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
+                                aria-label={`Move ${game.opponent} up`}
+                                className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
                               >
                                 ▲
                               </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); onMoveDown(index); }}
                                 disabled={index === games.length - 1}
-                                className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
+                                aria-label={`Move ${game.opponent} down`}
+                                className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/50 disabled:opacity-30 active:bg-white/[0.15] active:scale-90 transition-transform"
                               >
                                 ▼
                               </button>
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); onRemove(game.game_number); }}
+                              aria-label={`Remove ${game.opponent} from rankings`}
                               className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-sm text-[var(--red)] active:bg-[rgba(192,17,31,0.3)] active:scale-90 transition-transform"
                             >
                               ✕

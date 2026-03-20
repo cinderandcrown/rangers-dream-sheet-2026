@@ -50,7 +50,8 @@ export default function GameDetailModal({ game, allocation, members, onClose, on
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/60 transition hover:bg-white/20 hover:text-white"
+            aria-label="Close game details"
+            className="absolute right-3 top-3 z-10 flex h-[44px] w-[44px] items-center justify-center rounded-full bg-white/10 text-white/60 transition hover:bg-white/20 hover:text-white"
           >
             <X className="h-4 w-4" />
           </button>
@@ -146,7 +147,8 @@ export default function GameDetailModal({ game, allocation, members, onClose, on
             <div className="px-6 pb-6">
               <button
                 onClick={() => onRequestSwap(game, allocation)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] py-3 text-[13px] font-semibold text-white/80 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+                aria-label={`Request swap for game against ${game.opponent}`}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] min-h-[48px] py-3 text-[13px] font-semibold text-white/80 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
                 style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
               >
                 <ArrowLeftRight className="h-4 w-4" />

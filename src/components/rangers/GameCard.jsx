@@ -120,6 +120,7 @@ export default function GameCard({ game, rankNumber, onSelect, onInfoClick }) {
       {onInfoClick && (
         <button
           onClick={(e) => { e.stopPropagation(); onInfoClick(game); }}
+          aria-label={`View details for ${game.opponent} game`}
           className="absolute bottom-1 right-1 flex h-[44px] w-[44px] items-center justify-center rounded-full text-white/30 transition hover:bg-white/[0.12] hover:text-white/60"
         >
           <Info className="h-4 w-4" />

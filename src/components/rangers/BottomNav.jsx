@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, CalendarDays, Star, Shield } from "lucide-react";
+import { Home, CalendarDays } from "lucide-react";
 
 const NAV_ITEMS = [
   { path: "/", label: "Home", icon: Home },
@@ -18,14 +18,16 @@ export default function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-[90] border-t border-white/[0.06]"
+      role="navigation"
+      aria-label="Main navigation"
       style={{
         background: "linear-gradient(to top, rgba(10,22,40,0.98), rgba(10,22,40,0.95))",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)",
       }}
     >
-      <div className="mx-auto flex max-w-[400px] items-center justify-around px-4 py-1.5">
+      <div className="mx-auto flex max-w-[400px] items-center justify-around px-4 py-1">
         {NAV_ITEMS.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -33,7 +35,9 @@ export default function BottomNav() {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className="group flex min-h-[48px] min-w-[48px] flex-col items-center justify-center gap-0.5 px-5 py-2 transition-all"
+              aria-label={`Navigate to ${item.label}`}
+              aria-current={isActive ? "page" : undefined}
+              className="group flex min-h-[48px] min-w-[48px] flex-col items-center justify-center gap-0.5 px-6 py-2 transition-all"
             >
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${

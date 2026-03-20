@@ -100,8 +100,8 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
       {/* Add to Calendar button */}
       <button
         onClick={handleAddToCalendar}
-        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95"
-        title="Add to Calendar"
+        aria-label={`Add ${game.opponent} game to calendar`}
+        className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95"
       >
         <CalendarPlus className="h-[18px] w-[18px]" />
       </button>
