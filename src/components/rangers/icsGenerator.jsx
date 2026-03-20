@@ -1,5 +1,6 @@
 import { parseISO, format } from "date-fns";
 import { OUTLOOK_LOCATION } from "./constants";
+import { base44 } from "@/api/base44Client";
 
 /**
  * Convert "3:05 PM" CT to an ICS-formatted datetime string in UTC.
@@ -107,48 +108,16 @@ export function generateAllGamesIcs(games, memberName) {
 }
 
 /**
- * Trigger an .ics calendar import on iOS Safari and all browsers.
- *
- * iOS Safari cannot handle data: URIs or blob: URIs for text/calendar.
- * The only reliable method is navigating to a real HTTP URL that serves
- * the file with Content-Type: text/calendar.
- *
- * We submit a hidden form POST to our serveIcs backend function.
- * The server responds with Content-Type: text/calendar, which iOS
- * Safari intercepts to show the native "Add to Calendar" sheet.
- * Using a form POST avoids URL length limits for multi-game exports.
+ * Upload ICS content as a .ics file and navigate to the hosted URL.
+ * This works on iOS Safari because it's a real hosted file with the
+ * correct .ics extension — Safari recognizes it and shows the native
+ * "Add to Calendar" sheet.
  */
-export function downloadIcsFile(icsContent, filename) {
-  const baseUrl = window.location.origin;
-  const actionUrl = baseUrl + "/functions/serveIcs";
-
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = actionUrl;
-  form.style.display = "none";
-
-  // The backend reads JSON, but for a form submission to trigger
-  // the browser's native file handling we need enctype handling.
-  // Instead, use a GET with base64 for small payloads, POST form for large.
-  const encoded = btoa(unescape(encodeURIComponent(icsContent)));
-  const fullUrl = actionUrl + "?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
-
-  // If the URL is short enough (< 6000 chars), use simple navigation
-  if (fullUrl.length < 6000) {
-    window.location.href = fullUrl;
-    return;
-  }
-
-  // For large payloads, open in a new window with a POST form
-  const w = window.open("about:blank", "_blank");
-  if (w) {
-    w.document.write(
-      `<html><body><form id="f" method="POST" action="${actionUrl}" enctype="application/x-www-form-urlencoded">` +
-      `<input type="hidden" name="d" value="${encoded}">` +
-      `<input type="hidden" name="f" value="${encodeURIComponent(filename || "event.ics")}">` +
-      `</form><script>document.getElementById("f").submit();<\/script></body></html>`
-    );
-  }
+export async function downloadIcsFile(icsContent, filename) {
+  const blob = new Blob([icsContent], { type: "text/calendar" });
+  const file = new File([blob], filename || "event.ics", { type: "text/calendar" });
+  const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  window.location.href = file_url;
 }
 
 /**
