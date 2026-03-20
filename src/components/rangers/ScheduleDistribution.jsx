@@ -1,15 +1,14 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 import { downloadMemberScheduleCsv } from "./adminHelpers";
 import { downloadMasterExcel, downloadMemberExcel, getMemberScheduleData, generateAllSchedulesHtml } from "./scheduleExports";
 import CopyEmailSummary from "./CopyEmailSummary";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
 
 export default function ScheduleDistribution({ members, games, allocations, onToast }) {
-  const navigate = useNavigate();
+  const { push } = useTabNavigation();
 
   const handleViewSchedule = (name) => {
-    navigate(createPageUrl(`Schedule?memberName=${encodeURIComponent(name)}`));
+    push(`/Schedule?memberName=${encodeURIComponent(name)}`);
   };
 
   const handleMemberExcel = (member) => {
@@ -40,7 +39,6 @@ export default function ScheduleDistribution({ members, games, allocations, onTo
         View, print, and export individual schedules for each member. Download Excel workbooks or Outlook-compatible CSVs.
       </p>
 
-      {/* Member rows */}
       <div className="mb-5 space-y-2">
         {members.map((member) => {
           const memberGames = getMemberScheduleData(member.name, games, allocations);
@@ -71,7 +69,6 @@ export default function ScheduleDistribution({ members, games, allocations, onTo
         })}
       </div>
 
-      {/* Global exports */}
       <div className="flex flex-wrap gap-[10px] border-t border-white/[0.06] pt-4">
         <button
           onClick={handleMasterExcel}

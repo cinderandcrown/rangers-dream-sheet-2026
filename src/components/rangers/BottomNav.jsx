@@ -1,19 +1,19 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Home, CalendarDays } from "lucide-react";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
 
 const NAV_ITEMS = [
-  { path: "/", label: "Home", icon: Home },
-  { path: "/MyGames", label: "My Games", icon: CalendarDays },
+  { tab: "home", label: "Home", icon: Home },
+  { tab: "myGames", label: "My Games", icon: CalendarDays },
 ];
 
 export default function BottomNav() {
-  const navigate = useNavigate();
   const location = useLocation();
+  const { activeTab, switchTab } = useTabNavigation();
 
-  // Don't show on Rank page (needs full screen) or admin
   const hiddenPaths = ["/Rank", "/Admin", "/Schedule"];
-  if (hiddenPaths.some((p) => location.pathname.startsWith(p))) return null;
+  if (hiddenPaths.some((path) => location.pathname.startsWith(path))) return null;
 
   return (
     <nav
@@ -29,12 +29,13 @@ export default function BottomNav() {
     >
       <div className="mx-auto flex max-w-[400px] items-center justify-around px-4 py-1">
         {NAV_ITEMS.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = activeTab === item.tab;
           const Icon = item.icon;
+
           return (
             <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
+              key={item.tab}
+              onClick={() => switchTab(item.tab)}
               aria-label={`Navigate to ${item.label}`}
               aria-current={isActive ? "page" : undefined}
               className="group flex min-h-[48px] min-w-[48px] flex-col items-center justify-center gap-0.5 px-6 py-2 transition-all"

@@ -1,25 +1,26 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { CalendarDays, ChevronLeft, Home } from "lucide-react";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
 
-// Sub-routes that should show a back button automatically
 const SUB_ROUTES = {
+  "/Index": "/",
   "/MyGames": "/",
   "/Rank": "/",
   "/Admin": "/",
-  "/Schedule": "/",
+  "/Schedule": "/Admin",
 };
 
 export default function BrandHeader({ showBack, onBack }) {
-  const navigate = useNavigate();
   const location = useLocation();
-  const isHome = location.pathname === "/";
-  const isMyGames = location.pathname === "/MyGames";
+  const { activeTab, pop, switchTab } = useTabNavigation();
+  const isHomeScreen = location.pathname === "/" || location.pathname === "/Index";
+  const isHomeTab = activeTab === "home";
+  const isMyGamesTab = activeTab === "myGames";
 
-  // Centralized back logic: explicit onBack wins, otherwise auto-detect
   const autoBackTarget = SUB_ROUTES[location.pathname];
-  const shouldShowBack = showBack || (!isHome && Boolean(autoBackTarget));
-  const handleBack = onBack || (() => navigate(autoBackTarget || "/"));
+  const shouldShowBack = showBack || (!isHomeScreen && Boolean(autoBackTarget));
+  const handleBack = onBack || (() => pop(autoBackTarget || "/"));
 
   return (
     <header
@@ -36,7 +37,6 @@ export default function BrandHeader({ showBack, onBack }) {
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 py-2.5 sm:py-3">
         <div className="flex items-center gap-3">
-          {/* Back button or logo — min 44px tap target */}
           {shouldShowBack ? (
             <button
               onClick={handleBack}
@@ -69,11 +69,10 @@ export default function BrandHeader({ showBack, onBack }) {
           </div>
         </div>
 
-        {/* Desktop nav links — 44px touch targets */}
         <div className="hidden sm:flex items-center gap-1">
-          {!isHome && (
+          {!isHomeTab && (
             <button
-              onClick={() => navigate("/")}
+              onClick={() => switchTab("home")}
               aria-label="Navigate to Home"
               className="flex items-center gap-1.5 rounded-lg px-3 min-h-[44px] text-[11px] font-semibold text-white/40 transition hover:bg-white/[0.06] hover:text-white/70"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
@@ -81,9 +80,9 @@ export default function BrandHeader({ showBack, onBack }) {
               <Home className="h-4 w-4" /> Home
             </button>
           )}
-          {!isMyGames && (
+          {!isMyGamesTab && (
             <button
-              onClick={() => navigate("/MyGames")}
+              onClick={() => switchTab("myGames")}
               aria-label="Navigate to My Games"
               className="flex items-center gap-1.5 rounded-lg px-3 min-h-[44px] text-[11px] font-semibold text-[var(--gold)]/60 transition hover:bg-[rgba(191,160,72,0.08)] hover:text-[var(--gold)]"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
