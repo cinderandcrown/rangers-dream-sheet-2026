@@ -1,7 +1,7 @@
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Download } from "lucide-react";
+import { Download, LockOpen, Trash2 } from "lucide-react";
 import SubgroupMemberManager from "./SubgroupMemberManager";
 import SubgroupGameDraftRow from "./SubgroupGameDraftRow";
 import SubgroupDrawingOrderPanel from "./SubgroupDrawingOrderPanel";
@@ -63,6 +63,26 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
     onToast(`${managerName}'s subgroup draft was submitted`);
   };
 
+  const handleUnlockDraft = async () => {
+    await Promise.all(
+      picks.map((pick) => base44.entities.SubgroupPick.update(pick.id, { is_finalized: false }))
+    );
+    refreshDraft();
+    onToast(`${managerName}'s draft unlocked for editing`);
+  };
+
+  const handleDeletePick = async (pickId, gameName) => {
+    await base44.entities.SubgroupPick.delete(pickId);
+    refreshDraft();
+    onToast(`Removed ${gameName} from draft`);
+  };
+
+  const handleClearAllPicks = async () => {
+    await Promise.all(picks.map((pick) => base44.entities.SubgroupPick.delete(pick.id)));
+    refreshDraft();
+    onToast(`Cleared all picks for ${managerName}'s draft`);
+  };
+
   return (
     <div className="mb-6 rounded-2xl border border-white/[0.06] bg-[var(--slate)] p-5 sm:p-6">
       <div className="mb-5">
@@ -74,7 +94,7 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         </p>
         {isFinalized && (
           <div className="mt-3 rounded-xl border border-[#22C55E]/20 bg-[#22C55E]/10 px-4 py-3 text-[12px] text-[#86EFAC]">
-            Subgroup draft locked in — your schedule below now shows who each game belongs to, and you can download the Excel sheet to share with the subgroup.
+            Subgroup draft locked in — tap <strong>Unlock for Editing</strong> below to make changes or fix mistakes.
           </div>
         )}
       </div>
@@ -125,16 +145,38 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
         {isFinalized && (
+          <>
+            <button
+              onClick={() => downloadSubgroupExcel(managerName, games, picks)}
+              aria-label="Download subgroup draft as Excel"
+              className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-3 text-[12px] font-semibold text-white/80 transition hover:bg-white/[0.08]"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+            >
+              <Download className="h-4 w-4" />
+              Download Excel
+            </button>
+            <button
+              onClick={handleUnlockDraft}
+              aria-label="Unlock subgroup draft for editing"
+              className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-[var(--gold)]/20 bg-[var(--gold)]/5 px-5 py-3 text-[12px] font-semibold text-[var(--gold)] transition hover:bg-[var(--gold)]/10"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+            >
+              <LockOpen className="h-4 w-4" />
+              Unlock for Editing
+            </button>
+          </>
+        )}
+        {!isFinalized && picks.length > 0 && (
           <button
-            onClick={() => downloadSubgroupExcel(managerName, games, picks)}
-            aria-label="Download subgroup draft as Excel"
-            className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-3 text-[12px] font-semibold text-white/80 transition hover:bg-white/[0.08]"
+            onClick={handleClearAllPicks}
+            aria-label="Clear all draft picks"
+            className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-[var(--red)]/20 bg-[var(--red)]/5 px-5 py-3 text-[12px] font-semibold text-[var(--red)] transition hover:bg-[var(--red)]/10"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
-            <Download className="h-4 w-4" />
-            Download Excel
+            <Trash2 className="h-4 w-4" />
+            Clear All Picks
           </button>
         )}
         <button
