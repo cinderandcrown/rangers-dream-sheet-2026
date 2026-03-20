@@ -107,38 +107,30 @@ export function generateAllGamesIcs(games, memberName) {
 }
 
 /**
- * Upload ICS content as a hosted file, then navigate to it.
+ * Trigger an .ics download / calendar import.
  *
- * Mobile browsers block window.open after async work (loses user-gesture trust).
- * Strategy:
- *   - Mobile (iOS/Android): use window.location.href which triggers the native
- *     "Add to Calendar" prompt and then returns the user to the app.
- *   - Desktop: use a hidden <a download> link click.
+ * Uses a data: URI with text/calendar MIME type which is the most reliable
+ * cross-platform method:
+ *  - iOS Safari: opens the native "Add to Calendar" prompt
+ *  - Android Chrome: downloads the file, user taps to open in calendar
+ *  - Desktop: downloads the .ics file
  *
- * Returns the file URL.
+ * This is synchronous — no upload needed, no popup-blocker issues.
  */
-export async function downloadIcsFile(icsContent, filename) {
-  const { base44 } = await import("@/api/base44Client");
+export function downloadIcsFile(icsContent, filename) {
+  // Encode the ICS content as a base64 data URI with text/calendar MIME
+  const base64 = btoa(unescape(encodeURIComponent(icsContent)));
+  const dataUri = `data:text/calendar;base64,${base64}`;
 
-  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-  const file = new File([blob], filename, { type: "text/calendar" });
+  const link = document.createElement("a");
+  link.href = dataUri;
+  link.setAttribute("download", filename || "event.ics");
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
 
-  const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  if (isMobile) {
-    // Direct navigation triggers native calendar prompt on iOS & Android
-    window.location.href = file_url;
-  } else {
-    // Desktop: use a download link
-    const link = document.createElement("a");
-    link.href = file_url;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  }
-
-  return file_url;
+  // Small delay before cleanup to let the browser process
+  setTimeout(() => {
+    document.body.removeChild(link);
+  }, 100);
 }
