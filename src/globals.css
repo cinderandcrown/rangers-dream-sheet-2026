@@ -75,6 +75,19 @@ button, [role="button"], .game-card, .member-card {
   -webkit-touch-callout: none;
 }
 
+button,
+[role="button"],
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  min-height: 44px;
+}
+
+button,
+[role="button"] {
+  min-width: 44px;
+}
+
 
 
 * {

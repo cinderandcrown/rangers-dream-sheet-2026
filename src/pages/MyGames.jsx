@@ -17,6 +17,7 @@ import CalendarDropdown from "@/components/rangers/CalendarDropdown";
 import PrintableCalendar from "@/components/rangers/PrintableCalendar";
 import NextGameSpotlight from "@/components/rangers/NextGameSpotlight";
 import ShareSchedule from "@/components/rangers/ShareSchedule";
+import { saveMemberProfile } from "@/lib/memberProfileSession";
 
 export default function MyGames() {
   const seedQuery = useSeedData();
@@ -85,6 +86,7 @@ export default function MyGames() {
             setToast("Email doesn't match — use the email from your submission");
             return;
           }
+          saveMemberProfile({ memberName: member.name, memberEmail: email.trim().toLowerCase() });
           setAuthedMember(member);
           setAuthedEmail(email);
         }}
