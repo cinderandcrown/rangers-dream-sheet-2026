@@ -121,6 +121,6 @@ export function generateAllGamesIcs(games, memberName) {
 export function downloadIcsFile(icsContent, filename) {
   const encoded = btoa(unescape(encodeURIComponent(icsContent)));
   const baseUrl = window.location.origin;
-  const url = baseUrl + "/api/serveIcs?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
+  const url = baseUrl + "/functions/serveIcs?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
   window.location.href = url;
 }
