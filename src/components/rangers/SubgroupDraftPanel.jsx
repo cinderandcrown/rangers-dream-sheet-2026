@@ -5,6 +5,7 @@ import { Download } from "lucide-react";
 import SubgroupMemberManager from "./SubgroupMemberManager";
 import SubgroupGameDraftRow from "./SubgroupGameDraftRow";
 import SubgroupDrawingOrderPanel from "./SubgroupDrawingOrderPanel";
+import SubgroupScheduleDistribution from "./SubgroupScheduleDistribution";
 import { downloadSubgroupExcel } from "./subgroupExports";
 import { SANDY_DRAWING_ORDER_OPTIONS } from "./sandyDrawingOrder";
 
@@ -146,6 +147,14 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
           {isFinalized ? "Subgroup Draft Locked In" : (allAssigned ? "Lock In Subgroup Draft" : "Lock In Current Assignments") }
         </button>
       </div>
+
+      {isFinalized && (
+        <SubgroupScheduleDistribution
+          managerName={managerName}
+          games={games}
+          picks={picks}
+        />
+      )}
     </div>
   );
 }

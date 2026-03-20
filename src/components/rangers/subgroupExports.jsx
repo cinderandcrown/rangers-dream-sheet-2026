@@ -40,8 +40,8 @@ function applyDataStyles(ws, rowCount, colCount) {
   }
 }
 
-export function downloadSubgroupExcel(managerName, games, picks) {
-  const rows = games
+function getSubgroupRows(managerName, games, picks, subgroupMemberName) {
+  return games
     .map((game) => {
       const pick = picks.find((item) => item.game_number === game.game_number);
       return {
@@ -55,7 +55,12 @@ export function downloadSubgroupExcel(managerName, games, picks) {
         Manager: managerName,
       };
     })
+    .filter((row) => !subgroupMemberName || row["Subgroup Member"] === subgroupMemberName)
     .sort((a, b) => Number(a["Game #"]) - Number(b["Game #"]));
+}
+
+export function downloadSubgroupExcel(managerName, games, picks) {
+  const rows = getSubgroupRows(managerName, games, picks);
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(rows);
@@ -77,4 +82,26 @@ export function downloadSubgroupExcel(managerName, games, picks) {
 
   XLSX.utils.book_append_sheet(wb, ws, `${managerName} Subgroup`);
   XLSX.writeFile(wb, `${managerName}-Subgroup-Draft-2026.xlsx`);
+}
+
+export function downloadSubgroupMemberExcel(managerName, subgroupMemberName, games, picks) {
+  const rows = getSubgroupRows(managerName, games, picks, subgroupMemberName);
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws["!cols"] = [
+    { wch: 10 },
+    { wch: 22 },
+    { wch: 10 },
+    { wch: 26 },
+    { wch: 10 },
+    { wch: 12 },
+    { wch: 18 },
+    { wch: 12 },
+  ];
+  ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+  ws["!autofilter"] = { ref: `A1:H${rows.length + 1}` };
+  applyHeaderStyle(ws, 8);
+  applyDataStyles(ws, rows.length, 8);
+  XLSX.utils.book_append_sheet(wb, ws, subgroupMemberName.slice(0, 31));
+  XLSX.writeFile(wb, `${managerName}-${subgroupMemberName}-Schedule-2026.xlsx`);
 }
