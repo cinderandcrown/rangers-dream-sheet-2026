@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserCircle2 } from "lucide-react";
+import { User } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import AppToast from "@/components/rangers/AppToast";
