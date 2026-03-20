@@ -59,13 +59,14 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
         ref={ref}
         className={cn(
           isMobile
-            ? "fixed inset-x-0 bottom-0 top-auto z-50 max-h-[75vh] w-full overflow-hidden rounded-t-2xl border border-b-0 border-white/10 bg-popover text-popover-foreground shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=open]:slide-in-from-bottom-full"
-            : "relative z-[200] max-h-96 min-w-[12rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            ? "fixed inset-x-0 bottom-0 top-auto z-50 max-h-[75vh] w-full overflow-hidden rounded-t-2xl border border-b-0 border-white/10 text-popover-foreground shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=open]:slide-in-from-bottom-full"
+            : "relative z-[200] max-h-96 min-w-[12rem] overflow-hidden rounded-md border text-popover-foreground shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           !isMobile && position === "popper" &&
             "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className
         )}
         position={isMobile ? "item-aligned" : position}
+        style={{ backgroundColor: "#1E293B", ...props.style }}
         {...props}>
         {isMobile && <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-white/15" />}
         <SelectScrollUpButton />
