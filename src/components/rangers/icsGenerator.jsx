@@ -113,13 +113,40 @@ export function generateAllGamesIcs(games, memberName) {
  * The only reliable method is navigating to a real HTTP URL that serves
  * the file with Content-Type: text/calendar.
  *
- * We hit our serveIcs backend function via GET with base64-encoded
- * ICS content. iOS Safari intercepts the text/calendar response and
- * shows the native "Add to Calendar" sheet.
+ * We submit a hidden form POST to our serveIcs backend function.
+ * The server responds with Content-Type: text/calendar, which iOS
+ * Safari intercepts to show the native "Add to Calendar" sheet.
+ * Using a form POST avoids URL length limits for multi-game exports.
  */
 export function downloadIcsFile(icsContent, filename) {
-  const encoded = btoa(unescape(encodeURIComponent(icsContent)));
   const baseUrl = window.location.origin;
-  const url = baseUrl + "/functions/serveIcs?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
-  window.location.href = url;
+  const actionUrl = baseUrl + "/functions/serveIcs";
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = actionUrl;
+  form.style.display = "none";
+
+  // The backend reads JSON, but for a form submission to trigger
+  // the browser's native file handling we need enctype handling.
+  // Instead, use a GET with base64 for small payloads, POST form for large.
+  const encoded = btoa(unescape(encodeURIComponent(icsContent)));
+  const fullUrl = actionUrl + "?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
+
+  // If the URL is short enough (< 6000 chars), use simple navigation
+  if (fullUrl.length < 6000) {
+    window.location.href = fullUrl;
+    return;
+  }
+
+  // For large payloads, open in a new window with a POST form
+  const w = window.open("about:blank", "_blank");
+  if (w) {
+    w.document.write(
+      `<html><body><form id="f" method="POST" action="${actionUrl}" enctype="application/x-www-form-urlencoded">` +
+      `<input type="hidden" name="d" value="${encoded}">` +
+      `<input type="hidden" name="f" value="${encodeURIComponent(filename || "event.ics")}">` +
+      `</form><script>document.getElementById("f").submit();<\/script></body></html>`
+    );
+  }
 }
