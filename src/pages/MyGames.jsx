@@ -73,15 +73,11 @@ export default function MyGames() {
     setExpandedMonth((prev) => (prev === month ? "all" : month));
   };
 
-  const [calExporting, setCalExporting] = React.useState(false);
-
-  const handleExportAll = async () => {
-    if (!authedMember || calExporting) return;
-    setCalExporting(true);
+  const handleExportAll = () => {
+    if (!authedMember) return;
     const ics = generateAllGamesIcs(memberGames, authedMember.name);
-    await downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
-    setCalExporting(false);
-    setToast("Calendar opened — tap Add to save all games!");
+    downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
+    setToast("Calendar file ready — tap to add all games!");
   };
 
   if (isLoading) return <LoadingScreen />;
@@ -202,15 +198,10 @@ export default function MyGames() {
         <div className="mb-6 grid grid-cols-2 gap-3">
           <button
             onClick={handleExportAll}
-            disabled={calExporting}
-            className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)] disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
-            {calExporting ? (
-              <div className="h-4 w-4 border-2 border-[var(--gold)]/30 border-t-[var(--gold)] rounded-full animate-spin" />
-            ) : (
-              <CalendarDays className="h-4 w-4" />
-            )}
+            <CalendarDays className="h-4 w-4" />
             <span className="hidden sm:inline">Export to</span> Calendar
           </button>
           <button
