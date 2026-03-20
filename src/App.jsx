@@ -6,9 +6,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { NavigationProvider } from '@/lib/TabNavigationContext';
 import MyGames from './pages/MyGames';
 import BottomNav from './components/rangers/BottomNav';
-
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
@@ -79,7 +79,9 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
-          <AuthenticatedApp />
+          <NavigationProvider>
+            <AuthenticatedApp />
+          </NavigationProvider>
         </Router>
         <Toaster />
       </QueryClientProvider>
