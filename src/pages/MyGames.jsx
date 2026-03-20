@@ -198,6 +198,7 @@ export default function MyGames() {
         <div className="mb-6 grid grid-cols-2 gap-3">
           <button
             onClick={handleExportAll}
+            aria-label="Export all games to calendar"
             className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
@@ -206,6 +207,7 @@ export default function MyGames() {
           </button>
           <button
             onClick={() => setShowPrintCalendar(true)}
+            aria-label="Print calendar view"
             className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
@@ -214,6 +216,7 @@ export default function MyGames() {
           </button>
           <button
             onClick={() => downloadMemberScheduleCsv(authedMember.name, games, allocations)}
+            aria-label="Download schedule as CSV"
             className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
@@ -222,6 +225,7 @@ export default function MyGames() {
           </button>
           <button
             onClick={() => downloadMemberExcel(authedMember.name, authedMember.accent_color, games, allocations)}
+            aria-label="Download schedule as Excel"
             className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-white/60 transition hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white/80"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >

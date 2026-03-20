@@ -24,11 +24,14 @@ export default function BrandHeader({ showBack, onBack }) {
   return (
     <header
       className="sticky top-0 z-[100]"
+      role="banner"
       style={{
         background: "linear-gradient(135deg, var(--navy), #001845)",
         borderBottom: "3px solid var(--red)",
         boxShadow: "0 4px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.03) inset",
-        paddingTop: "env(safe-area-inset-top, 0px)"
+        paddingTop: "env(safe-area-inset-top, 0px)",
+        paddingLeft: "env(safe-area-inset-left, 0px)",
+        paddingRight: "env(safe-area-inset-right, 0px)",
       }}
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 py-2.5 sm:py-3">
@@ -37,6 +40,7 @@ export default function BrandHeader({ showBack, onBack }) {
           {shouldShowBack ? (
             <button
               onClick={handleBack}
+              aria-label="Go back"
               className="flex h-[44px] w-[44px] items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white/50 transition hover:bg-white/[0.08] hover:text-white active:scale-95"
             >
               <ChevronLeft className="h-5 w-5" />
@@ -70,6 +74,7 @@ export default function BrandHeader({ showBack, onBack }) {
           {!isHome && (
             <button
               onClick={() => navigate("/")}
+              aria-label="Navigate to Home"
               className="flex items-center gap-1.5 rounded-lg px-3 min-h-[44px] text-[11px] font-semibold text-white/40 transition hover:bg-white/[0.06] hover:text-white/70"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
             >
@@ -79,6 +84,7 @@ export default function BrandHeader({ showBack, onBack }) {
           {!isMyGames && (
             <button
               onClick={() => navigate("/MyGames")}
+              aria-label="Navigate to My Games"
               className="flex items-center gap-1.5 rounded-lg px-3 min-h-[44px] text-[11px] font-semibold text-[var(--gold)]/60 transition hover:bg-[rgba(191,160,72,0.08)] hover:text-[var(--gold)]"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
             >
