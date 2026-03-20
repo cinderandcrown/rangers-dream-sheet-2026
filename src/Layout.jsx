@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { useTabNavigation } from "@/lib/TabNavigationContext";
+
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -11,8 +11,6 @@ const pageVariants = {
 
 export default function Layout({ children }) {
   const location = useLocation();
-  const { transitionType } = useTabNavigation();
-
   useEffect(() => {
     document.title = "Rangers Dream Sheet 2026";
   }, []);
