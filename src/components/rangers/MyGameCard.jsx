@@ -14,10 +14,10 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
   const dateLabel = format(d, "EEE, MMM d");
   const isWeekend = ["Fri", "Sat", "Sun"].includes(game.day_of_week);
 
-  const handleAddToCalendar = (e) => {
+  const handleAddToCalendar = async (e) => {
     e.stopPropagation();
     const ics = generateSingleGameIcs(game, memberName);
-    downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}-${format(d, "MMM-d")}.ics`);
+    await downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}-${format(d, "MMM-d")}.ics`);
   };
 
   const tags = [];

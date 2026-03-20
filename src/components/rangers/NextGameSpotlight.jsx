@@ -32,11 +32,11 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
   else if (daysUntil === 1) countdownLabel = "🔥 Tomorrow!";
   else if (daysUntil <= 7) countdownLabel = `In ${daysUntil} days`;
 
-  const handleAddToCalendar = (e) => {
+  const handleAddToCalendar = async (e) => {
     e.stopPropagation();
     const ics = generateSingleGameIcs(nextGame, memberName);
-    downloadIcsFile(ics, `rangers-next-game.ics`);
-    if (onToast) onToast("Calendar file ready — tap to add!");
+    await downloadIcsFile(ics, `rangers-next-game.ics`);
+    if (onToast) onToast("Calendar event opened!");
   };
 
   return (

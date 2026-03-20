@@ -73,11 +73,11 @@ export default function MyGames() {
     setExpandedMonth((prev) => (prev === month ? "all" : month));
   };
 
-  const handleExportAll = () => {
+  const handleExportAll = async () => {
     if (!authedMember) return;
     const ics = generateAllGamesIcs(memberGames, authedMember.name);
-    downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
-    setToast("Calendar file ready — tap to add all games!");
+    await downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
+    setToast("Calendar events opened!");
   };
 
   if (isLoading) return <LoadingScreen />;
