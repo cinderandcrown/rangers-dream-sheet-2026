@@ -59,7 +59,7 @@ export default function BrandHeader({ showBack, onBack }) {
               className="text-[14px] sm:text-[18px] font-bold leading-tight text-white"
               style={{ fontFamily: "'Oswald', sans-serif", letterSpacing: "2px", textTransform: "uppercase" }}
             >
-              My 2026 Rangers Schedule
+              My Rangers Schedule
             </h1>
             <div
               className="hidden sm:block text-[9px] font-medium text-[var(--gold)]"
