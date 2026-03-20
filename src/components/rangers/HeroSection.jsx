@@ -121,44 +121,45 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers, 
           position: absolute;
           top: 50%;
           left: 50%;
-          transform: translate(-50%, -45%) rotate(45deg);
-          width: 400px;
-          height: 400px;
+          transform: translate(-50%, -28%) rotate(45deg);
+          width: 460px;
+          height: 460px;
           opacity: 0;
+          filter: drop-shadow(0 0 18px rgba(191,160,72,0.14));
           animation: heroFieldFadeInV2 2s ease-out 0.3s forwards;
         }
 
         .hero-wrap-v2 .diamond-v2 {
           position: absolute;
           inset: 0;
-          border: 1px solid rgba(191,160,72,0.16);
+          border: 2px solid rgba(191,160,72,0.3);
           border-radius: 4px;
-          box-shadow: 0 0 18px rgba(191,160,72,0.05);
+          box-shadow: 0 0 24px rgba(191,160,72,0.08);
         }
         .hero-wrap-v2 .diamond-v2:nth-child(2) {
           inset: 40px;
-          border-color: rgba(191,160,72,0.11);
+          border-color: rgba(191,160,72,0.2);
         }
         .hero-wrap-v2 .diamond-v2:nth-child(3) {
           inset: 80px;
-          border-color: rgba(191,160,72,0.08);
+          border-color: rgba(191,160,72,0.14);
         }
 
         .hero-wrap-v2 .base-v2 {
           position: absolute;
-          width: 8px;
-          height: 8px;
-          background: rgba(191,160,72,0.32);
-          box-shadow: 0 0 10px rgba(191,160,72,0.18);
+          width: 10px;
+          height: 10px;
+          background: rgba(191,160,72,0.62);
+          box-shadow: 0 0 14px rgba(191,160,72,0.3);
           transform: rotate(-45deg);
         }
 ...
         @media (max-width: 640px) {
           .hero-wrap-v2 .hero-field-lines-v2 {
-            width: 280px;
-            height: 280px;
-            transform: translate(-50%, -40%) rotate(45deg);
-            opacity: 0.75;
+            width: 320px;
+            height: 320px;
+            transform: translate(-50%, -18%) rotate(45deg);
+            opacity: 0.95;
           }
           .hero-wrap-v2 .hero-arc-v2 { display: none; }
         }
