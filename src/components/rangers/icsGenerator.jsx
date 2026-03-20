@@ -107,10 +107,15 @@ export function generateAllGamesIcs(games, memberName) {
 }
 
 /**
- * Upload ICS content as a real file, then open the URL.
- * A real hosted URL is required for iOS & Android to trigger their
- * native "Add to Calendar" prompt — blob/data URIs don't work.
- * Returns the file URL (or null on error).
+ * Upload ICS content as a hosted file, then navigate to it.
+ *
+ * Mobile browsers block window.open after async work (loses user-gesture trust).
+ * Strategy:
+ *   - Mobile (iOS/Android): use window.location.href which triggers the native
+ *     "Add to Calendar" prompt and then returns the user to the app.
+ *   - Desktop: use a hidden <a download> link click.
+ *
+ * Returns the file URL.
  */
 export async function downloadIcsFile(icsContent, filename) {
   const { base44 } = await import("@/api/base44Client");
@@ -120,8 +125,20 @@ export async function downloadIcsFile(icsContent, filename) {
 
   const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-  // Open the hosted URL — this lets iOS/Android recognise the .ics and
-  // offer to add events to the native calendar app.
-  window.open(file_url, "_blank");
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    // Direct navigation triggers native calendar prompt on iOS & Android
+    window.location.href = file_url;
+  } else {
+    // Desktop: use a download link
+    const link = document.createElement("a");
+    link.href = file_url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   return file_url;
 }
