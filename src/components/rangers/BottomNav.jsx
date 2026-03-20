@@ -1,11 +1,12 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { Home, CalendarDays } from "lucide-react";
+import { Home, CalendarDays, User } from "lucide-react";
 import { useTabNavigation } from "@/lib/TabNavigationContext";
 
 const NAV_ITEMS = [
   { tab: "home", label: "Home", icon: Home },
   { tab: "myGames", label: "My Games", icon: CalendarDays },
+  { tab: "profile", label: "Profile", icon: User },
 ];
 
 export default function BottomNav() {
@@ -27,7 +28,7 @@ export default function BottomNav() {
         paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)",
       }}
     >
-      <div className="mx-auto flex max-w-[400px] items-center justify-around px-4 py-1">
+      <div className="mx-auto flex max-w-[480px] items-center justify-around px-4 py-1">
         {NAV_ITEMS.map((item) => {
           const isActive = activeTab === item.tab;
           const Icon = item.icon;

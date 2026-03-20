@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { CalendarDays, ChevronLeft, Home } from "lucide-react";
+import { CalendarDays, ChevronLeft, Home, User } from "lucide-react";
 import { useTabNavigation } from "@/lib/TabNavigationContext";
 
 const SUB_ROUTES = {
@@ -17,6 +17,7 @@ export default function BrandHeader({ showBack, onBack }) {
   const isHomeScreen = location.pathname === "/" || location.pathname === "/Index";
   const isHomeTab = activeTab === "home";
   const isMyGamesTab = activeTab === "myGames";
+  const isProfileTab = activeTab === "profile";
 
   const autoBackTarget = SUB_ROUTES[location.pathname];
   const shouldShowBack = showBack || (!isHomeScreen && Boolean(autoBackTarget));
@@ -88,6 +89,16 @@ export default function BrandHeader({ showBack, onBack }) {
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
             >
               <CalendarDays className="h-4 w-4" /> My Games
+            </button>
+          )}
+          {!isProfileTab && (
+            <button
+              onClick={() => switchTab("profile")}
+              aria-label="Navigate to Profile"
+              className="flex items-center gap-1.5 rounded-lg px-3 min-h-[44px] text-[11px] font-semibold text-white/40 transition hover:bg-white/[0.06] hover:text-white/70"
+              style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+            >
+              <User className="h-4 w-4" /> Profile
             </button>
           )}
         </div>

@@ -1,10 +1,13 @@
 export const TAB_CONFIG = {
   home: { path: "/" },
   myGames: { path: "/MyGames" },
+  profile: { path: "/Profile" },
 };
 
 export function getTabKeyForPath(pathname) {
-  return pathname.startsWith("/MyGames") ? "myGames" : "home";
+  if (pathname.startsWith("/MyGames")) return "myGames";
+  if (pathname.startsWith("/Profile")) return "profile";
+  return "home";
 }
 
 export function buildPath(locationLike) {

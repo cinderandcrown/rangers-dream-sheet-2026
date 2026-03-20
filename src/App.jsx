@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { NavigationProvider } from '@/lib/TabNavigationContext';
 import MyGames from './pages/MyGames';
+import Profile from './pages/Profile';
 import BottomNav from './components/rangers/BottomNav';
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -63,6 +64,11 @@ const AuthenticatedApp = () => {
       <Route path="/MyGames" element={
         <LayoutWrapper currentPageName="MyGames">
           <MyGames />
+        </LayoutWrapper>
+      } />
+      <Route path="/Profile" element={
+        <LayoutWrapper currentPageName="Profile">
+          <Profile />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
