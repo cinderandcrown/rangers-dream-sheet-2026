@@ -131,6 +131,8 @@ export function NavigationProvider({ children }) {
   };
 
   const switchTab = (tabKey) => {
+    if (tabKey === activeTab) return;
+
     const target = normalizeTabState(tabKey, tabState[tabKey]).lastPath || TAB_CONFIG[tabKey].path;
     navigate(target, {
       replace: true,
@@ -149,12 +151,6 @@ export function NavigationProvider({ children }) {
     const fallbackPath = currentIndex > 0
       ? stack[currentIndex - 1]
       : (stack[stack.length - 2] || fallbackTo);
-    const historyIndex = window.history.state?.idx ?? 0;
-
-    if (historyIndex > 0) {
-      navigate(-1);
-      return;
-    }
 
     navigate(fallbackPath, {
       replace: true,

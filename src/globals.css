@@ -79,12 +79,14 @@ button,
 [role="button"],
 input:not([type="checkbox"]):not([type="radio"]),
 select,
-textarea {
+textarea,
+.touch-target {
   min-height: 44px;
 }
 
 button,
-[role="button"] {
+[role="button"],
+.touch-target {
   min-width: 44px;
 }
 
