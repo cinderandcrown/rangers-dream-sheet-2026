@@ -82,8 +82,6 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
           <span>{dateLabel}</span>
           <span className="text-white/20">·</span>
           <span>{game.start_time} CT</span>
-          <span className="text-white/20">·</span>
-          <span>{game.start_time_et} ET</span>
         </div>
         {(tags.length > 0 || isPersonal || subgroupPick) && (
           <div className="mt-1.5 flex flex-wrap gap-1">

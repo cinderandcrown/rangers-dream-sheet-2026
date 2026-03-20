@@ -93,7 +93,7 @@ export default function GameDetailModal({ game, allocation, members, onClose, on
             </div>
             <div className="flex items-center gap-3 text-[14px]">
               <Clock className="h-4 w-4 flex-shrink-0 text-white/40" />
-              <span className="text-white/90">{game.start_time} CT / {game.start_time_et} ET</span>
+              <span className="text-white/90">{game.start_time} CT</span>
             </div>
             <div className="flex items-center gap-3 text-[14px]">
               <MapPin className="h-4 w-4 flex-shrink-0 text-white/40" />

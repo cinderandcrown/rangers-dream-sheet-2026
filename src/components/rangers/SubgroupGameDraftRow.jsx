@@ -25,7 +25,7 @@ export default function SubgroupGameDraftRow({ game, currentPick, members, onAss
           <div className="text-[15px] font-semibold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
             vs {game.opponent}
           </div>
-          <div className="text-[12px] text-white/45">Game #{game.game_number} · {gameDate} · {game.start_time}</div>
+          <div className="text-[12px] text-white/45">Game #{game.game_number} · {gameDate} · {game.start_time} CT</div>
         </div>
         {currentPick && (
           <div className="rounded-full bg-[rgba(191,160,72,0.15)] px-3 py-1 text-[11px] text-[var(--gold)]">
