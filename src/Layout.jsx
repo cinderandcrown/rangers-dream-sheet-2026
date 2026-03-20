@@ -18,7 +18,9 @@ export default function Layout({ children, currentPageName }) {
       style={{
         background: "#0A1628",
         color: "#E2E8F0",
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)",
+        paddingLeft: "env(safe-area-inset-left, 0px)",
+        paddingRight: "env(safe-area-inset-right, 0px)",
       }}
     >
       <div className="relative z-10">

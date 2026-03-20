@@ -98,7 +98,8 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
         <div className="mt-4 flex gap-2">
           <button
             onClick={handleAddToCalendar}
-            className="flex items-center gap-1.5 rounded-lg border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] px-3 min-h-[44px] py-2 text-[11px] font-semibold text-[var(--gold)] transition hover:bg-[rgba(191,160,72,0.12)]"
+            aria-label={`Add ${nextGame.opponent} game to calendar`}
+            className="flex items-center gap-1.5 rounded-lg border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] px-4 min-h-[44px] py-2.5 text-[11px] font-semibold text-[var(--gold)] transition hover:bg-[rgba(191,160,72,0.12)]"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
           >
             <CalendarPlus className="h-3.5 w-3.5" /> Add to Calendar
@@ -107,7 +108,8 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
             href="https://maps.google.com/?q=Globe+Life+Field+Arlington+TX"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-white/50 transition hover:bg-white/[0.06] hover:text-white/70"
+            aria-label="Get directions to Globe Life Field"
+            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 min-h-[44px] py-2.5 text-[11px] font-semibold text-white/50 transition hover:bg-white/[0.06] hover:text-white/70"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
             onClick={(e) => e.stopPropagation()}
           >
