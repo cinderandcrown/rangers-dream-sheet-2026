@@ -1,8 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { createPageUrl } from "@/utils";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
+import useOptimisticMutation from "@/lib/useOptimisticMutation";
 import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import AdminSubmissionControls from "@/components/rangers/AdminSubmissionControls";
@@ -17,8 +17,7 @@ import ScheduleDistribution from "@/components/rangers/ScheduleDistribution";
 import AnalyticsDashboard from "@/components/rangers/analytics/AnalyticsDashboard";
 
 export default function Admin() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { pop } = useTabNavigation();
   const seedQuery = useSeedData();
   const [toast, setToast] = React.useState("");
 
@@ -27,33 +26,30 @@ export default function Admin() {
   const submissionsQuery = useQuery({ queryKey: ["submissions"], queryFn: () => base44.entities.Submission.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const allocationsQuery = useQuery({ queryKey: ["allocations"], queryFn: () => base44.entities.Allocation.list(), enabled: seedQuery.isSuccess, initialData: [] });
 
-  const allocationMutation = useMutation({
+  const allocationMutation = useOptimisticMutation({
     mutationFn: async () => {
       const g = sortGames(gamesQuery.data);
       const m = sortMembers(membersQuery.data);
       const s = submissionsQuery.data;
       const { allocations } = buildAllocationPlan(g, m, s);
       const existing = allocationsQuery.data;
-      await Promise.all(existing.map((a) => base44.entities.Allocation.delete(a.id)));
+      await Promise.all(existing.map((allocation) => base44.entities.Allocation.delete(allocation.id)));
       if (allocations.length > 0) await base44.entities.Allocation.bulkCreate(allocations);
       return allocations;
     },
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["allocations"] });
-      const prev = queryClient.getQueryData(["allocations"]);
-      const g = sortGames(gamesQuery.data);
-      const m = sortMembers(membersQuery.data);
-      const s = submissionsQuery.data;
-      const { allocations: optimistic } = buildAllocationPlan(g, m, s);
-      queryClient.setQueryData(["allocations"], optimistic);
-      return { prev };
-    },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(["allocations"], ctx.prev);
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(["allocations"], data);
-      queryClient.invalidateQueries({ queryKey: ["allocations"] });
+    optimisticUpdates: [
+      {
+        queryKey: ["allocations"],
+        updater: () => {
+          const g = sortGames(gamesQuery.data);
+          const m = sortMembers(membersQuery.data);
+          const s = submissionsQuery.data;
+          return buildAllocationPlan(g, m, s).allocations;
+        },
+      },
+    ],
+    invalidateKeys: [["allocations"]],
+    onSuccess: () => {
       setToast("Allocation complete!");
     },
   });
@@ -73,7 +69,7 @@ export default function Admin() {
   return (
     <AdminGate>
       <div>
-        <BrandHeader showBack onBack={() => navigate(createPageUrl("Index"))} />
+        <BrandHeader showBack onBack={() => pop("/")} />
         <div className="relative z-[1] mx-auto max-w-[1100px] px-6 py-8">
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>

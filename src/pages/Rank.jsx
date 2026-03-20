@@ -1,8 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { createPageUrl } from "@/utils";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
+import useOptimisticMutation from "@/lib/useOptimisticMutation";
 import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import FilterPills from "@/components/rangers/FilterPills";
@@ -23,7 +23,7 @@ function reorder(items, startIndex, endIndex) {
 }
 
 export default function Rank() {
-  const navigate = useNavigate();
+  const { pop } = useTabNavigation();
   const queryClient = useQueryClient();
   const seedQuery = useSeedData();
   const urlParams = new URLSearchParams(window.location.search);
@@ -42,31 +42,69 @@ export default function Rank() {
   const submissionQuery = useQuery({ queryKey: ["submission", memberName], queryFn: () => base44.entities.Submission.filter({ member_name: memberName }), enabled: seedQuery.isSuccess && Boolean(memberName), initialData: [] });
   const allocationsQuery = useQuery({ queryKey: ["allocations"], queryFn: () => base44.entities.Allocation.list(), enabled: seedQuery.isSuccess, initialData: [] });
 
-  const saveMutation = useMutation({
+  const saveMutation = useOptimisticMutation({
     mutationFn: async () => {
       const existing = submissionQuery.data[0];
-      const payload = { member_name: memberName, member_email: memberEmail || existing?.member_email || "", ranked_game_ids: rankedGameIds, submitted_at: new Date().toISOString(), is_final: false };
+      const payload = {
+        member_name: memberName,
+        member_email: memberEmail || existing?.member_email || "",
+        ranked_game_ids: rankedGameIds,
+        submitted_at: new Date().toISOString(),
+        is_final: false,
+      };
       if (existing) return base44.entities.Submission.update(existing.id, payload);
       return base44.entities.Submission.create(payload);
     },
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["submission", memberName] });
-      const prev = queryClient.getQueryData(["submission", memberName]);
-      queryClient.setQueryData(["submission", memberName], (old) => {
-        const payload = { member_name: memberName, ranked_game_ids: rankedGameIds, submitted_at: new Date().toISOString() };
-        return old?.[0] ? [{ ...old[0], ...payload }] : [payload];
-      });
-      return { prev };
-    },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(["submission", memberName], ctx.prev);
+    optimisticUpdates: [
+      {
+        queryKey: ["submission", memberName],
+        updater: (old = []) => {
+          const existing = old[0] || submissionQuery.data[0];
+          return [{
+            ...existing,
+            id: existing?.id || `temp-${memberName}`,
+            member_name: memberName,
+            member_email: memberEmail || existing?.member_email || "",
+            ranked_game_ids: rankedGameIds,
+            submitted_at: new Date().toISOString(),
+            is_final: false,
+          }];
+        },
+      },
+      {
+        queryKey: ["submissions"],
+        updater: (old = []) => {
+          const existing = old.find((item) => item.member_name === memberName) || submissionQuery.data[0];
+          const nextSubmission = {
+            ...existing,
+            id: existing?.id || `temp-${memberName}`,
+            member_name: memberName,
+            member_email: memberEmail || existing?.member_email || "",
+            ranked_game_ids: rankedGameIds,
+            submitted_at: new Date().toISOString(),
+            is_final: false,
+          };
+          const hasExisting = old.some((item) => item.member_name === memberName);
+          return hasExisting
+            ? old.map((item) => item.member_name === memberName ? { ...item, ...nextSubmission } : item)
+            : [...old, nextSubmission];
+        },
+      },
+    ],
+    invalidateKeys: [["submission", memberName], ["submissions"]],
+    onError: () => {
       setToast("Save failed — please try again");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["submissions"] });
-      queryClient.invalidateQueries({ queryKey: ["submission", memberName] });
+    onSuccess: (data, _vars, _ctx, optimisticQueryClient) => {
+      optimisticQueryClient.setQueryData(["submission", memberName], [data]);
+      optimisticQueryClient.setQueryData(["submissions"], (old = []) => {
+        const hasExisting = old.some((item) => item.member_name === memberName);
+        return hasExisting
+          ? old.map((item) => item.member_name === memberName ? { ...item, ...data } : item)
+          : [...old, data];
+      });
       setToast(`${memberName}'s rankings saved!`);
-      setTimeout(() => { navigate(createPageUrl("Index")); }, 1200);
+      setTimeout(() => { pop("/"); }, 1200);
     },
   });
 
@@ -112,7 +150,7 @@ export default function Rank() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center text-center">
         <div className="mb-4 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>Member not found</div>
-        <button onClick={() => navigate(createPageUrl("Index"))} className="rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back</button>
+        <button onClick={() => pop("/")} className="rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back</button>
       </div>
     );
   }
@@ -120,12 +158,12 @@ export default function Rank() {
   if (emailMismatch) {
     return (
       <div>
-        <BrandHeader showBack onBack={() => navigate(createPageUrl("Index"))} />
+        <BrandHeader showBack onBack={() => pop("/")} />
         <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-6">
           <div className="text-4xl mb-4">🚫</div>
           <div className="mb-2 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>Email Doesn't Match</div>
           <p className="text-sm text-white/50 max-w-md">{member.name}'s Dream Sheet was submitted with a different email address. Please use the same email you originally signed in with.</p>
-          <button onClick={() => navigate(createPageUrl("Index"))} className="mt-6 rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back to Home</button>
+          <button onClick={() => pop("/")} className="mt-6 rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back to Home</button>
         </div>
       </div>
     );
@@ -135,12 +173,12 @@ export default function Rank() {
   if (existingSub?.is_locked) {
     return (
       <div>
-        <BrandHeader showBack onBack={() => navigate(createPageUrl("Index"))} />
+        <BrandHeader showBack onBack={() => pop("/")} />
         <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-6">
           <div className="text-4xl mb-4">🔒</div>
           <div className="mb-2 text-2xl font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>Submission Locked</div>
           <p className="text-sm text-white/50 max-w-md">{member.name}'s submission has been locked by the admin. Contact Clark if you need to make changes.</p>
-          <button onClick={() => navigate(createPageUrl("Index"))} className="mt-6 rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back to Home</button>
+          <button onClick={() => pop("/")} className="mt-6 rounded-lg border border-white/15 px-5 min-h-[44px] py-2.5 text-sm text-white/70 hover:text-white transition">Back to Home</button>
         </div>
       </div>
     );
@@ -164,7 +202,7 @@ export default function Rank() {
         if (rankedGameIds.length > 0 && !saveMutation.isSuccess) {
           if (!window.confirm("You have unsaved rankings. Leave anyway?")) return;
         }
-        navigate(createPageUrl("Index"));
+        pop("/");
       }} />
       <div className="relative z-[1] mx-auto max-w-[1200px] px-3 sm:px-6 py-4 sm:py-6">
         {/* Top bar */}
