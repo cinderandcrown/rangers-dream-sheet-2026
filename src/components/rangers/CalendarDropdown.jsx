@@ -7,6 +7,15 @@ import {
   generateGoogleCalUrl,
   generateOutlookCalUrl,
 } from "./icsGenerator";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 const APPLE_ICON = (
   <svg viewBox="0 0 384 512" className="h-4 w-4 fill-current"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-62.1 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
@@ -18,32 +27,49 @@ const OUTLOOK_ICON = (
   <svg viewBox="0 0 24 24" className="h-4 w-4"><path fill="#0078D4" d="M24 7.387v10.478c0 .23-.08.424-.238.583a.793.793 0 01-.584.238h-8.322V6.566h8.322c.23 0 .424.08.584.238.158.159.238.353.238.583zM13.728 2.468V6.06H8.089l-1.078-.909-4.988-4.2a.746.746 0 01.494-.183h10.588c.23 0 .424.08.584.238a.807.807 0 01.039.462zm0 4.598v11.648c0 .148-.04.278-.119.39l-5.2-4.378-.32-.269-1.078-.908L2.023 9.56V5.16l4.988 4.201 1.078.909 5.64 4.75V7.066zm-13.575.5v12.307c0 .23.08.424.238.584.159.158.353.238.584.238h12.553v-4.338L8.089 11.46 7.011 10.55 2.023 6.35V5.966l-.87-.733a.803.803 0 00-.397.33.77.77 0 00-.103.403z"/><path fill="#0078D4" d="M7.011 10.551l1.078.908.32.269 5.2 4.378a.756.756 0 01-.119.39.793.793 0 01-.584.238H.975a.793.793 0 01-.584-.238.793.793 0 01-.238-.584V7.566c0-.146.035-.277.103-.403a.803.803 0 01.397-.33l.87.733 1.5 1.264z"/></svg>
 );
 
-/**
- * A dropdown button that lets users choose Apple Calendar (.ics), Google Calendar, or Outlook.
- *
- * Props:
- *  - game: single game object (for per-game buttons)
- *  - games: array of game objects (for "export all" button)
- *  - memberName: string
- *  - variant: "icon" (small icon button) | "button" (full-width labeled button)
- *  - label: custom label for button variant
- *  - onToast: optional toast callback
- */
+function TriggerButton({ variant, label, open, onClick }) {
+  if (variant === "icon") {
+    return (
+      <button
+        onClick={onClick}
+        aria-label="Add to calendar"
+        className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95"
+      >
+        <CalendarPlus className="h-[18px] w-[18px]" />
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label || "Add to calendar"}
+      className="flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
+      style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+    >
+      <CalendarPlus className="h-4 w-4" />
+      {label || "Add to Calendar"}
+      <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+    </button>
+  );
+}
+
 export default function CalendarDropdown({ game, games, memberName, variant = "icon", label, onToast }) {
   const [open, setOpen] = React.useState(false);
   const ref = useRef(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isMobile) return;
     const handleClick = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
     document.addEventListener("pointerdown", handleClick);
     return () => document.removeEventListener("pointerdown", handleClick);
-  }, [open]);
+  }, [open, isMobile]);
 
   const handleApple = async (e) => {
-    e.stopPropagation();
+    e?.stopPropagation?.();
     setOpen(false);
     if (games) {
       const ics = generateAllGamesIcs(games, memberName);
@@ -56,10 +82,9 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
   };
 
   const handleGoogle = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation?.();
     setOpen(false);
     if (games) {
-      // Google only supports single events — open first game, toast instruction
       window.open(generateGoogleCalUrl(games[0], memberName), "_blank");
       if (onToast) onToast("Google Calendar opened — add games one at a time, or use Apple/iCal for bulk");
     } else if (game) {
@@ -69,7 +94,7 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
   };
 
   const handleOutlook = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation?.();
     setOpen(false);
     if (games) {
       window.open(generateOutlookCalUrl(games[0], memberName), "_blank");
@@ -80,39 +105,62 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
     }
   };
 
-  const toggleOpen = (e) => {
-    e.stopPropagation();
-    setOpen((v) => !v);
-  };
-
   const menuItems = [
     { icon: APPLE_ICON, label: "Apple / iCal", sublabel: "Downloads .ics file", onClick: handleApple },
     { icon: GOOGLE_ICON, label: "Google Calendar", sublabel: "Best on Android", onClick: handleGoogle },
     { icon: OUTLOOK_ICON, label: "Outlook", sublabel: "Web link", onClick: handleOutlook },
   ];
 
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
+          <div onClick={(e) => e.stopPropagation()}>
+            <TriggerButton variant={variant} label={label} open={open} />
+          </div>
+        </DrawerTrigger>
+        <DrawerContent className="border-white/[0.08] bg-[#13203a] text-white">
+          <DrawerHeader className="pb-2 text-left">
+            <DrawerTitle className="text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+              Add to Calendar
+            </DrawerTitle>
+            <DrawerDescription className="text-white/50">
+              Pick where you want to save this game.
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-6">
+            {menuItems.map((item) => (
+              <button
+                key={item.label}
+                onClick={item.onClick}
+                className="flex w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-4 text-left transition hover:bg-white/[0.06]"
+              >
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.08]">
+                  {item.icon}
+                </div>
+                <div>
+                  <div className="text-[14px] font-semibold text-white">{item.label}</div>
+                  <div className="text-[11px] text-white/45">{item.sublabel}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <div ref={ref} className="relative">
-      {variant === "icon" ? (
-        <button
-          onClick={toggleOpen}
-          aria-label="Add to calendar"
-          className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95"
-        >
-          <CalendarPlus className="h-[18px] w-[18px]" />
-        </button>
-      ) : (
-        <button
-          onClick={toggleOpen}
-          aria-label={label || "Add to calendar"}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
-          style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
-        >
-          <CalendarPlus className="h-4 w-4" />
-          {label || "Add to Calendar"}
-          <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
-        </button>
-      )}
+      <TriggerButton
+        variant={variant}
+        label={label}
+        open={open}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((value) => !value);
+        }}
+      />
 
       {open && (
         <div
