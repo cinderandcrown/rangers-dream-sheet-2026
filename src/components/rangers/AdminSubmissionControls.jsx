@@ -1,19 +1,37 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useOptimisticMutation from "@/lib/useOptimisticMutation";
 
 export default function AdminSubmissionControls({ member, submission, onToast }) {
-  const queryClient = useQueryClient();
-
-  const updateMutation = useMutation({
+  const updateMutation = useOptimisticMutation({
     mutationFn: ({ id, data }) => base44.entities.Submission.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["submissions"] }),
+    optimisticUpdates: [
+      {
+        queryKey: ["submissions"],
+        updater: (old = [], { id, data }) => old.map((item) => item.id === id ? { ...item, ...data } : item),
+      },
+      {
+        queryKey: ["submission", member.name],
+        updater: (old = [], { id, data }) => old.map((item) => item.id === id ? { ...item, ...data } : item),
+      },
+    ],
+    invalidateKeys: [["submissions"], ["submission", member.name]],
   });
 
-  const deleteMutation = useMutation({
+  const deleteMutation = useOptimisticMutation({
     mutationFn: (id) => base44.entities.Submission.delete(id),
+    optimisticUpdates: [
+      {
+        queryKey: ["submissions"],
+        updater: (old = [], id) => old.filter((item) => item.id !== id),
+      },
+      {
+        queryKey: ["submission", member.name],
+        updater: (old = [], id) => old.filter((item) => item.id !== id),
+      },
+    ],
+    invalidateKeys: [["submissions"], ["submission", member.name]],
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["submissions"] });
       onToast(`${member.name}'s submission deleted`);
     },
   });
@@ -53,7 +71,6 @@ export default function AdminSubmissionControls({ member, submission, onToast })
         {isFinal ? `✓ Finalized (${ct})` : ct > 0 ? `✓ ${ct} ranked` : "Awaiting"}
       </span>
 
-      {/* Controls */}
       <div className="mt-3 flex flex-wrap justify-center gap-1.5">
         <button
           onClick={() => updateMutation.mutate({ id: submission.id, data: { is_locked: !isLocked } })}
