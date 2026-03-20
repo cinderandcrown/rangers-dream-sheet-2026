@@ -1,5 +1,6 @@
 import { parseISO, format } from "date-fns";
 import { OUTLOOK_LOCATION } from "./constants";
+import { base44 } from "@/api/base44Client";
 
 /**
  * Convert "3:05 PM" CT to an ICS-formatted datetime string in UTC.
@@ -107,14 +108,19 @@ export function generateAllGamesIcs(games, memberName) {
 }
 
 /**
- * Trigger an .ics calendar import on iOS Safari and other browsers.
+ * Trigger an .ics calendar import on iOS Safari and all browsers.
  *
- * Uses a data: URI with text/calendar MIME type and navigates the
- * current window to it. iOS Safari intercepts this and shows the
- * native "Add to Calendar" sheet, then returns the user to the page.
- * No blank tabs, no file uploads, no server calls.
+ * iOS Safari cannot handle data: URIs or blob: URIs for text/calendar.
+ * The only reliable method is navigating to a real HTTP URL that serves
+ * the file with Content-Type: text/calendar.
+ *
+ * We call our serveIcs backend function via GET with base64-encoded
+ * ICS content, and navigate to that URL. iOS Safari will intercept it
+ * and show the native "Add to Calendar" sheet.
  */
-export function downloadIcsFile(icsContent, _filename) {
-  const dataUri = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
-  window.location.href = dataUri;
+export function downloadIcsFile(icsContent, filename) {
+  const encoded = btoa(unescape(encodeURIComponent(icsContent)));
+  const fnUrl = base44.functions.getUrl("serveIcs");
+  const url = fnUrl + "?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
+  window.location.href = url;
 }
