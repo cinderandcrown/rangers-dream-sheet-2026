@@ -1,12 +1,11 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { Home, CalendarDays, User } from "lucide-react";
+import { Home, CalendarDays } from "lucide-react";
 import { useTabNavigation } from "@/lib/TabNavigationContext";
 
 const NAV_ITEMS = [
   { tab: "home", label: "Home", icon: Home },
   { tab: "myGames", label: "My Games", icon: CalendarDays },
-  { tab: "profile", label: "Profile", icon: User },
 ];
 
 export default function BottomNav() {
