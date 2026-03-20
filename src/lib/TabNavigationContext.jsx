@@ -131,8 +131,12 @@ export function NavigationProvider({ children }) {
         return next;
       }
 
-      if (isReplace) stack[stack.length - 1] = currentPath;
-      else if (stack[stack.length - 1] !== currentPath) stack.push(currentPath);
+      if (isReplace) {
+        if (stack[stack.length - 2] === currentPath) stack.pop();
+        else stack[stack.length - 1] = currentPath;
+      } else if (stack[stack.length - 1] !== currentPath) {
+        stack.push(currentPath);
+      }
 
       next[activeTab] = {
         stack,
