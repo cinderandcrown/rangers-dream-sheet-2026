@@ -30,12 +30,11 @@ export default function Layout({ children }) {
         <AnimatePresence mode="wait">
           <motion.div
             key={`${location.pathname}${location.search}`}
-            custom={transitionType}
             variants={pageVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
           >
             {children}
           </motion.div>
