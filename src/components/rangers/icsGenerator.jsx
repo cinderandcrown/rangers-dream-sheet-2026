@@ -150,3 +150,48 @@ export function downloadIcsFile(icsContent, filename) {
     );
   }
 }
+
+/**
+ * Generate a Google Calendar "Add Event" URL for a single game.
+ */
+export function generateGoogleCalUrl(game, memberName) {
+  const dtStart = ctToUtcDatetime(game.date, game.start_time);
+  const dtEnd = addHoursToUtc(dtStart, 3.5);
+  const title = `${game.opponent} at Rangers`;
+  const details = `Texas Rangers vs ${game.opponent}\nGame #${game.game_number}\n${memberName}'s Season Ticket`;
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: title,
+    dates: `${dtStart}/${dtEnd}`,
+    details: details,
+    location: OUTLOOK_LOCATION,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+/**
+ * Generate an Outlook.com "Add Event" URL for a single game.
+ */
+export function generateOutlookCalUrl(game, memberName) {
+  const d = parseISO(game.date);
+  const [timePart, suffix] = game.start_time.split(" ");
+  let [hours, minutes] = timePart.split(":").map(Number);
+  if (suffix === "PM" && hours !== 12) hours += 12;
+  if (suffix === "AM" && hours === 12) hours = 0;
+
+  const startDt = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hours, minutes);
+  const endDt = new Date(startDt.getTime() + 3.5 * 60 * 60 * 1000);
+
+  const title = `${game.opponent} at Rangers`;
+  const body = `Texas Rangers vs ${game.opponent}\nGame #${game.game_number}\n${memberName}'s Season Ticket`;
+  const params = new URLSearchParams({
+    rru: "addevent",
+    subject: title,
+    startdt: startDt.toISOString(),
+    enddt: endDt.toISOString(),
+    body: body,
+    location: OUTLOOK_LOCATION,
+    path: "/calendar/action/compose",
+  });
+  return `https://outlook.live.com/calendar/0/action/compose?${params.toString()}`;
+}
