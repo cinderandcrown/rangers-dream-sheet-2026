@@ -1,6 +1,5 @@
 import { parseISO, format } from "date-fns";
 import { OUTLOOK_LOCATION } from "./constants";
-import { base44 } from "@/api/base44Client";
 
 /**
  * Convert "3:05 PM" CT to an ICS-formatted datetime string in UTC.
@@ -110,31 +109,12 @@ export function generateAllGamesIcs(games, memberName) {
 /**
  * Trigger an .ics calendar import on iOS Safari and other browsers.
  *
- * Strategy: create a blob URL and navigate to it in the current window.
- * iOS Safari recognises "text/calendar" blobs and shows the native
- * "Add to Calendar" sheet without leaving the page, because the
- * navigation is intercepted by the OS calendar handler.
- *
- * We avoid window.open entirely — it creates orphan "about:blank" tabs
- * and sometimes triggers "Safari cannot download this file" errors.
+ * Uses a data: URI with text/calendar MIME type and navigates the
+ * current window to it. iOS Safari intercepts this and shows the
+ * native "Add to Calendar" sheet, then returns the user to the page.
+ * No blank tabs, no file uploads, no server calls.
  */
-export async function downloadIcsFile(icsContent, _filename) {
-  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-
-  // Use a temporary <a> link to trigger the download / calendar prompt.
-  // On iOS Safari this surfaces the native calendar sheet.
-  // On desktop browsers it downloads the .ics file.
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = _filename || "event.ics";
-  a.style.display = "none";
-  document.body.appendChild(a);
-  a.click();
-
-  // Clean up after a short delay so the browser can process the click
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 1000);
+export function downloadIcsFile(icsContent, _filename) {
+  const dataUri = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
+  window.location.href = dataUri;
 }
