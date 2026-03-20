@@ -86,8 +86,8 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
   };
 
   const menuItems = [
-    { icon: APPLE_ICON, label: "Apple / iCal", sublabel: ".ics file", onClick: handleApple },
-    { icon: GOOGLE_ICON, label: "Google Calendar", sublabel: "Web link", onClick: handleGoogle },
+    { icon: APPLE_ICON, label: "Apple / iCal", sublabel: ".ics file for Apple", onClick: handleApple },
+    { icon: GOOGLE_ICON, label: "Google Calendar", sublabel: "Best on Android", onClick: handleGoogle },
     { icon: OUTLOOK_ICON, label: "Outlook", sublabel: "Web link", onClick: handleOutlook },
   ];
 

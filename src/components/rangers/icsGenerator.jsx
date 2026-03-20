@@ -2,44 +2,33 @@ import { parseISO, format } from "date-fns";
 import { OUTLOOK_LOCATION } from "./constants";
 import { base44 } from "@/api/base44Client";
 
-/**
- * Convert "3:05 PM" CT to an ICS-formatted datetime string in UTC.
- * Central Time is UTC-5 (CDT) during baseball season (Apr–Sep).
- */
-function ctToUtcDatetime(dateStr, timeStr) {
-  const d = parseISO(dateStr);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+function formatUtcIcsDate(date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+  return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+}
 
+/**
+ * Convert "3:05 PM" Central Time to a real UTC Date.
+ * Rangers season dates are during daylight time, so CT is UTC-5.
+ */
+function ctToUtcDate(dateStr, timeStr) {
+  const d = parseISO(dateStr);
   const [timePart, suffix] = timeStr.split(" ");
   let [hours, minutes] = timePart.split(":").map(Number);
+
   if (suffix === "PM" && hours !== 12) hours += 12;
   if (suffix === "AM" && hours === 12) hours = 0;
 
-  // Add 5 hours for CDT → UTC
-  hours += 5;
-  let adjustedDay = Number(day);
-  if (hours >= 24) {
-    hours -= 24;
-    adjustedDay += 1;
-  }
-
-  const h = String(hours).padStart(2, "0");
-  const m = String(minutes).padStart(2, "0");
-  const dd = String(adjustedDay).padStart(2, "0");
-  return `${year}${month}${dd}T${h}${m}00Z`;
+  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), hours + 5, minutes, 0));
 }
 
-function addHoursToUtc(utcStr, hoursToAdd) {
-  const year = parseInt(utcStr.slice(0, 4));
-  const month = parseInt(utcStr.slice(4, 6)) - 1;
-  const day = parseInt(utcStr.slice(6, 8));
-  const hours = parseInt(utcStr.slice(9, 11));
-  const minutes = parseInt(utcStr.slice(11, 13));
-  const d = new Date(Date.UTC(year, month, day, hours, minutes));
-  d.setUTCHours(d.getUTCHours() + hoursToAdd);
-  return format(d, "yyyyMMdd") + "T" + format(d, "HHmmss") + "Z";
+function addHours(date, hoursToAdd) {
+  return new Date(date.getTime() + hoursToAdd * 60 * 60 * 1000);
 }
 
 function escapeIcs(str) {
@@ -50,60 +39,52 @@ function generateUid(gameNumber) {
   return `rangers-2026-game-${gameNumber}@dreamsheet`;
 }
 
-export function generateSingleGameIcs(game, memberName) {
-  const dtStart = ctToUtcDatetime(game.date, game.start_time);
-  const dtEnd = addHoursToUtc(dtStart, 3.5);
+function buildEvent(game, memberName) {
+  const dtStart = ctToUtcDate(game.date, game.start_time);
+  const dtEnd = addHours(dtStart, 3.5);
   const summary = `${game.opponent} at Rangers`;
   const description = `Texas Rangers vs ${game.opponent}\\nGame #${game.game_number}\\n${memberName}'s Season Ticket`;
+  const dtStamp = formatUtcIcsDate(new Date());
 
   return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Rangers Dream Sheet//EN",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${generateUid(game.game_number)}`,
-    `DTSTART:${dtStart}`,
-    `DTEND:${dtEnd}`,
+    `DTSTAMP:${dtStamp}`,
+    `DTSTART:${formatUtcIcsDate(dtStart)}`,
+    `DTEND:${formatUtcIcsDate(dtEnd)}`,
     `SUMMARY:${escapeIcs(summary)}`,
     `DESCRIPTION:${escapeIcs(description)}`,
     `LOCATION:${escapeIcs(OUTLOOK_LOCATION)}`,
     "STATUS:CONFIRMED",
+    "TRANSP:OPAQUE",
     "END:VEVENT",
-    "END:VCALENDAR",
   ].join("\r\n");
 }
 
-export function generateAllGamesIcs(games, memberName) {
-  const events = games.map((game) => {
-    const dtStart = ctToUtcDatetime(game.date, game.start_time);
-    const dtEnd = addHoursToUtc(dtStart, 3.5);
-    const summary = `${game.opponent} at Rangers`;
-    const description = `Texas Rangers vs ${game.opponent}\\nGame #${game.game_number}\\n${memberName}'s Season Ticket`;
-
-    return [
-      "BEGIN:VEVENT",
-      `UID:${generateUid(game.game_number)}`,
-      `DTSTART:${dtStart}`,
-      `DTEND:${dtEnd}`,
-      `SUMMARY:${escapeIcs(summary)}`,
-      `DESCRIPTION:${escapeIcs(description)}`,
-      `LOCATION:${escapeIcs(OUTLOOK_LOCATION)}`,
-      "STATUS:CONFIRMED",
-      "END:VEVENT",
-    ].join("\r\n");
-  });
-
+export function generateSingleGameIcs(game, memberName) {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Rangers Dream Sheet//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    `X-WR-CALNAME:${memberName}'s Rangers 2026`,
-    ...events,
+    buildEvent(game, memberName),
     "END:VCALENDAR",
+    "",
+  ].join("\r\n");
+}
+
+export function generateAllGamesIcs(games, memberName) {
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Rangers Dream Sheet//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    `X-WR-CALNAME:${escapeIcs(memberName)}'s Rangers 2026`,
+    ...games.map((game) => buildEvent(game, memberName)),
+    "END:VCALENDAR",
+    "",
   ].join("\r\n");
 }
 
