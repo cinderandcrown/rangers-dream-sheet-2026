@@ -8,8 +8,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function SubgroupGameDraftRow({ game, currentPick, members, onAssign, disabled = false }) {
+export default function SubgroupGameDraftRow({ game, currentPick, members, onAssign, disabled = false, options, useDrawingOrder = false }) {
   const gameDate = format(parseISO(game.date), "EEE, MMM d");
+  const selectOptions = options || members.map((member) => ({
+    value: member.member_name,
+    label: `${member.pick_order}. ${member.member_name}`,
+  }));
+  const currentValue = currentPick
+    ? (useDrawingOrder ? `${currentPick.pick_order}::${currentPick.subgroup_member_name}` : currentPick.subgroup_member_name)
+    : "unassigned";
 
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
@@ -27,14 +34,14 @@ export default function SubgroupGameDraftRow({ game, currentPick, members, onAss
         )}
       </div>
 
-      <Select value={currentPick?.subgroup_member_name || "unassigned"} onValueChange={(value) => onAssign(game, value)} disabled={disabled}>
+      <Select value={currentValue} onValueChange={(value) => onAssign(game, value)} disabled={disabled}>
         <SelectTrigger className="min-h-[48px] border-white/[0.08] bg-white/[0.03] text-white disabled:opacity-50">
           <SelectValue placeholder="Assign this game" />
         </SelectTrigger>
         <SelectContent className="border-white/[0.08] bg-[var(--slate)] text-white" side="bottom" sideOffset={8} position="popper">
           <SelectItem value="unassigned">Unassigned</SelectItem>
-          {members.map((member) => (
-            <SelectItem key={member.id} value={member.member_name}>{member.pick_order}. {member.member_name}</SelectItem>
+          {selectOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
           ))}
         </SelectContent>
       </Select>

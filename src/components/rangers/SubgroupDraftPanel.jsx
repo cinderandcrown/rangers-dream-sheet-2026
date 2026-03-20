@@ -6,9 +6,11 @@ import SubgroupMemberManager from "./SubgroupMemberManager";
 import SubgroupGameDraftRow from "./SubgroupGameDraftRow";
 import SubgroupDrawingOrderPanel from "./SubgroupDrawingOrderPanel";
 import { downloadSubgroupExcel } from "./subgroupExports";
+import { SANDY_DRAWING_ORDER_OPTIONS } from "./sandyDrawingOrder";
 
 export default function SubgroupDraftPanel({ managerName, games, members, picks, onToast }) {
   const queryClient = useQueryClient();
+  const isSandyDraft = managerName === "Sandy";
   const isFinalized = picks.length > 0 && picks.every((pick) => pick.is_finalized);
   const allAssigned = games.length > 0 && games.every((game) => picks.some((pick) => pick.game_number === game.game_number));
 
@@ -28,23 +30,28 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
       return;
     }
 
+    const [pickOrderValue, subgroupMemberValue] = isSandyDraft ? value.split("::") : [null, value];
+    const subgroupMemberName = subgroupMemberValue || value;
+    const nextPickOrder = isSandyDraft ? Number(pickOrderValue) : (existingPick?.pick_order || (picks.length + 1));
+
     if (existingPick) {
       await base44.entities.SubgroupPick.update(existingPick.id, {
-        subgroup_member_name: value,
+        subgroup_member_name: subgroupMemberName,
+        pick_order: nextPickOrder,
         is_finalized: false,
       });
     } else {
       await base44.entities.SubgroupPick.create({
         manager_name: managerName,
-        subgroup_member_name: value,
+        subgroup_member_name: subgroupMemberName,
         game_number: game.game_number,
-        pick_order: picks.length + 1,
+        pick_order: nextPickOrder,
         is_finalized: false,
       });
     }
 
     refreshDraft();
-    onToast(`${game.opponent} assigned to ${value}`);
+    onToast(`${game.opponent} assigned to ${subgroupMemberName}`);
   };
 
   const handleSubmitDraft = async () => {
@@ -86,14 +93,16 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         </div>
       </div>
 
-      {managerName === "Sandy" && <SubgroupDrawingOrderPanel />}
+      {isSandyDraft && <SubgroupDrawingOrderPanel />}
 
-      <div className="mb-5">
-        <div className="mb-2 text-[11px] font-semibold tracking-[2px] text-white/35" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
-          Turn Order
+      {!isSandyDraft && (
+        <div className="mb-5">
+          <div className="mb-2 text-[11px] font-semibold tracking-[2px] text-white/35" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
+            Turn Order
+          </div>
+          <SubgroupMemberManager managerName={managerName} members={members} picks={picks} onRefresh={refreshDraft} onToast={onToast} disabled={isFinalized} />
         </div>
-        <SubgroupMemberManager managerName={managerName} members={members} picks={picks} onRefresh={refreshDraft} onToast={onToast} disabled={isFinalized} />
-      </div>
+      )}
 
       <div>
         <div className="mb-2 text-[11px] font-semibold tracking-[2px] text-white/35" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
@@ -106,6 +115,8 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
               game={game}
               currentPick={picks.find((pick) => pick.game_number === game.game_number) || null}
               members={members}
+              options={isSandyDraft ? SANDY_DRAWING_ORDER_OPTIONS : undefined}
+              useDrawingOrder={isSandyDraft}
               onAssign={handleAssign}
               disabled={isFinalized}
             />
@@ -127,12 +138,12 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         )}
         <button
           onClick={handleSubmitDraft}
-          disabled={isFinalized || members.length === 0 || !allAssigned}
+          disabled={isFinalized || picks.length === 0}
           aria-label="Lock in subgroup draft"
           className="btn-red-gradient min-h-[48px] rounded-xl px-5 py-3 text-[12px] font-semibold text-white disabled:opacity-40"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
         >
-          {isFinalized ? "Subgroup Draft Locked In" : "Lock In Subgroup Draft"}
+          {isFinalized ? "Subgroup Draft Locked In" : (allAssigned ? "Lock In Subgroup Draft" : "Lock In Current Assignments") }
         </button>
       </div>
     </div>

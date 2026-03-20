@@ -1,29 +1,5 @@
 import React from "react";
-
-const SANDY_DRAWING_ORDER = [
-  "Brad",
-  "Shane",
-  "Mary",
-  "John P.",
-  "JK",
-  "Neal",
-  "Chrissy",
-  "Shane",
-  "JK",
-  "John R.",
-  "Nick",
-  "John P.",
-  "Nick",
-  "Andy",
-  "JK",
-  "Neal",
-  "Shane",
-  "Nick",
-  "Brad",
-  "Shane",
-  "Shane",
-  "John R.",
-];
+import { SANDY_DRAWING_ORDER } from "./sandyDrawingOrder";
 
 export default function SubgroupDrawingOrderPanel() {
   return (
