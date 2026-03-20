@@ -131,195 +131,35 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers, 
         .hero-wrap-v2 .diamond-v2 {
           position: absolute;
           inset: 0;
-          border: 1px solid rgba(191,160,72,0.06);
+          border: 1px solid rgba(191,160,72,0.16);
           border-radius: 4px;
+          box-shadow: 0 0 18px rgba(191,160,72,0.05);
         }
         .hero-wrap-v2 .diamond-v2:nth-child(2) {
           inset: 40px;
-          border-color: rgba(191,160,72,0.04);
+          border-color: rgba(191,160,72,0.11);
         }
         .hero-wrap-v2 .diamond-v2:nth-child(3) {
           inset: 80px;
-          border-color: rgba(191,160,72,0.03);
+          border-color: rgba(191,160,72,0.08);
         }
 
         .hero-wrap-v2 .base-v2 {
           position: absolute;
           width: 8px;
           height: 8px;
-          background: rgba(191,160,72,0.12);
+          background: rgba(191,160,72,0.32);
+          box-shadow: 0 0 10px rgba(191,160,72,0.18);
           transform: rotate(-45deg);
         }
-        .hero-wrap-v2 .base-v2.home { bottom: -4px; left: 50%; margin-left: -4px; }
-        .hero-wrap-v2 .base-v2.first { right: -4px; top: 50%; margin-top: -4px; }
-        .hero-wrap-v2 .base-v2.second { top: -4px; left: 50%; margin-left: -4px; }
-        .hero-wrap-v2 .base-v2.third { left: -4px; top: 50%; margin-top: -4px; }
-
-        .hero-wrap-v2 .hero-arc-v2 {
-          position: absolute;
-          top: 30%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 600px;
-          height: 300px;
-          border: 1px solid rgba(192,17,31,0.08);
-          border-radius: 50%;
-          border-bottom: none;
-          opacity: 0;
-          animation: heroArcFadeInV2 1.5s ease-out 0.5s forwards;
-        }
-        .hero-wrap-v2 .hero-arc-v2::after {
-          content: '';
-          position: absolute;
-          top: -1px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 80px;
-          height: 3px;
-          background: linear-gradient(90deg, transparent, rgba(192,17,31,0.3), transparent);
-          border-radius: 2px;
-        }
-
-        .hero-wrap-v2 .orb-v2 {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(80px);
-          pointer-events: none;
-        }
-        .hero-wrap-v2 .orb-red-v2 {
-          width: 300px; height: 300px;
-          background: rgba(192,17,31,0.12);
-          top: -100px; right: -80px;
-          animation: heroOrbPulseSimpleV2 6s ease-in-out infinite;
-        }
-        .hero-wrap-v2 .orb-gold-v2 {
-          width: 250px; height: 250px;
-          background: rgba(191,160,72,0.08);
-          bottom: -50px; left: -60px;
-          animation: heroOrbPulseSimpleV2 8s ease-in-out 2s infinite;
-        }
-        .hero-wrap-v2 .orb-navy-v2 {
-          width: 400px; height: 400px;
-          background: rgba(0,50,120,0.15);
-          top: -150px; left: 50%;
-          transform: translateX(-50%);
-          animation: heroOrbPulseV2 7s ease-in-out 1s infinite;
-        }
-
-        .hero-wrap-v2 .particles-v2 {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-          pointer-events: none;
-        }
-        .hero-wrap-v2 .particle-v2 {
-          position: absolute;
-          border-radius: 50%;
-          animation: heroFloatV2 linear infinite;
-        }
-
-        .hero-wrap-v2 .hero-pill-v2 {
-          opacity: 0;
-          transform: translateY(12px);
-          animation: heroSlideUpV2 0.6s ease-out 0.2s forwards;
-        }
-        .hero-wrap-v2 .hero-event-card-v2 {
-          opacity: 0;
-          transform: translateY(12px);
-          animation: heroSlideUpV2 0.6s ease-out 0.35s forwards;
-        }
-        .hero-wrap-v2 .hero-headline-v2 {
-          opacity: 0;
-          transform: translateY(16px);
-          animation: heroSlideUpV2 0.7s ease-out 0.55s forwards;
-        }
-        .hero-wrap-v2 .hero-sub-v2 {
-          opacity: 0;
-          transform: translateY(12px);
-          animation: heroSlideUpV2 0.6s ease-out 0.7s forwards;
-        }
-        .hero-wrap-v2 .hero-stats-v2 {
-          opacity: 0;
-          transform: translateY(16px) scale(0.97);
-          animation: heroStatsInV2 0.7s ease-out 0.85s forwards;
-        }
-
-        .hero-wrap-v2 .shimmer-text-v2 {
-          background: linear-gradient(105deg, rgba(255,255,255,0) 40%, rgba(191,160,72,0.15) 50%, rgba(255,255,255,0) 60%);
-          background-size: 200% 100%;
-          -webkit-background-clip: text;
-          background-clip: text;
-          animation: heroShimmerV2 4s ease-in-out 2s infinite;
-        }
-
-        .hero-stat-cell {
-          position: relative;
-          transition: all 0.2s;
-        }
-        .hero-stat-cell:hover {
-          background: rgba(255,255,255,0.03);
-        }
-        .hero-stat-cell .hero-stat-value {
-          transition: transform 0.2s;
-        }
-        .hero-stat-cell:hover .hero-stat-value {
-          transform: scale(1.08);
-        }
-
-        .hero-progress-ring-v2 {
-          transform: rotate(-90deg);
-        }
-        .hero-progress-ring-v2 circle {
-          transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .hero-wrap-v2 .red-underline-v2 {
-          position: absolute;
-          bottom: -3px;
-          left: 0;
-          height: 3px;
-          width: 0;
-          background: linear-gradient(90deg, transparent, #C0111F, transparent);
-          border-radius: 2px;
-          animation: heroUnderlineGrowV2 0.8s ease-out 1.0s forwards;
-        }
-
-        @keyframes heroSlideUpV2 {
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes heroStatsInV2 {
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes heroFieldFadeInV2 {
-          to { opacity: 1; }
-        }
-        @keyframes heroArcFadeInV2 {
-          to { opacity: 1; }
-        }
-        @keyframes heroOrbPulseV2 {
-          0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
-          50% { opacity: 0.6; transform: translateX(-50%) scale(1.15); }
-        }
-        @keyframes heroOrbPulseSimpleV2 {
-          0%, 100% { opacity: 1; scale: 1; }
-          50% { opacity: 0.5; scale: 1.2; }
-        }
-        @keyframes heroShimmerV2 {
-          0%, 100% { background-position: 200% center; }
-          50% { background-position: -200% center; }
-        }
-        @keyframes heroFloatV2 {
-          from { transform: translateY(100vh) translateX(0); opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          to { transform: translateY(-20px) translateX(30px); opacity: 0; }
-        }
-        @keyframes heroUnderlineGrowV2 {
-          to { width: 100%; }
-        }
-
+...
         @media (max-width: 640px) {
-          .hero-wrap-v2 .hero-field-lines-v2 { display: none; }
+          .hero-wrap-v2 .hero-field-lines-v2 {
+            width: 280px;
+            height: 280px;
+            transform: translate(-50%, -40%) rotate(45deg);
+            opacity: 0.75;
+          }
           .hero-wrap-v2 .hero-arc-v2 { display: none; }
         }
       `}</style>
