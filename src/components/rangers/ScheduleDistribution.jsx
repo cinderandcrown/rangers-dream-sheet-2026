@@ -49,9 +49,9 @@ export default function ScheduleDistribution({ members, games, allocations, onTo
               </div>
               <span className="text-[13px] text-white/40">{memberGames.length} games</span>
               <div className="ml-auto flex flex-wrap gap-2">
-                <ActionBtn onClick={() => handleViewSchedule(member.name)} label="👁 View" />
-                <ActionBtn onClick={() => downloadMemberScheduleCsv(member.name, games, allocations)} label="📥 CSV" />
-                <ActionBtn onClick={() => handleMemberExcel(member)} label="📥 Excel" />
+                <ActionBtn onClick={() => handleViewSchedule(member.name)} label="👁 View" ariaLabel={`View ${member.name}'s schedule`} />
+                <ActionBtn onClick={() => downloadMemberScheduleCsv(member.name, games, allocations)} label="📥 CSV" ariaLabel={`Download ${member.name}'s schedule as CSV`} />
+                <ActionBtn onClick={() => handleMemberExcel(member)} label="📥 Excel" ariaLabel={`Download ${member.name}'s schedule as Excel`} />
               </div>
             </div>
           );
@@ -61,6 +61,7 @@ export default function ScheduleDistribution({ members, games, allocations, onTo
       <div className="flex flex-wrap gap-[10px] border-t border-white/[0.06] pt-4">
         <button
           onClick={handleMasterExcel}
+          aria-label="Download the master schedule as Excel"
           className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
         >
@@ -68,6 +69,7 @@ export default function ScheduleDistribution({ members, games, allocations, onTo
         </button>
         <button
           onClick={handleAllSchedulesHtml}
+          aria-label="Open printable schedules for all members"
           className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
         >
@@ -79,10 +81,11 @@ export default function ScheduleDistribution({ members, games, allocations, onTo
   );
 }
 
-function ActionBtn({ onClick, label }) {
+function ActionBtn({ onClick, label, ariaLabel }) {
   return (
     <button
       onClick={onClick}
+      aria-label={ariaLabel}
       className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[12px] text-white/60 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
       style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
     >

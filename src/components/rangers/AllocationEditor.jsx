@@ -78,6 +78,7 @@ export default function AllocationEditor({ games, members, allocations, targets,
           <button
             onClick={() => { if (window.confirm("Finalize all allocations? Members will see their final assignments.")) finalizeMutation.mutate(); }}
             disabled={finalizeMutation.isPending}
+            aria-label="Finalize all game allocations"
             className="rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:-translate-y-0.5"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px", background: "linear-gradient(135deg, #22C55E, #15803D)" }}
           >
@@ -107,11 +108,11 @@ export default function AllocationEditor({ games, members, allocations, targets,
       </div>
 
       <div className="mb-4 flex flex-wrap gap-1">
-        <button onClick={() => setAllocTab("master")} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === "master" ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        <button onClick={() => setAllocTab("master")} aria-label="Show master allocation list" aria-pressed={allocTab === "master"} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === "master" ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
           Master
         </button>
         {members.map((member) => (
-          <button key={member.name} onClick={() => setAllocTab(member.name)} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === member.name ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          <button key={member.name} onClick={() => setAllocTab(member.name)} aria-label={`Show allocations for ${member.name}`} aria-pressed={allocTab === member.name} className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${allocTab === member.name ? "border border-[var(--navy)] bg-[var(--navy)] text-white" : "border border-white/[0.08] bg-transparent text-white/50 hover:text-white"}`} style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
             {member.name}
           </button>
         ))}
@@ -154,6 +155,7 @@ export default function AllocationEditor({ games, members, allocations, targets,
                           <button
                             key={member.name}
                             onClick={() => reassignMutation.mutate({ gameNumber: game.game_number, newOwner: member.name })}
+                            aria-label={`Assign game ${game.game_number} to ${member.name}`}
                             className="rounded-md px-2 py-0.5 text-[11px] font-medium transition hover:opacity-80"
                             style={{ fontFamily: "'Oswald', sans-serif", backgroundColor: `${member.accent_color}33`, color: member.accent_color }}
                           >
