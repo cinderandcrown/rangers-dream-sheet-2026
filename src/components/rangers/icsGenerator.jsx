@@ -107,30 +107,23 @@ export function generateAllGamesIcs(games, memberName) {
 }
 
 /**
- * Trigger an .ics download / calendar import.
+ * Trigger an .ics calendar import.
  *
- * Uses a data: URI with text/calendar MIME type which is the most reliable
- * cross-platform method:
- *  - iOS Safari: opens the native "Add to Calendar" prompt
- *  - Android Chrome: downloads the file, user taps to open in calendar
- *  - Desktop: downloads the .ics file
+ * iOS Safari blocks both data: URIs and blob downloads. The only reliable
+ * cross-platform method is to create an Object URL from a Blob with the
+ * correct MIME type and navigate to it directly via window.location.
  *
- * This is synchronous — no upload needed, no popup-blocker issues.
+ * On iOS this opens the native "Add to Calendar" sheet.
+ * On Android/Desktop it triggers a download.
  */
 export function downloadIcsFile(icsContent, filename) {
-  // Encode the ICS content as a base64 data URI with text/calendar MIME
-  const base64 = btoa(unescape(encodeURIComponent(icsContent)));
-  const dataUri = `data:text/calendar;base64,${base64}`;
+  const blob = new Blob([icsContent], { type: "text/calendar" });
+  const url = URL.createObjectURL(blob);
 
-  const link = document.createElement("a");
-  link.href = dataUri;
-  link.setAttribute("download", filename || "event.ics");
-  link.style.display = "none";
-  document.body.appendChild(link);
-  link.click();
+  // iOS Safari: direct navigation is the ONLY way to trigger the calendar prompt
+  // Android & desktop: an <a> tag click works, but location.href also works fine
+  window.location.href = url;
 
-  // Small delay before cleanup to let the browser process
-  setTimeout(() => {
-    document.body.removeChild(link);
-  }, 100);
+  // Revoke after a delay to free memory (browser has already picked up the blob)
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
