@@ -38,7 +38,7 @@ export default function SubgroupGameDraftRow({ game, currentPick, members, onAss
         <SelectTrigger className="min-h-[48px] border-white/[0.08] bg-white/[0.03] text-white disabled:opacity-50">
           <SelectValue placeholder="Assign this game" />
         </SelectTrigger>
-        <SelectContent className="border-white/[0.08] bg-[var(--slate)] text-white" side="bottom" sideOffset={8} position="popper">
+        <SelectContent className="border-white/[0.08] text-white" side="bottom" sideOffset={8} position="popper">
           <SelectItem value="unassigned">Unassigned</SelectItem>
           {selectOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
