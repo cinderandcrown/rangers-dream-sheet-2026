@@ -114,13 +114,13 @@ export function generateAllGamesIcs(games, memberName) {
  * The only reliable method is navigating to a real HTTP URL that serves
  * the file with Content-Type: text/calendar.
  *
- * We call our serveIcs backend function via GET with base64-encoded
- * ICS content, and navigate to that URL. iOS Safari will intercept it
- * and show the native "Add to Calendar" sheet.
+ * We hit our serveIcs backend function via GET with base64-encoded
+ * ICS content. iOS Safari intercepts the text/calendar response and
+ * shows the native "Add to Calendar" sheet.
  */
 export function downloadIcsFile(icsContent, filename) {
   const encoded = btoa(unescape(encodeURIComponent(icsContent)));
-  const fnUrl = base44.functions.getUrl("serveIcs");
-  const url = fnUrl + "?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
+  const baseUrl = window.location.origin;
+  const url = baseUrl + "/api/serveIcs?d=" + encodeURIComponent(encoded) + "&f=" + encodeURIComponent(filename || "event.ics");
   window.location.href = url;
 }
