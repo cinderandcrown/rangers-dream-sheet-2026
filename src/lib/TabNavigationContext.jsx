@@ -146,7 +146,9 @@ export function NavigationProvider({ children }) {
   const pop = (fallbackTo = TAB_CONFIG[activeTab].path) => {
     const stack = normalizeTabState(activeTab, tabState[activeTab]).stack;
     const currentIndex = stack.lastIndexOf(currentPath);
-    const fallbackPath = stack[currentIndex > 0 ? stack[currentIndex - 1] : stack[stack.length - 2] || fallbackTo;
+    const fallbackPath = currentIndex > 0
+      ? stack[currentIndex - 1]
+      : (stack[stack.length - 2] || fallbackTo);
     const historyIndex = window.history.state?.idx ?? 0;
 
     if (historyIndex > 0) {
