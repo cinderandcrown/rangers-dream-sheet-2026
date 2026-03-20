@@ -1,9 +1,11 @@
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { Download } from "lucide-react";
 import SubgroupMemberManager from "./SubgroupMemberManager";
 import SubgroupGameDraftRow from "./SubgroupGameDraftRow";
 import SubgroupDrawingOrderPanel from "./SubgroupDrawingOrderPanel";
+import { downloadSubgroupExcel } from "./subgroupExports";
 
 export default function SubgroupDraftPanel({ managerName, games, members, picks, onToast }) {
   const queryClient = useQueryClient();
@@ -64,7 +66,7 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         </p>
         {isFinalized && (
           <div className="mt-3 rounded-xl border border-[#22C55E]/20 bg-[#22C55E]/10 px-4 py-3 text-[12px] text-[#86EFAC]">
-            Subgroup draft submitted — your schedule below now shows who each game belongs to.
+            Subgroup draft locked in — your schedule below now shows who each game belongs to, and you can download the Excel sheet to share with the subgroup.
           </div>
         )}
       </div>
@@ -111,15 +113,26 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         </div>
       </div>
 
-      <div className="mt-5 flex justify-end">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        {isFinalized && (
+          <button
+            onClick={() => downloadSubgroupExcel(managerName, games, picks)}
+            aria-label="Download subgroup draft as Excel"
+            className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-3 text-[12px] font-semibold text-white/80 transition hover:bg-white/[0.08]"
+            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+          >
+            <Download className="h-4 w-4" />
+            Download Excel
+          </button>
+        )}
         <button
           onClick={handleSubmitDraft}
           disabled={isFinalized || members.length === 0 || !allAssigned}
-          aria-label="Submit subgroup draft"
+          aria-label="Lock in subgroup draft"
           className="btn-red-gradient min-h-[48px] rounded-xl px-5 py-3 text-[12px] font-semibold text-white disabled:opacity-40"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
         >
-          {isFinalized ? "Subgroup Draft Submitted" : "Submit Subgroup Draft"}
+          {isFinalized ? "Subgroup Draft Locked In" : "Lock In Subgroup Draft"}
         </button>
       </div>
     </div>
