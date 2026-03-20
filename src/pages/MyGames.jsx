@@ -292,7 +292,7 @@ export default function MyGames() {
         {/* Tip */}
         <div className="mt-4 rounded-xl border border-white/[0.04] bg-white/[0.02] px-5 py-4">
           <p className="text-[12px] text-white/35 leading-relaxed">
-            <strong className="text-white/50">Tip:</strong> Tap the <span className="text-[var(--gold)]">calendar icon</span> on any game and choose Apple Calendar, Google Calendar, or Outlook. Use the <span className="text-white/50">Calendar</span> button above for all games at once, or <span className="text-white/50">Print Calendar</span> for a fridge-ready monthly view.
+            <strong className="text-white/50">Tip:</strong> Tap the <span className="text-[var(--gold)]">calendar icon</span> on any game and choose Apple / iCal, Google Calendar, or Outlook. On iPhone, Apple downloads an <span className="text-white/50">.ics</span> file that you add from Share or Files; on Android, use <span className="text-white/50">Google Calendar</span>.
           </p>
         </div>
 

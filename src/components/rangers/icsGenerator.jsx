@@ -90,19 +90,10 @@ export function generateAllGamesIcs(games, memberName) {
   ].join("\r\n");
 }
 
-function isAppleDevice() {
-  if (typeof navigator === "undefined") return false;
-  return /iPad|iPhone|iPod|Macintosh/i.test(navigator.userAgent);
-}
-
-function toWebcalUrl(url) {
-  return url.replace(/^https?:\/\//i, "webcal://");
-}
-
 /**
- * Upload ICS content as a hosted file.
- * On Apple devices, open it with the webcal scheme so Calendar can handle it.
- * Elsewhere, open the hosted file normally.
+ * Upload ICS content as a hosted file and open it.
+ * iPhone Safari does not reliably hand off website downloads straight into Calendar,
+ * so the Apple flow should be treated as a file download/share step.
  */
 export async function downloadIcsFile(icsContent, filename) {
   const safeFilename = filename || "event.ics";
@@ -111,8 +102,9 @@ export async function downloadIcsFile(icsContent, filename) {
   const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
   const link = document.createElement("a");
-  link.href = isAppleDevice() ? toWebcalUrl(file_url) : file_url;
-  link.target = "_self";
+  link.href = file_url;
+  link.target = "_blank";
+  link.rel = "noopener";
   document.body.appendChild(link);
   link.click();
   link.remove();

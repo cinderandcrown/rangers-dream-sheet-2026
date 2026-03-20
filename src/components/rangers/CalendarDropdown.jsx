@@ -52,7 +52,7 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
       const ics = generateSingleGameIcs(game, memberName);
       await downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}.ics`);
     }
-    if (onToast) onToast("Apple Calendar opened!");
+    if (onToast) onToast("Apple downloads an .ics file — on iPhone use Share or Files to add it to Calendar.");
   };
 
   const handleGoogle = (e) => {
@@ -86,7 +86,7 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
   };
 
   const menuItems = [
-    { icon: APPLE_ICON, label: "Apple / iCal", sublabel: ".ics file for Apple", onClick: handleApple },
+    { icon: APPLE_ICON, label: "Apple / iCal", sublabel: "Downloads .ics file", onClick: handleApple },
     { icon: GOOGLE_ICON, label: "Google Calendar", sublabel: "Best on Android", onClick: handleGoogle },
     { icon: OUTLOOK_ICON, label: "Outlook", sublabel: "Web link", onClick: handleOutlook },
   ];
