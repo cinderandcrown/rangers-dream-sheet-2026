@@ -1,5 +1,6 @@
 import { parseISO, format } from "date-fns";
 import { OUTLOOK_LOCATION } from "./constants";
+import { base44 } from "@/api/base44Client";
 
 /**
  * Convert "3:05 PM" CT to an ICS-formatted datetime string in UTC.
@@ -109,21 +110,19 @@ export function generateAllGamesIcs(games, memberName) {
 /**
  * Trigger an .ics calendar import.
  *
- * iOS Safari blocks both data: URIs and blob downloads. The only reliable
- * cross-platform method is to create an Object URL from a Blob with the
- * correct MIME type and navigate to it directly via window.location.
+ * Uploads the ICS content to the server which returns it with the correct
+ * text/calendar MIME type, then opens that URL. This is the most reliable
+ * method across all platforms including iOS Safari.
  *
- * On iOS this opens the native "Add to Calendar" sheet.
- * On Android/Desktop it triggers a download.
+ * Returns a promise — callers should await it.
  */
-export function downloadIcsFile(icsContent, filename) {
-  const blob = new Blob([icsContent], { type: "text/calendar" });
-  const url = URL.createObjectURL(blob);
+export async function downloadIcsFile(icsContent, filename) {
+  // Upload the raw ICS text as a file via the UploadFile integration
+  const icsBlob = new Blob([icsContent], { type: "text/calendar" });
+  const file = new File([icsBlob], filename || "event.ics", { type: "text/calendar" });
+  const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-  // iOS Safari: direct navigation is the ONLY way to trigger the calendar prompt
-  // Android & desktop: an <a> tag click works, but location.href also works fine
-  window.location.href = url;
-
-  // Revoke after a delay to free memory (browser has already picked up the blob)
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  // Open the hosted URL — on iOS Safari this triggers the native calendar prompt
+  // Using window.open in the same tick to avoid popup blockers
+  window.open(file_url, "_blank");
 }
