@@ -108,16 +108,35 @@ export function generateAllGamesIcs(games, memberName) {
 }
 
 /**
- * Upload ICS content as a .ics file and navigate to the hosted URL.
- * This works on iOS Safari because it's a real hosted file with the
- * correct .ics extension — Safari recognizes it and shows the native
- * "Add to Calendar" sheet.
+ * On Apple Safari, prefer the native file share sheet for .ics files.
+ * Fallback to a hosted file URL everywhere else.
  */
 export async function downloadIcsFile(icsContent, filename) {
+  const safeFilename = filename || "event.ics";
   const blob = new Blob([icsContent], { type: "text/calendar" });
-  const file = new File([blob], filename || "event.ics", { type: "text/calendar" });
+  const file = new File([blob], safeFilename, { type: "text/calendar" });
+
+  const canShareFile =
+    typeof navigator !== "undefined" &&
+    typeof navigator.share === "function" &&
+    typeof navigator.canShare === "function" &&
+    navigator.canShare({ files: [file] });
+
+  if (canShareFile) {
+    return navigator.share({
+      files: [file],
+      title: safeFilename,
+    });
+  }
+
   const { file_url } = await base44.integrations.Core.UploadFile({ file });
-  window.location.href = file_url;
+  const link = document.createElement("a");
+  link.href = file_url;
+  link.target = "_blank";
+  link.rel = "noopener";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 /**

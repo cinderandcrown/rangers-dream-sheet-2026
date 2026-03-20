@@ -42,17 +42,17 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
     return () => document.removeEventListener("pointerdown", handleClick);
   }, [open]);
 
-  const handleApple = (e) => {
+  const handleApple = async (e) => {
     e.stopPropagation();
     setOpen(false);
     if (games) {
       const ics = generateAllGamesIcs(games, memberName);
-      downloadIcsFile(ics, `${memberName.toLowerCase()}-rangers-2026.ics`);
+      await downloadIcsFile(ics, `${memberName.toLowerCase()}-rangers-2026.ics`);
     } else if (game) {
       const ics = generateSingleGameIcs(game, memberName);
-      downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}.ics`);
+      await downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}.ics`);
     }
-    if (onToast) onToast("Calendar file opened!");
+    if (onToast) onToast("Apple Calendar opened!");
   };
 
   const handleGoogle = (e) => {
