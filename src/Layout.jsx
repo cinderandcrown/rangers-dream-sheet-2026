@@ -4,17 +4,9 @@ import { useLocation } from "react-router-dom";
 import { useTabNavigation } from "@/lib/TabNavigationContext";
 
 const pageVariants = {
-  initial: (transitionType) => {
-    if (transitionType === "push") return { opacity: 0, x: 28 };
-    if (transitionType === "pop") return { opacity: 0, x: -20 };
-    return { opacity: 0, y: 10 };
-  },
-  animate: { opacity: 1, x: 0, y: 0 },
-  exit: (transitionType) => {
-    if (transitionType === "push") return { opacity: 0, x: -18 };
-    if (transitionType === "pop") return { opacity: 0, x: 20 };
-    return { opacity: 0, y: -6 };
-  },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 export default function Layout({ children }) {
