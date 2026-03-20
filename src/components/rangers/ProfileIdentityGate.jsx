@@ -77,6 +77,7 @@ export default function ProfileIdentityGate({ members, onConfirm }) {
             <User className="h-4 w-4 text-white/30" />
             <input
               type="email"
+              aria-label="Email address"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);

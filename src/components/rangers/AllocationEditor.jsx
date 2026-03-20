@@ -162,7 +162,7 @@ export default function AllocationEditor({ games, members, allocations, targets,
                             {member.name}
                           </button>
                         ))}
-                        <button onClick={() => setEditingGame(null)} className="ml-1 text-[11px] text-white/30 hover:text-white">✕</button>
+                        <button onClick={() => setEditingGame(null)} aria-label={`Cancel reassignment for game ${game.game_number}`} className="ml-1 text-[11px] text-white/30 hover:text-white">✕</button>
                       </div>
                     ) : (
                       <span
@@ -192,6 +192,7 @@ export default function AllocationEditor({ games, members, allocations, targets,
                     {game.game_number !== RESERVED_GAME_NUMBER && allocation && !isFinalized && (
                       <button
                         onClick={() => setEditingGame(isEditing ? null : game.game_number)}
+                        aria-label={isEditing ? `Cancel swap for game ${game.game_number}` : `Swap owner for game ${game.game_number}`}
                         className="rounded px-2 py-0.5 text-[10px] text-white/30 transition hover:bg-white/[0.06] hover:text-white"
                         style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}
                       >

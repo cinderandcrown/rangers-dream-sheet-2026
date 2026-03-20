@@ -169,6 +169,7 @@ export default function MemberLoginGate({ members, onLogin }) {
           <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] transition focus-within:border-white/[0.2] focus-within:bg-white/[0.05]">
             <input
               type="email"
+              aria-label="Email address"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(""); }}
               placeholder="your@email.com"
