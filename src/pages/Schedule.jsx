@@ -69,7 +69,7 @@ export default function Schedule() {
 
   return (
     <div className="schedule-page">
-      <BrandHeader showBack onBack={() => navigate(createPageUrl("Admin"))} />
+      <BrandHeader showBack onBack={() => pop("/Admin")} />
 
       <div className="relative z-[1] mx-auto max-w-[740px] px-6 py-8">
         {/* Header banner */}
