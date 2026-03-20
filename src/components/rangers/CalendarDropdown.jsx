@@ -133,6 +133,7 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
               <button
                 key={item.label}
                 onClick={item.onClick}
+                aria-label={`Add this game to ${item.label}`}
                 className="flex w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-4 text-left transition hover:bg-white/[0.06]"
               >
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.08]">
@@ -171,6 +172,7 @@ export default function CalendarDropdown({ game, games, memberName, variant = "i
             <button
               key={item.label}
               onClick={item.onClick}
+              aria-label={`Add this game to ${item.label}`}
               className="flex w-full items-center gap-3 px-4 min-h-[48px] py-3 text-left transition hover:bg-white/[0.06] active:bg-white/[0.08]"
             >
               <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-white/[0.08]">

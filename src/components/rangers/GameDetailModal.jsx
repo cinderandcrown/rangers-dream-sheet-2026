@@ -36,6 +36,9 @@ export default function GameDetailModal({ game, allocation, members, onClose, on
 
         {/* Modal */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="game-detail-title"
           className="relative w-full max-w-[400px] overflow-hidden rounded-2xl border border-white/[0.08]"
           style={{ background: "#1E293B" }}
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -72,6 +75,7 @@ export default function GameDetailModal({ game, allocation, members, onClose, on
             </div>
             <div>
               <h2
+                id="game-detail-title"
                 className="text-[20px] font-bold text-white"
                 style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
               >
