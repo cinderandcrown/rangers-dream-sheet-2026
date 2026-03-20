@@ -27,7 +27,9 @@ function StatCell({ label, value, isGold }) {
 function SubmissionCell({ submitted, total, allIn }) {
   const radius = 14;
   const circumference = 2 * Math.PI * radius;
-  const progress = (submitted / total) * circumference;
+  const safeTotal = total > 0 ? total : 0;
+  const progressRatio = safeTotal > 0 ? Math.min(submitted / safeTotal, 1) : 0;
+  const progress = progressRatio * circumference;
 
   return (
     <div className="hero-stat-cell" style={{
@@ -101,7 +103,7 @@ export default function HeroSection({ totalGames, submittedCount, totalMembers, 
     return () => clearInterval(timer);
   }, [totalGames, submittedCount]);
 
-  const allIn = submittedCount === totalMembers;
+  const allIn = totalMembers > 0 && submittedCount === totalMembers;
   const nextGame = getNextGame(allocations);
   const seasonLive = daysUntil <= 0;
 
