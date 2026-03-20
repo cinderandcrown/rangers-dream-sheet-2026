@@ -108,27 +108,33 @@ export function generateAllGamesIcs(games, memberName) {
 }
 
 /**
- * Trigger an .ics calendar import.
+ * Trigger an .ics calendar import on iOS Safari and other browsers.
  *
- * Opens a blank window synchronously (to avoid popup blockers), uploads
- * the ICS content to get a real hosted URL, then navigates that window
- * to the file. On iOS Safari this triggers the native "Add to Calendar" sheet.
+ * Strategy: create a blob URL and navigate to it in the current window.
+ * iOS Safari recognises "text/calendar" blobs and shows the native
+ * "Add to Calendar" sheet without leaving the page, because the
+ * navigation is intercepted by the OS calendar handler.
  *
- * Returns a promise — callers should await it.
+ * We avoid window.open entirely — it creates orphan "about:blank" tabs
+ * and sometimes triggers "Safari cannot download this file" errors.
  */
-export async function downloadIcsFile(icsContent, filename) {
-  // Open a blank window SYNCHRONOUSLY inside the user-gesture tick
-  // This avoids popup blockers on iOS/Android
-  const win = window.open("about:blank", "_blank");
+export async function downloadIcsFile(icsContent, _filename) {
+  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
 
-  const icsBlob = new Blob([icsContent], { type: "text/calendar" });
-  const file = new File([icsBlob], filename || "event.ics", { type: "text/calendar" });
-  const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  // Use a temporary <a> link to trigger the download / calendar prompt.
+  // On iOS Safari this surfaces the native calendar sheet.
+  // On desktop browsers it downloads the .ics file.
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = _filename || "event.ics";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
 
-  if (win) {
-    win.location.href = file_url;
-  } else {
-    // Fallback if popup was still blocked — use current window
-    window.location.href = file_url;
-  }
+  // Clean up after a short delay so the browser can process the click
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 1000);
 }
