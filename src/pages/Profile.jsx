@@ -63,7 +63,7 @@ export default function Profile() {
         <div className="mb-6 rounded-2xl border border-white/[0.06] bg-[#003278] px-6 py-6 sm:px-8 sm:py-7">
           <div className="flex items-start gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.08] text-white">
-              <UserCircle2 className="h-8 w-8" />
+              <User className="h-8 w-8" />
             </div>
             <div>
               <h1 className="text-[24px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}>
