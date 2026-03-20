@@ -17,11 +17,11 @@ export default function DeleteAccountCard({ member, memberEmail, onDelete, isDel
   return (
     <div className="rounded-2xl border border-[rgba(192,17,31,0.2)] bg-[rgba(192,17,31,0.06)] p-5 sm:p-6">
       <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(192,17,31,0.16)] text-[var(--red)]">
+        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[rgba(192,17,31,0.16)] text-[var(--red)]">
           <ShieldAlert className="h-5 w-5" />
         </div>
-        <div>
-          <h2 className="text-[18px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
+        <div className="min-w-0">
+          <h2 className="text-[17px] sm:text-[18px] font-bold leading-tight text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
             Delete Account
           </h2>
           <p className="mt-1 text-[13px] text-white/65">
@@ -31,8 +31,8 @@ export default function DeleteAccountCard({ member, memberEmail, onDelete, isDel
       </div>
 
       <div className="mb-5 rounded-xl border border-white/[0.08] bg-black/10 px-4 py-4 text-[13px] text-white/70">
-        <div><span className="text-white/40">Profile:</span> {member.name}</div>
-        <div className="mt-1"><span className="text-white/40">Email:</span> {memberEmail}</div>
+        <div className="break-words"><span className="text-white/40">Profile:</span> {member.name}</div>
+        <div className="mt-1 break-all"><span className="text-white/40">Email:</span> {memberEmail}</div>
         <div className="mt-3 text-white/50">Deletes your saved ranking submission and stored profile data for this app.</div>
       </div>
 

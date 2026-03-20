@@ -60,16 +60,16 @@ export default function Profile() {
     <div>
       <BrandHeader />
       <div className="mx-auto max-w-[680px] px-4 sm:px-6 py-6 sm:py-8">
-        <div className="mb-6 rounded-2xl border border-white/[0.06] bg-[#003278] px-6 py-6 sm:px-8 sm:py-7">
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.08] text-white">
-              <User className="h-8 w-8" />
+        <div className="mb-6 rounded-2xl border border-white/[0.06] bg-[#003278] px-5 py-5 sm:px-8 sm:py-7">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-start">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-white/[0.08] text-white sm:h-14 sm:w-14">
+              <User className="h-7 w-7 sm:h-8 sm:w-8" />
             </div>
-            <div>
-              <h1 className="text-[24px] font-bold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "2px" }}>
+            <div className="min-w-0">
+              <h1 className="text-[20px] sm:text-[24px] font-bold leading-tight text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1.5px" }}>
                 Profile Settings
               </h1>
-              <p className="mt-2 text-[14px] text-white/65">
+              <p className="mt-2 max-w-[28rem] text-[13px] sm:text-[14px] text-white/65">
                 Manage your account data for {activeMember.name}.
               </p>
             </div>
@@ -81,14 +81,14 @@ export default function Profile() {
             Active profile
           </div>
           <div className="mt-4 flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full text-[18px] font-bold text-white" style={{ background: activeMember.accent_color }}>
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-[18px] font-bold text-white" style={{ background: activeMember.accent_color }}>
               {activeMember.name[0]}
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="text-[16px] font-semibold text-white" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
                 {activeMember.name}
               </div>
-              <div className="text-[13px] text-white/50">{identity.memberEmail}</div>
+              <div className="truncate text-[13px] text-white/50">{identity.memberEmail}</div>
             </div>
           </div>
         </div>
@@ -99,6 +99,8 @@ export default function Profile() {
           onDelete={handleDelete}
           isDeleting={isDeleting}
         />
+
+        <div className="h-24" />
       </div>
       <AppToast toast={toast} onClose={() => setToast("")} />
     </div>
