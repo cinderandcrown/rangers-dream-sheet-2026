@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
-export default function SubgroupMemberManager({ managerName, members, picks, onRefresh, onToast }) {
+export default function SubgroupMemberManager({ managerName, members, picks, onRefresh, onToast, disabled = false }) {
   const [newMemberName, setNewMemberName] = React.useState("");
 
   const assignmentCounts = picks.reduce((acc, pick) => {
@@ -59,12 +59,14 @@ export default function SubgroupMemberManager({ managerName, members, picks, onR
           onChange={(e) => setNewMemberName(e.target.value)}
           placeholder="Add subgroup member"
           aria-label="Add subgroup member"
-          className="min-h-[44px] flex-1 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 text-[14px] text-white placeholder-white/30 outline-none"
+          disabled={disabled}
+          className="min-h-[44px] flex-1 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 text-[14px] text-white placeholder-white/30 outline-none disabled:opacity-50"
         />
         <button
           onClick={handleAdd}
           aria-label="Add subgroup member"
-          className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 text-[12px] font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+          disabled={disabled}
+          className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 text-[12px] font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
           style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
         >
           <Plus className="h-4 w-4" />
@@ -83,13 +85,13 @@ export default function SubgroupMemberManager({ managerName, members, picks, onR
               <div className="text-[12px] text-white/40">{assignmentCounts[member.member_name] || 0} drafted games</div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => handleMove(member, "up")} disabled={index === 0} aria-label={`Move ${member.member_name} up`} className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white/50 disabled:opacity-30">
+              <button onClick={() => handleMove(member, "up")} disabled={disabled || index === 0} aria-label={`Move ${member.member_name} up`} className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white/50 disabled:opacity-30">
                 <ArrowUp className="h-4 w-4" />
               </button>
-              <button onClick={() => handleMove(member, "down")} disabled={index === members.length - 1} aria-label={`Move ${member.member_name} down`} className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white/50 disabled:opacity-30">
+              <button onClick={() => handleMove(member, "down")} disabled={disabled || index === members.length - 1} aria-label={`Move ${member.member_name} down`} className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white/50 disabled:opacity-30">
                 <ArrowDown className="h-4 w-4" />
               </button>
-              <button onClick={() => handleRemove(member)} aria-label={`Remove ${member.member_name}`} className="flex h-11 w-11 items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-[var(--red)]">
+              <button onClick={() => handleRemove(member)} disabled={disabled} aria-label={`Remove ${member.member_name}`} className="flex h-11 w-11 items-center justify-center rounded-full bg-[rgba(192,17,31,0.15)] text-[var(--red)] disabled:opacity-30">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>

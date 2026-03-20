@@ -4,7 +4,7 @@ import { getTeamLogoUrl } from "./teamLogos";
 import { getTeamColor, getTeamAbbreviation } from "./utils";
 import CalendarDropdown from "./CalendarDropdown";
 
-export default function MyGameCard({ game, memberName, onInfoClick, index, allocation }) {
+export default function MyGameCard({ game, memberName, onInfoClick, index, allocation, subgroupPick }) {
   const isPersonal = allocation?.ticket_type === "personal";
   const sectionNote = allocation?.section_note || "";
   const logoUrl = getTeamLogoUrl(game.opponent);
@@ -85,11 +85,16 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
           <span className="text-white/20">·</span>
           <span>{game.start_time_et} ET</span>
         </div>
-        {(tags.length > 0 || isPersonal) && (
+        {(tags.length > 0 || isPersonal || subgroupPick) && (
           <div className="mt-1.5 flex flex-wrap gap-1">
             {isPersonal && (
               <span className="inline-block rounded-md px-[6px] py-[2px] text-[9px] font-semibold" style={{ color: "#BFA048", backgroundColor: "rgba(191,160,72,0.2)", fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Personal {sectionNote ? `· ${sectionNote}` : ""}
+              </span>
+            )}
+            {subgroupPick && (
+              <span className="inline-block rounded-md px-[6px] py-[2px] text-[9px] font-semibold" style={{ color: subgroupPick.is_finalized ? "#86EFAC" : "#FCD34D", backgroundColor: subgroupPick.is_finalized ? "rgba(34,197,94,0.16)" : "rgba(191,160,72,0.18)", fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                {subgroupPick.is_finalized ? `Belongs to ${subgroupPick.subgroup_member_name}` : `Drafting for ${subgroupPick.subgroup_member_name}`}
               </span>
             )}
             {tags.map((t) => (

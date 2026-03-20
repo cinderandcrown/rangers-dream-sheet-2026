@@ -6,6 +6,8 @@ import SubgroupGameDraftRow from "./SubgroupGameDraftRow";
 
 export default function SubgroupDraftPanel({ managerName, games, members, picks, onToast }) {
   const queryClient = useQueryClient();
+  const isFinalized = picks.length > 0 && picks.every((pick) => pick.is_finalized);
+  const allAssigned = games.length > 0 && games.every((game) => picks.some((pick) => pick.game_number === game.game_number));
 
   const refreshDraft = () => {
     queryClient.invalidateQueries({ queryKey: ["subgroupMembers"] });
@@ -26,6 +28,7 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
     if (existingPick) {
       await base44.entities.SubgroupPick.update(existingPick.id, {
         subgroup_member_name: value,
+        is_finalized: false,
       });
     } else {
       await base44.entities.SubgroupPick.create({
@@ -33,11 +36,20 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         subgroup_member_name: value,
         game_number: game.game_number,
         pick_order: picks.length + 1,
+        is_finalized: false,
       });
     }
 
     refreshDraft();
     onToast(`${game.opponent} assigned to ${value}`);
+  };
+
+  const handleSubmitDraft = async () => {
+    await Promise.all(
+      picks.map((pick) => base44.entities.SubgroupPick.update(pick.id, { is_finalized: true }))
+    );
+    refreshDraft();
+    onToast(`${managerName}'s subgroup draft was submitted`);
   };
 
   return (
@@ -49,6 +61,11 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         <p className="mt-2 text-[13px] text-white/50">
           Manage your subgroup here using only your assigned group games. Set the turn order, then assign each game to someone in your subgroup.
         </p>
+        {isFinalized && (
+          <div className="mt-3 rounded-xl border border-[#22C55E]/20 bg-[#22C55E]/10 px-4 py-3 text-[12px] text-[#86EFAC]">
+            Subgroup draft submitted — your schedule below now shows who each game belongs to.
+          </div>
+        )}
       </div>
 
       <div className="mb-5 grid grid-cols-3 gap-3">
@@ -70,7 +87,7 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
         <div className="mb-2 text-[11px] font-semibold tracking-[2px] text-white/35" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
           Turn Order
         </div>
-        <SubgroupMemberManager managerName={managerName} members={members} picks={picks} onRefresh={refreshDraft} onToast={onToast} />
+        <SubgroupMemberManager managerName={managerName} members={members} picks={picks} onRefresh={refreshDraft} onToast={onToast} disabled={isFinalized} />
       </div>
 
       <div>
@@ -85,9 +102,22 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
               currentPick={picks.find((pick) => pick.game_number === game.game_number) || null}
               members={members}
               onAssign={handleAssign}
+              disabled={isFinalized}
             />
           ))}
         </div>
+      </div>
+
+      <div className="mt-5 flex justify-end">
+        <button
+          onClick={handleSubmitDraft}
+          disabled={isFinalized || members.length === 0 || !allAssigned}
+          aria-label="Submit subgroup draft"
+          className="btn-red-gradient min-h-[48px] rounded-xl px-5 py-3 text-[12px] font-semibold text-white disabled:opacity-40"
+          style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
+        >
+          {isFinalized ? "Subgroup Draft Submitted" : "Submit Subgroup Draft"}
+        </button>
       </div>
     </div>
   );

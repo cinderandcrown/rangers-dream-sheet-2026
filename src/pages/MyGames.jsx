@@ -63,6 +63,7 @@ export default function MyGames() {
         .filter((pick) => pick.manager_name === authedMember.name)
         .sort((a, b) => (a.pick_order || 0) - (b.pick_order || 0))
     : [];
+  const subgroupPickByGame = Object.fromEntries(subgroupPicksForManager.map((pick) => [pick.game_number, pick]));
 
   // Group by month
   const monthGroups = {};
@@ -298,6 +299,7 @@ export default function MyGames() {
                       memberName={authedMember.name}
                       onInfoClick={setDetailGame}
                       allocation={allocationByGame[game.game_number]}
+                      subgroupPick={subgroupPickByGame[game.game_number]}
                     />
                   ))}
                 </div>

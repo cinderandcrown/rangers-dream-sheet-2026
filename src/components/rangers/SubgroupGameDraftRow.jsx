@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function SubgroupGameDraftRow({ game, currentPick, members, onAssign }) {
+export default function SubgroupGameDraftRow({ game, currentPick, members, onAssign, disabled = false }) {
   const gameDate = format(parseISO(game.date), "EEE, MMM d");
 
   return (
@@ -27,8 +27,8 @@ export default function SubgroupGameDraftRow({ game, currentPick, members, onAss
         )}
       </div>
 
-      <Select value={currentPick?.subgroup_member_name || "unassigned"} onValueChange={(value) => onAssign(game, value)}>
-        <SelectTrigger className="min-h-[48px] border-white/[0.08] bg-white/[0.03] text-white">
+      <Select value={currentPick?.subgroup_member_name || "unassigned"} onValueChange={(value) => onAssign(game, value)} disabled={disabled}>
+        <SelectTrigger className="min-h-[48px] border-white/[0.08] bg-white/[0.03] text-white disabled:opacity-50">
           <SelectValue placeholder="Assign this game" />
         </SelectTrigger>
         <SelectContent className="border-white/[0.08] bg-[var(--slate)] text-white">
