@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { CalendarDays, Download, ChevronDown, ChevronUp, Printer } from "lucide-react";
+import { Download, ChevronDown, ChevronUp, Printer } from "lucide-react";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
 import AppToast from "@/components/rangers/AppToast";
@@ -14,7 +14,7 @@ import { parseISO, format } from "date-fns";
 import { sortGames, sortMembers } from "@/components/rangers/utils";
 import { getMemberScheduleData, downloadMemberExcel } from "@/components/rangers/scheduleExports";
 import { downloadMemberScheduleCsv } from "@/components/rangers/adminHelpers";
-import { generateAllGamesIcs, downloadIcsFile } from "@/components/rangers/icsGenerator";
+import CalendarDropdown from "@/components/rangers/CalendarDropdown";
 import PrintableCalendar from "@/components/rangers/PrintableCalendar";
 import NextGameSpotlight from "@/components/rangers/NextGameSpotlight";
 import ShareSchedule from "@/components/rangers/ShareSchedule";
@@ -73,12 +73,6 @@ export default function MyGames() {
     setExpandedMonth((prev) => (prev === month ? "all" : month));
   };
 
-  const handleExportAll = async () => {
-    if (!authedMember) return;
-    const ics = generateAllGamesIcs(memberGames, authedMember.name);
-    await downloadIcsFile(ics, `${authedMember.name.toLowerCase()}-rangers-2026.ics`);
-    setToast("Calendar events opened!");
-  };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -196,15 +190,13 @@ export default function MyGames() {
 
         {/* Action buttons */}
         <div className="mb-6 grid grid-cols-2 gap-3">
-          <button
-            onClick={handleExportAll}
-            aria-label="Export all games to calendar"
-            className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] min-h-[48px] py-3 text-[12px] sm:text-[13px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.35)] hover:bg-[rgba(191,160,72,0.1)]"
-            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
-          >
-            <CalendarDays className="h-4 w-4" />
-            <span className="hidden sm:inline">Export to</span> Calendar
-          </button>
+          <CalendarDropdown
+            games={memberGames}
+            memberName={authedMember.name}
+            variant="button"
+            label="Calendar"
+            onToast={setToast}
+          />
           <button
             onClick={() => setShowPrintCalendar(true)}
             aria-label="Print calendar view"

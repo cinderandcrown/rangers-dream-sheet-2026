@@ -1,9 +1,9 @@
 import React from "react";
 import { parseISO, format, differenceInCalendarDays } from "date-fns";
-import { CalendarPlus, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { getTeamLogoUrl } from "./teamLogos";
 import { getTeamColor } from "./utils";
-import { generateSingleGameIcs, downloadIcsFile } from "./icsGenerator";
+import CalendarDropdown from "./CalendarDropdown";
 
 export default function NextGameSpotlight({ memberGames, memberName, accentColor, onToast }) {
   const today = new Date();
@@ -32,12 +32,6 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
   else if (daysUntil === 1) countdownLabel = "🔥 Tomorrow!";
   else if (daysUntil <= 7) countdownLabel = `In ${daysUntil} days`;
 
-  const handleAddToCalendar = async (e) => {
-    e.stopPropagation();
-    const ics = generateSingleGameIcs(nextGame, memberName);
-    await downloadIcsFile(ics, `rangers-next-game.ics`);
-    if (onToast) onToast("Calendar event opened!");
-  };
 
   return (
     <div
@@ -96,14 +90,13 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
         </div>
 
         <div className="mt-4 flex gap-2">
-          <button
-            onClick={handleAddToCalendar}
-            aria-label={`Add ${nextGame.opponent} game to calendar`}
-            className="flex items-center gap-1.5 rounded-lg border border-[rgba(191,160,72,0.2)] bg-[rgba(191,160,72,0.06)] px-4 min-h-[44px] py-2.5 text-[11px] font-semibold text-[var(--gold)] transition hover:bg-[rgba(191,160,72,0.12)]"
-            style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "0.5px" }}
-          >
-            <CalendarPlus className="h-3.5 w-3.5" /> Add to Calendar
-          </button>
+          <CalendarDropdown
+            game={nextGame}
+            memberName={memberName}
+            variant="button"
+            label="Add to Calendar"
+            onToast={onToast}
+          />
           <a
             href="https://maps.google.com/?q=Globe+Life+Field+Arlington+TX"
             target="_blank"

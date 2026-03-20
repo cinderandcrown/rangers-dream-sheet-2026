@@ -1,9 +1,8 @@
 import React from "react";
 import { format, parseISO } from "date-fns";
-import { CalendarPlus } from "lucide-react";
 import { getTeamLogoUrl } from "./teamLogos";
 import { getTeamColor, getTeamAbbreviation } from "./utils";
-import { generateSingleGameIcs, downloadIcsFile } from "./icsGenerator";
+import CalendarDropdown from "./CalendarDropdown";
 
 export default function MyGameCard({ game, memberName, onInfoClick, index, allocation }) {
   const isPersonal = allocation?.ticket_type === "personal";
@@ -14,11 +13,6 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
   const dateLabel = format(d, "EEE, MMM d");
   const isWeekend = ["Fri", "Sat", "Sun"].includes(game.day_of_week);
 
-  const handleAddToCalendar = async (e) => {
-    e.stopPropagation();
-    const ics = generateSingleGameIcs(game, memberName);
-    await downloadIcsFile(ics, `rangers-vs-${game.opponent.toLowerCase().replace(/\s+/g, "-")}-${format(d, "MMM-d")}.ics`);
-  };
 
   const tags = [];
   if (game.is_holiday) tags.push({ label: game.is_holiday, color: "#EAB308", bg: "rgba(234,179,8,0.15)" });
@@ -97,14 +91,8 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
         )}
       </div>
 
-      {/* Add to Calendar button */}
-      <button
-        onClick={handleAddToCalendar}
-        aria-label={`Add ${game.opponent} game to calendar`}
-        className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 transition hover:bg-[rgba(191,160,72,0.15)] hover:text-[var(--gold)] hover:scale-105 active:scale-95"
-      >
-        <CalendarPlus className="h-[18px] w-[18px]" />
-      </button>
+      {/* Add to Calendar dropdown */}
+      <CalendarDropdown game={game} memberName={memberName} variant="icon" />
     </div>
   );
 }
