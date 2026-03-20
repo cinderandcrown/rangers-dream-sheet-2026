@@ -35,7 +35,7 @@ export default function NextGameSpotlight({ memberGames, memberName, accentColor
 
   return (
     <div
-      className="mb-6 overflow-hidden rounded-2xl border"
+      className="mb-6 rounded-2xl border overflow-visible"
       style={{ borderColor: `${accentColor}25`, borderLeft: `5px solid ${accentColor}` }}
     >
       <div className="bg-white/[0.02] px-5 sm:px-6 py-5">

@@ -43,7 +43,9 @@ function buildEvent(game, memberName) {
   const dtStart = ctToUtcDate(game.date, game.start_time);
   const dtEnd = addHours(dtStart, 3.5);
   const summary = `${game.opponent} at Rangers`;
-  const description = `Texas Rangers vs ${game.opponent}\\nGame #${game.game_number}\\n${memberName}'s Season Ticket`;
+  const description = `Texas Rangers vs ${game.opponent}
+Game #${game.game_number}
+${memberName}'s Season Ticket`;
   const dtStamp = formatUtcIcsDate(new Date());
 
   return [
@@ -88,33 +90,29 @@ export function generateAllGamesIcs(games, memberName) {
   ].join("\r\n");
 }
 
+function isAppleDevice() {
+  if (typeof navigator === "undefined") return false;
+  return /iPad|iPhone|iPod|Macintosh/i.test(navigator.userAgent);
+}
+
+function toWebcalUrl(url) {
+  return url.replace(/^https?:\/\//i, "webcal://");
+}
+
 /**
- * On Apple Safari, prefer the native file share sheet for .ics files.
- * Fallback to a hosted file URL everywhere else.
+ * Upload ICS content as a hosted file.
+ * On Apple devices, open it with the webcal scheme so Calendar can handle it.
+ * Elsewhere, open the hosted file normally.
  */
 export async function downloadIcsFile(icsContent, filename) {
   const safeFilename = filename || "event.ics";
   const blob = new Blob([icsContent], { type: "text/calendar" });
   const file = new File([blob], safeFilename, { type: "text/calendar" });
-
-  const canShareFile =
-    typeof navigator !== "undefined" &&
-    typeof navigator.share === "function" &&
-    typeof navigator.canShare === "function" &&
-    navigator.canShare({ files: [file] });
-
-  if (canShareFile) {
-    return navigator.share({
-      files: [file],
-      title: safeFilename,
-    });
-  }
-
   const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
   const link = document.createElement("a");
-  link.href = file_url;
-  link.target = "_blank";
-  link.rel = "noopener";
+  link.href = isAppleDevice() ? toWebcalUrl(file_url) : file_url;
+  link.target = "_self";
   document.body.appendChild(link);
   link.click();
   link.remove();

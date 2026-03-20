@@ -240,7 +240,7 @@ export default function MyGames() {
           const isExpanded = expandedMonth === "all" || expandedMonth === month;
 
           return (
-            <div key={month} className="mb-3 overflow-hidden rounded-xl border border-white/[0.06] bg-[var(--slate)]">
+            <div key={month} className="mb-3 overflow-visible rounded-xl border border-white/[0.06] bg-[var(--slate)]">
               {/* Month header — clickable */}
               <button
                 onClick={() => toggleMonth(month)}
