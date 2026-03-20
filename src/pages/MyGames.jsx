@@ -17,6 +17,7 @@ import CalendarDropdown from "@/components/rangers/CalendarDropdown";
 import PrintableCalendar from "@/components/rangers/PrintableCalendar";
 import NextGameSpotlight from "@/components/rangers/NextGameSpotlight";
 import ShareSchedule from "@/components/rangers/ShareSchedule";
+import SubgroupDraftPanel from "@/components/rangers/SubgroupDraftPanel";
 import { saveMemberProfile } from "@/lib/memberProfileSession";
 
 export default function MyGames() {
@@ -32,13 +33,17 @@ export default function MyGames() {
   const gamesQuery = useQuery({ queryKey: ["games"], queryFn: () => base44.entities.Game.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const allocationsQuery = useQuery({ queryKey: ["allocations"], queryFn: () => base44.entities.Allocation.list(), enabled: seedQuery.isSuccess, initialData: [] });
   const submissionsQuery = useQuery({ queryKey: ["submissions"], queryFn: () => base44.entities.Submission.list(), enabled: seedQuery.isSuccess, initialData: [] });
+  const subgroupMembersQuery = useQuery({ queryKey: ["subgroupMembers"], queryFn: () => base44.entities.SubgroupMember.list(), enabled: seedQuery.isSuccess, initialData: [] });
+  const subgroupPicksQuery = useQuery({ queryKey: ["subgroupPicks"], queryFn: () => base44.entities.SubgroupPick.list(), enabled: seedQuery.isSuccess, initialData: [] });
 
   const members = sortMembers(membersQuery.data);
   const games = sortGames(gamesQuery.data);
   const allocations = allocationsQuery.data;
   const submissions = submissionsQuery.data;
+  const subgroupMembers = subgroupMembersQuery.data;
+  const subgroupPicks = subgroupPicksQuery.data;
 
-  const isLoading = seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || allocationsQuery.isLoading || submissionsQuery.isLoading;
+  const isLoading = seedQuery.isLoading || membersQuery.isLoading || gamesQuery.isLoading || allocationsQuery.isLoading || submissionsQuery.isLoading || subgroupMembersQuery.isLoading || subgroupPicksQuery.isLoading;
 
   // Build enriched game list with allocation metadata
   const memberAllocations = authedMember ? allocations.filter((a) => a.assigned_to === authedMember.name) : [];
@@ -47,6 +52,17 @@ export default function MyGames() {
 
   const groupGames = memberGames.filter((g) => (allocationByGame[g.game_number]?.ticket_type || "group") === "group");
   const personalGames = memberGames.filter((g) => allocationByGame[g.game_number]?.ticket_type === "personal");
+  const canManageSubgroup = authedMember && ["Sandy", "George"].includes(authedMember.name);
+  const subgroupMembersForManager = canManageSubgroup
+    ? subgroupMembers
+        .filter((member) => member.manager_name === authedMember.name && member.is_active !== false)
+        .sort((a, b) => (a.pick_order || 0) - (b.pick_order || 0))
+    : [];
+  const subgroupPicksForManager = canManageSubgroup
+    ? subgroupPicks
+        .filter((pick) => pick.manager_name === authedMember.name)
+        .sort((a, b) => (a.pick_order || 0) - (b.pick_order || 0))
+    : [];
 
   // Group by month
   const monthGroups = {};
@@ -225,6 +241,16 @@ export default function MyGames() {
             Excel
           </button>
         </div>
+
+        {canManageSubgroup && (
+          <SubgroupDraftPanel
+            managerName={authedMember.name}
+            games={groupGames}
+            members={subgroupMembersForManager}
+            picks={subgroupPicksForManager}
+            onToast={setToast}
+          />
+        )}
 
         {/* Next Game Spotlight */}
         <NextGameSpotlight
