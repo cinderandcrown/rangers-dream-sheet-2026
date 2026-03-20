@@ -1,8 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { createPageUrl } from "@/utils";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import LoadingScreen from "@/components/rangers/LoadingScreen";
 import ScheduleMonthCard from "@/components/rangers/ScheduleMonthCard";
@@ -13,7 +12,7 @@ import { Printer } from "lucide-react";
 import GameDetailModal from "@/components/rangers/GameDetailModal";
 
 export default function Schedule() {
-  const navigate = useNavigate();
+  const { pop } = useTabNavigation();
   const urlParams = new URLSearchParams(window.location.search);
   const memberName = urlParams.get("memberName");
   const [selectedGame, setSelectedGame] = React.useState(null);
@@ -34,7 +33,7 @@ export default function Schedule() {
   if (allocations.length === 0) {
     return (
       <div>
-        <BrandHeader showBack onBack={() => navigate(createPageUrl("Admin"))} />
+        <BrandHeader showBack onBack={() => pop("/Admin")} />
         <div className="mx-auto max-w-[740px] px-6 py-16 text-center">
           <div className="text-[48px] mb-4">📋</div>
           <h2 className="text-xl font-bold text-white/80 mb-2" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>
@@ -49,7 +48,7 @@ export default function Schedule() {
   if (!member) {
     return (
       <div>
-        <BrandHeader showBack onBack={() => navigate(createPageUrl("Admin"))} />
+        <BrandHeader showBack onBack={() => pop("/Admin")} />
         <div className="mx-auto max-w-[740px] px-6 py-16 text-center">
           <p className="text-white/50">Member "{memberName}" not found.</p>
         </div>
@@ -125,7 +124,8 @@ export default function Schedule() {
         {/* Back link */}
         <div className="mt-8 text-center">
           <button
-            onClick={() => navigate(createPageUrl("Admin"))}
+            onClick={() => pop("/Admin")}
+
             className="text-[12px] text-white/30 underline underline-offset-2 transition hover:text-white/50"
           >
             ← Back to Admin Dashboard

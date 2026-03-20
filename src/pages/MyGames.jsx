@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Download, ChevronDown, ChevronUp, Printer } from "lucide-react";
@@ -20,7 +19,6 @@ import NextGameSpotlight from "@/components/rangers/NextGameSpotlight";
 import ShareSchedule from "@/components/rangers/ShareSchedule";
 
 export default function MyGames() {
-  const navigate = useNavigate();
   const seedQuery = useSeedData();
   const [authedMember, setAuthedMember] = React.useState(null);
   const [authedEmail, setAuthedEmail] = React.useState(null);

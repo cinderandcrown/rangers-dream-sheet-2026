@@ -1,8 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { createPageUrl } from "@/utils";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
 import AppToast from "@/components/rangers/AppToast";
 import BrandHeader from "@/components/rangers/BrandHeader";
 import MemberCard from "@/components/rangers/MemberCard";
@@ -16,7 +15,7 @@ import { DEADLINE_LABEL, GAME_SEED_DATA } from "@/components/rangers/constants";
 import { sortMembers } from "@/components/rangers/utils";
 
 export default function Index() {
-  const navigate = useNavigate();
+  const { push } = useTabNavigation();
   const queryClient = useQueryClient();
   const [toast, setToast] = React.useState("");
   const [loginMember, setLoginMember] = React.useState(null);
@@ -114,7 +113,8 @@ export default function Index() {
           {/* Quick actions row */}
           <div className="mb-10 mx-auto max-w-[540px] grid grid-cols-2 gap-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
             <button
-              onClick={() => navigate("/MyGames")}
+              onClick={() => push("/MyGames")}
+
               aria-label="View my game schedule"
               className="flex items-center justify-center gap-2 rounded-xl border border-[rgba(191,160,72,0.15)] bg-[rgba(191,160,72,0.05)] px-4 min-h-[48px] py-3 text-[12px] font-semibold text-[var(--gold)] transition hover:border-[rgba(191,160,72,0.3)] hover:bg-[rgba(191,160,72,0.1)] hover:-translate-y-0.5"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
@@ -152,7 +152,8 @@ export default function Index() {
           {/* Admin access */}
           <div className="mt-8 text-center">
             <button
-              onClick={() => navigate(createPageUrl("Admin"))}
+              onClick={() => push("/Admin")}
+
               aria-label="Open admin dashboard"
               className="min-h-[44px] min-w-[44px] px-4 text-[11px] text-white/15 underline underline-offset-2 transition hover:text-white/35"
               style={{ fontFamily: "'Source Sans 3', sans-serif" }}
@@ -176,7 +177,7 @@ export default function Index() {
         <EmailLoginModal
           memberName={loginMember.name}
           onConfirm={(email) => {
-            navigate(createPageUrl(`Rank?memberName=${encodeURIComponent(loginMember.name)}&email=${encodeURIComponent(email)}`));
+            push(`/Rank?memberName=${encodeURIComponent(loginMember.name)}&email=${encodeURIComponent(email)}`);
           }}
           onCancel={() => setLoginMember(null)}
         />
