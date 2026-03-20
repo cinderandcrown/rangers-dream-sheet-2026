@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import SubgroupMemberManager from "./SubgroupMemberManager";
 import SubgroupGameDraftRow from "./SubgroupGameDraftRow";
+import SubgroupDrawingOrderPanel from "./SubgroupDrawingOrderPanel";
 
 export default function SubgroupDraftPanel({ managerName, games, members, picks, onToast }) {
   const queryClient = useQueryClient();
@@ -82,6 +83,8 @@ export default function SubgroupDraftPanel({ managerName, games, members, picks,
           <div className="text-[10px] text-white/45" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}>Open</div>
         </div>
       </div>
+
+      {managerName === "Sandy" && <SubgroupDrawingOrderPanel />}
 
       <div className="mb-5">
         <div className="mb-2 text-[11px] font-semibold tracking-[2px] text-white/35" style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase" }}>
