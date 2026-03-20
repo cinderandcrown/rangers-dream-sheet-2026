@@ -1,11 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CalendarDays, Star, Ticket } from "lucide-react";
 import BrandHeader from "./BrandHeader";
+import { useTabNavigation } from "@/lib/TabNavigationContext";
 
 export default function MemberLoginGate({ members, onLogin }) {
-  const navigate = useNavigate();
+  const { switchTab } = useTabNavigation();
   const [selectedMember, setSelectedMember] = React.useState(null);
   const [email, setEmail] = React.useState("");
   const [error, setError] = React.useState("");
@@ -24,7 +24,7 @@ export default function MemberLoginGate({ members, onLogin }) {
   if (!selectedMember) {
     return (
       <div>
-        <BrandHeader showBack onBack={() => navigate("/")} />
+        <BrandHeader showBack onBack={() => switchTab("home")} />
 
         {/* Visual hero banner */}
         <div className="relative overflow-hidden" style={{ background: "linear-gradient(165deg, #003278 0%, #001845 50%, #0A1628 100%)" }}>

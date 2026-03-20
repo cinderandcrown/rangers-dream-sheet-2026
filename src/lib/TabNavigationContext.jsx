@@ -49,10 +49,39 @@ export function NavigationProvider({ children }) {
   const [tabState, setTabState] = useState(readStoredState);
   const [transitionType, setTransitionType] = useState("neutral");
   const lastProcessedKey = useRef("");
+  const lastCommittedRouteRef = useRef({ path: currentPath, tab: activeTab });
+  const controlledPopTargetRef = useRef("");
 
   useEffect(() => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(tabState));
   }, [tabState]);
+
+  useEffect(() => {
+    if (navigationType !== "POP") {
+      controlledPopTargetRef.current = "";
+      lastCommittedRouteRef.current = { path: currentPath, tab: activeTab };
+      return;
+    }
+
+    const { path: lastPath, tab: lastTab } = lastCommittedRouteRef.current;
+    const stack = normalizeTabState(lastTab, tabState[lastTab]).stack;
+    const currentIndex = stack.lastIndexOf(lastPath);
+    const fallbackPath = currentIndex > 0
+      ? stack[currentIndex - 1]
+      : (stack[stack.length - 2] || TAB_CONFIG[lastTab].path);
+
+    controlledPopTargetRef.current = fallbackPath;
+
+    if (currentPath !== fallbackPath) {
+      navigate(fallbackPath, {
+        replace: true,
+        state: {
+          navTransition: "pop",
+          navSource: "provider-pop",
+        },
+      });
+    }
+  }, [activeTab, currentPath, navigate, navigationType, tabState]);
 
   useEffect(() => {
     const navTransition = location.state?.navTransition;
@@ -88,9 +117,15 @@ export function NavigationProvider({ children }) {
       const isReplace = location.state?.navTransition === "replace" || location.state?.navIntent === "switch-tab";
 
       if (navigationType === "POP") {
-        const existingIndex = stack.lastIndexOf(currentPath);
-        next[activeTab] = {
-          stack: existingIndex >= 0 ? stack.slice(0, existingIndex + 1) : [...stack, currentPath],
+        const { tab: sourceTab } = lastCommittedRouteRef.current;
+        const controlledPath = controlledPopTargetRef.current;
+
+        if (controlledPath && currentPath !== controlledPath) return prev;
+
+        const sourceStack = [...next[sourceTab].stack];
+        const existingIndex = sourceStack.lastIndexOf(currentPath);
+        next[sourceTab] = {
+          stack: existingIndex >= 0 ? sourceStack.slice(0, existingIndex + 1) : [...sourceStack, currentPath],
           lastPath: currentPath,
         };
         return next;
