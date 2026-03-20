@@ -110,19 +110,25 @@ export function generateAllGamesIcs(games, memberName) {
 /**
  * Trigger an .ics calendar import.
  *
- * Uploads the ICS content to the server which returns it with the correct
- * text/calendar MIME type, then opens that URL. This is the most reliable
- * method across all platforms including iOS Safari.
+ * Opens a blank window synchronously (to avoid popup blockers), uploads
+ * the ICS content to get a real hosted URL, then navigates that window
+ * to the file. On iOS Safari this triggers the native "Add to Calendar" sheet.
  *
  * Returns a promise — callers should await it.
  */
 export async function downloadIcsFile(icsContent, filename) {
-  // Upload the raw ICS text as a file via the UploadFile integration
+  // Open a blank window SYNCHRONOUSLY inside the user-gesture tick
+  // This avoids popup blockers on iOS/Android
+  const win = window.open("about:blank", "_blank");
+
   const icsBlob = new Blob([icsContent], { type: "text/calendar" });
   const file = new File([icsBlob], filename || "event.ics", { type: "text/calendar" });
   const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-  // Open the hosted URL — on iOS Safari this triggers the native calendar prompt
-  // Using window.open in the same tick to avoid popup blockers
-  window.open(file_url, "_blank");
+  if (win) {
+    win.location.href = file_url;
+  } else {
+    // Fallback if popup was still blocked — use current window
+    window.location.href = file_url;
+  }
 }
