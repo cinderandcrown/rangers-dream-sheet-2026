@@ -29,6 +29,7 @@ export default function CopyEmailSummary({ members, games, allocations, onToast 
   return (
     <button
       onClick={handleCopy}
+      aria-label="Copy email summary to clipboard"
       className="rounded-[10px] border border-white/12 bg-transparent px-4 py-3 text-sm text-white/70 transition hover:border-white/25 hover:text-white"
       style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
     >

@@ -19,6 +19,7 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
         {games.length > 0 ? (
           <button
             onClick={onClear}
+            aria-label="Clear all ranked games"
             className="rounded-[10px] border border-white/12 bg-transparent px-3 py-2 min-h-[44px] min-w-[44px] text-[11px] font-medium text-white/70 transition hover:border-white/25 hover:text-white active:bg-white/[0.08] active:scale-95"
             style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
           >
@@ -140,6 +141,7 @@ export default function RankedListPanel({ games, onDragEnd, onMoveUp, onMoveDown
         <button
           onClick={onSubmit}
           disabled={disabled}
+          aria-label="Submit your rankings"
           className="btn-red-gradient w-full rounded-[10px] px-3 py-3 min-h-[48px] text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(192,17,31,0.4)] active:scale-[0.97] active:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
           style={{
             fontFamily: "'Oswald', sans-serif",

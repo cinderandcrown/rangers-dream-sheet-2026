@@ -20,6 +20,8 @@ export default function FilterPills({ options, activeValue, onChange, games, cou
           <button
             key={option}
             onClick={() => onChange(option)}
+            aria-label={`Filter by ${option}`}
+            aria-pressed={active}
             className={`flex-shrink-0 rounded-lg px-[12px] sm:px-[14px] min-h-[44px] text-[11px] sm:text-[13px] font-medium transition-all ${
               active
                 ? "border border-[var(--navy)] bg-[var(--navy)] text-white"

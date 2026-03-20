@@ -45,6 +45,15 @@ export default function GameCard({ game, rankNumber, onSelect, onInfoClick }) {
   return (
     <div
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      role={isReserved || isRanked ? undefined : "button"}
+      tabIndex={isReserved || isRanked ? -1 : 0}
+      aria-label={isReserved ? `${game.opponent} opening day game is reserved` : isRanked ? `${game.opponent} game is already ranked at position ${rankNumber}` : `Add ${game.opponent} game on ${dateLabel} at ${game.start_time} to rankings`}
       className={`game-card relative flex items-start gap-2 sm:gap-[14px] rounded-xl border p-[10px_12px] sm:p-[14px_16px] transition-all duration-200 ${
         justAdded ? "game-card-flash" : ""
       } ${

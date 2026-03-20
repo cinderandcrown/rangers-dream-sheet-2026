@@ -94,6 +94,7 @@ export default function Schedule() {
             </div>
             <button
               onClick={() => window.print()}
+              aria-label={`Print ${member.name}'s schedule`}
               className="flex-shrink-0 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-semibold text-white transition hover:bg-white/20"
               style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: "1px" }}
             >
@@ -125,7 +126,7 @@ export default function Schedule() {
         <div className="mt-8 text-center">
           <button
             onClick={() => pop("/Admin")}
-
+            aria-label="Back to admin dashboard"
             className="text-[12px] text-white/30 underline underline-offset-2 transition hover:text-white/50"
           >
             ← Back to Admin Dashboard

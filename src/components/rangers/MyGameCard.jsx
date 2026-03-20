@@ -26,7 +26,17 @@ export default function MyGameCard({ game, memberName, onInfoClick, index, alloc
         borderColor: isPersonal ? "rgba(191,160,72,0.2)" : "rgba(255,255,255,0.06)",
         background: isPersonal ? "rgba(191,160,72,0.04)" : "rgba(255,255,255,0.02)",
       }}
+      role={onInfoClick ? "button" : undefined}
+      tabIndex={onInfoClick ? 0 : -1}
+      aria-label={`Open details for game ${game.game_number} against ${game.opponent} on ${dateLabel}`}
       onClick={() => onInfoClick && onInfoClick(game)}
+      onKeyDown={(e) => {
+        if (!onInfoClick) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onInfoClick(game);
+        }
+      }}
     >
       {/* Game number badge */}
       <div className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white/[0.08] text-[9px] font-bold text-white/40" style={{ fontFamily: "'Oswald', sans-serif" }}>
