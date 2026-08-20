@@ -1,0 +1,62 @@
+{
+  "name": "Game",
+  "type": "object",
+  "properties": {
+    "game_number": {
+      "type": "number",
+      "description": "Sequential home game number"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Game date"
+    },
+    "day_of_week": {
+      "type": "string",
+      "description": "Day of week"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Start time in Central Time"
+    },
+    "start_time_et": {
+      "type": "string",
+      "description": "Start time in Eastern Time"
+    },
+    "opponent": {
+      "type": "string",
+      "description": "Opponent name"
+    },
+    "month": {
+      "type": "string",
+      "description": "Month name"
+    },
+    "location": {
+      "type": "string",
+      "description": "Ballpark location"
+    },
+    "is_day_game": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if game starts before 5 PM CT"
+    },
+    "is_holiday": {
+      "type": "string",
+      "description": "Holiday name if applicable, empty otherwise"
+    },
+    "promotional_event": {
+      "type": "string",
+      "description": "Promotional event name if applicable, empty otherwise"
+    }
+  },
+  "required": [
+    "game_number",
+    "date",
+    "day_of_week",
+    "start_time",
+    "start_time_et",
+    "opponent",
+    "month",
+    "location"
+  ]
+}

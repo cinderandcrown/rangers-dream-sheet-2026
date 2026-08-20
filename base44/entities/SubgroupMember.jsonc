@@ -1,0 +1,28 @@
+{
+  "name": "SubgroupMember",
+  "type": "object",
+  "properties": {
+    "manager_name": {
+      "type": "string",
+      "description": "Main member who manages this subgroup"
+    },
+    "member_name": {
+      "type": "string",
+      "description": "Subgroup member name"
+    },
+    "pick_order": {
+      "type": "number",
+      "description": "Turn order within the subgroup"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this subgroup member is active"
+    }
+  },
+  "required": [
+    "manager_name",
+    "member_name",
+    "pick_order"
+  ]
+}

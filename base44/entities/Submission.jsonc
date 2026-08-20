@@ -1,0 +1,41 @@
+{
+  "name": "Submission",
+  "type": "object",
+  "properties": {
+    "member_name": {
+      "type": "string",
+      "description": "Member name"
+    },
+    "member_email": {
+      "type": "string",
+      "description": "Email address provided at login"
+    },
+    "ranked_game_ids": {
+      "type": "array",
+      "description": "Ordered ranked game numbers",
+      "items": {
+        "type": "number"
+      }
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Submission timestamp"
+    },
+    "is_final": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether admin finalized this submission"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether admin locked edits"
+    }
+  },
+  "required": [
+    "member_name",
+    "ranked_game_ids",
+    "submitted_at"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Member",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Member first name"
+    },
+    "share_count": {
+      "type": "number",
+      "description": "Games held in the split"
+    },
+    "rank_max": {
+      "type": "number",
+      "description": "Maximum rankings required"
+    },
+    "accent_color": {
+      "type": "string",
+      "description": "Hex accent color"
+    }
+  },
+  "required": [
+    "name",
+    "share_count",
+    "rank_max",
+    "accent_color"
+  ]
+}

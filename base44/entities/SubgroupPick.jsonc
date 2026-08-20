@@ -1,0 +1,33 @@
+{
+  "name": "SubgroupPick",
+  "type": "object",
+  "properties": {
+    "manager_name": {
+      "type": "string",
+      "description": "Main member managing the subgroup draft"
+    },
+    "subgroup_member_name": {
+      "type": "string",
+      "description": "Subgroup member who received the game"
+    },
+    "game_number": {
+      "type": "number",
+      "description": "Game number assigned in the subgroup draft"
+    },
+    "pick_order": {
+      "type": "number",
+      "description": "Order in which the subgroup pick was made"
+    },
+    "is_finalized": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the subgroup draft was submitted"
+    }
+  },
+  "required": [
+    "manager_name",
+    "subgroup_member_name",
+    "game_number",
+    "pick_order"
+  ]
+}

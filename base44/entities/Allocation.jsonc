@@ -1,0 +1,50 @@
+{
+  "name": "Allocation",
+  "type": "object",
+  "properties": {
+    "game_number": {
+      "type": "number",
+      "description": "Allocated game number"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Assigned member name"
+    },
+    "was_ranked": {
+      "type": "boolean",
+      "description": "Whether member ranked this game"
+    },
+    "rank_position": {
+      "type": "number",
+      "description": "Ranking position if ranked"
+    },
+    "manually_assigned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this was manually assigned by admin"
+    },
+    "is_finalized": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether allocation is finalized by admin"
+    },
+    "ticket_type": {
+      "type": "string",
+      "enum": [
+        "group",
+        "personal"
+      ],
+      "default": "group",
+      "description": "Whether this is a group split ticket or a personal purchase"
+    },
+    "section_note": {
+      "type": "string",
+      "description": "Optional note like section number for personal tickets"
+    }
+  },
+  "required": [
+    "game_number",
+    "assigned_to",
+    "was_ranked"
+  ]
+}
